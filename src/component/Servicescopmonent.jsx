@@ -60,7 +60,7 @@ const ServicesSection = ({ limit }) => {
             onClick={() => setShowAll(!showAll)}
             className="px-6 py-2 poppins-thin mt-11 bg-[#F8AF2A] text-white rounded-full hover:bg-yellow-600 transition duration-300"
           >
-            {showAll ? "Show Less Services" : "See All Services"}
+            {showAll ? "View Less Services" : "View All Services"}
           </button>
         </div>
       )}
