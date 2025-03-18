@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
 
-const ServicesSection = ({ limit }) => {
+const Servicescopmonent = ({ limit }) => {
   const [services, setServices] = useState([]);
   const [showAll, setShowAll] = useState(false);
 
@@ -54,4 +54,4 @@ const ServicesSection = ({ limit }) => {
   );
 };
 
-export default ServicesSection;
+export default Servicescopmonent;
