@@ -11,6 +11,7 @@ import BlogSection from "./component/BlogSection";
 import WideRange from "./component/WideRange";
 import BlogInfoSection from "./component/BlogInfoSection";
 import Wave from "./component/TopWave";
+import Testimonials from "./component/Testimonials;";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <WideRange />
       <ServicesSection limit={3} /> {/* Show 3 services */}
       <Wave />
+      <Testimonials />
       <RecentWork limit={3} /> {/* Show 3 products */}
       <BlogInfoSection />
       <BlogSection limit={3} /> {/* Show 3 blogs */}
