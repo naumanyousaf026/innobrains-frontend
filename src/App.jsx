@@ -11,7 +11,8 @@ import BlogSection from "./component/BlogSection";
 import WideRange from "./component/WideRange";
 import BlogInfoSection from "./component/BlogInfoSection";
 import Wave from "./component/TopWave";
-import Testimonials from "./component/Testimonials;";
+import Testimonials from "./component/Testimonials";
+
 
 function App() {
   return (
