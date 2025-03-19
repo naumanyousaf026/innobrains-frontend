@@ -9,7 +9,7 @@ import ServicesSection from "./component/Servicescopmonent";
 // import RecentWork from "./component/RecentWork";
 import BlogSection from "./component/BlogSection";
 import WideRange from "./component/WideRange";
-import BlogInfoSection from "./component/BlogInfoSection";
+
 import Wave from "./component/TopWave";
 import Testimonials from "./component/Testimonials";
 import ProjectsPage from "./component/ProjectsPage";
@@ -26,7 +26,7 @@ function App() {
       <Testimonials />
       {/* <RecentWork limit={3} /> Show 3 products */}
       <ProjectsPage />
-      <BlogInfoSection />
+    
       <BlogSection limit={3} /> {/* Show 3 blogs */}
       <ContactForm />
       <Footer />
