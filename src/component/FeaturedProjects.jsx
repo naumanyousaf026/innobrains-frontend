@@ -61,7 +61,7 @@ const FeaturedProjects = () => {
           <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-[#103153]">
             <span className="w-2 h-2 bg-[#103153] rounded-full mr-2"></span> FEATURED PROJECTS
           </h3>
-          <button className="bg-[#F8AF2A] text-white px-6 py-2 rounded-lg">See All Projects</button>
+       
         </div>
 
         <h2 className="text-2xl md:text-3xl lg:text-[42px] font-bold text-gray-900 mb-8 max-w-md leading-tight">
