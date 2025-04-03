@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from 'react-router-dom';
 const ServicesSection = () => {
   return (
     <div className="relative">
@@ -30,10 +30,11 @@ const ServicesSection = () => {
             team member's individual skills and unique perspective on design,
             collaborating to achieve exceptional results.
           </p>
+          <Link to="/contact">
           <button className="mt-8 bg-[#FFA500] text-white py-3 px-8 rounded-full text-lg hover:bg-yellow-600">
             Contact Us
           </button>
-
+         </Link>
           {/* Stats */}
           <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-12 text-gray-800">
             <div>
