@@ -30,9 +30,7 @@ const CompanyValues = () => {
               Highlight value one
             </h3>
             <p className="text-gray-500 roboto-thin">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse varius enim in eros elementum tristique. Duis cursus,
-              mi quis viverra ornare.
+            We bring fresh, forward-thinking ideas to every project, helping businesses stay ahead in the digital world.
             </p>
           </div>
 
@@ -48,9 +46,7 @@ const CompanyValues = () => {
               Highlight value two
             </h3>
             <p className="text-gray-500 roboto-thin">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse varius enim in eros elementum tristique. Duis cursus,
-              mi quis viverra ornare.
+            From design to development, our work is driven by precision and a commitment to delivering top-tier results.
             </p>
           </div>
 
@@ -66,9 +62,7 @@ const CompanyValues = () => {
               Highlight value three
             </h3>
             <p className="text-gray-500 roboto-thin">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse varius enim in eros elementum tristique. Duis cursus,
-              mi quis viverra ornare.
+            We prioritize your goals, ensuring every solution we craft is aligned with your business success and satisfaction.
             </p>
           </div>
         </div>
