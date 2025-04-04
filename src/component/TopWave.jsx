@@ -144,6 +144,7 @@
 
 // export default Wave;
 import React from 'react'
+import { Link } from 'react-router-dom';
 const Wave = () => {
   return (
     <section className="bg-[#103153] text-white py-20 px-6 md:px-16">
@@ -157,9 +158,11 @@ const Wave = () => {
             We strive for creative and manufacturing synergy, utilizing each team member's individual
             skills and own unique perspective on design, collaborating to achieve exceptional results.
           </p>
+          <Link to="/contact">
           <button className="bg-[#F8AF2A] text-black  px-6 py-2 rounded-full font-semibold hover:bg-yellow-500 transition">
             Contact Us
           </button>
+          </Link>
         </div>
 
         {/* Right Side Stats */}
