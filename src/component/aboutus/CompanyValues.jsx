@@ -27,7 +27,7 @@ const CompanyValues = () => {
               />
             </div>
             <h3 className="text-xl font-semibold mb-2 roboto-thin">
-              Highlight value one
+            Digital Innovation
             </h3>
             <p className="text-gray-500 roboto-thin">
             We bring fresh, forward-thinking ideas to every project, helping businesses stay ahead in the digital world.
@@ -43,7 +43,7 @@ const CompanyValues = () => {
               />
             </div>
             <h3 className="text-xl font-semibold mb-2 roboto-thin">
-              Highlight value two
+            Creative Excellence
             </h3>
             <p className="text-gray-500 roboto-thin">
             From design to development, our work is driven by precision and a commitment to delivering top-tier results.
@@ -59,7 +59,7 @@ const CompanyValues = () => {
               />
             </div>
             <h3 className="text-xl font-semibold mb-2 roboto-thin">
-              Highlight value three
+            Powerful Solutions
             </h3>
             <p className="text-gray-500 roboto-thin">
             We prioritize your goals, ensuring every solution we craft is aligned with your business success and satisfaction.
