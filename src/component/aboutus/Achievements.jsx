@@ -35,7 +35,7 @@ const Achievements = () => {
   if (!achievementData) return <p>No achievements found.</p>;
 
   return (
-    <div className="bg-[#F6F6F6]">
+    <div className="">
       <div className="w-5/6 mx-auto">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center py-16 px-4 sm:px-6 lg:px-8">
           <div className="md:w-1/2">

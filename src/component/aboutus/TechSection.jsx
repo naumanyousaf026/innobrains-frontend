@@ -2,7 +2,7 @@ import React from "react";
 
 const TechSolutionsSection = () => {
   return (
-    <section className="bg-[#F6F6F6]">
+    <section className="">
       <div className="w-5/6 mx-auto py-16">
         {/* Main Title Section */}
         <div className="text-center">

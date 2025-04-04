@@ -54,7 +54,7 @@ const TeamSection = () => {
   // Display loading state
   if (isLoading) {
     return (
-      <section className="bg-[#F9FAFB] py-12 w-5/6 mx-auto">
+      <section className=" py-12 w-5/6 mx-auto">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-800">Loading Team Members...</h2>
         </div>
@@ -65,7 +65,7 @@ const TeamSection = () => {
   // Display error state
   if (error) {
     return (
-      <section className="bg-[#F9FAFB] py-12 w-5/6 mx-auto">
+      <section className=" py-12 w-5/6 mx-auto">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600">Error loading team members</h2>
           <p className="text-gray-600 mt-4">Please try again later.</p>
@@ -75,7 +75,7 @@ const TeamSection = () => {
   }
 
   return (
-    <section className="bg-[#F9FAFB] py-12 w-5/6 mx-auto">
+    <section className=" py-12 w-5/6 mx-auto">
       {/* Section Title */}
       <div className="text-center mb-12">
         <h3 className="text-lg text-[#5C5C5C] font-semibold mb-3">Team Members</h3>

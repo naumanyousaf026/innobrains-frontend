@@ -5,7 +5,7 @@ import React from "react";
 
 const CompanyValues = () => {
   return (
-    <div className="bg-[#F9FAFB]">
+    <div className="">
       <div className="py-12 text-center">
         {/* Section Title */}
         <h2 className="text-4xl md:text-5xl font-semibold mb-6 poppins-thin max-w-3xl mx-auto">
