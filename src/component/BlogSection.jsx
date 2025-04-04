@@ -37,7 +37,7 @@ const BlogSection = () => {
             Explore article and <span className="block mt-2">information</span>
           </h1>
           <p className="text-[#5C5C5C] poppins-thin text-lg">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Transforming businesses through innovative software solutions and cutting-edge technology.
           </p>
         </div>
         <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
@@ -50,7 +50,7 @@ const BlogSection = () => {
                 className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
               >
                 <img
-                  className="w-full h-48 object-cover"
+                  className="w-full h-full object-cover"
                   src={`https://apis.innobrains.pk${blog.image}`}
                   alt={blog.title || "Blog Post"}
                 />
