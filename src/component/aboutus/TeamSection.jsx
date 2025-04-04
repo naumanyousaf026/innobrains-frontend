@@ -94,13 +94,13 @@ const TeamSection = () => {
           >
             {/* Image Container */}
             <div 
-              className="w-full overflow-hidden flex items-center justify-center"
-              style={{ height: '369px' }}
+              className="w-full overflow-hidden  aspect-[4/4] "
+             
             >
               <img
                 src={member.image}
                 alt={member.name}
-                className="w-full h-full object-contain" 
+                className="w-full h-full" 
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImage;
