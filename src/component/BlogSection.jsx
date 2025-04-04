@@ -47,7 +47,7 @@ const BlogSection = () => {
             blogs.slice(0, 3).map((blog, index) => (
               <div
                 key={index}
-                className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                className="bg-white w-full aspect-[4/4] shadow-md overflow-hidden transition-transform transform hover:scale-105"
               >
                 <img
                   className="w-full h-full object-cover"
