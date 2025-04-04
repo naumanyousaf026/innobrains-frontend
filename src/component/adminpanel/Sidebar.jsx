@@ -93,7 +93,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
           Team
         </button>
 <button
-          onClick={() => setSection("userSubmissions")}
+          onClick={() => setSection(userSubmissions)}
           className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
         >
           <UserGroupIcon className="h-6 w-6" />
