@@ -13,9 +13,11 @@ const FeaturedProjects = () => {
           throw new Error("Failed to fetch project data");
         }
         const data = await response.json();
+
+        console.log("Fetched Projects:", data); // ✅ Debugging
         setProjects(data);
       } catch (error) {
-        console.error("Error fetching project data:", error);
+        console.error("API Fetch Error:", error);
         setError(error.message);
       }
     };
@@ -71,28 +73,30 @@ const FeaturedProjects = () => {
               projects.map((project) => (
                 <div
                   key={project._id}
-                  className={`rounded-2xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl flex flex-col items-center justify-center ${
-                    project.style === "white"
-                      ? "bg-white text-black"
-                      : "bg-white text-black border border-gray-300"
-                  }`}
+                  className="rounded-2xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl flex flex-col items-center justify-center bg-white text-black"
                 >
                   {/* Project Image Section */}
-                  <div
-                    className={`w-full flex rounded-2xl items-center justify-center h-64 ${
-                      project.style === "black-img-white-text" ? "bg-black" : "bg-white"
-                    }`}
-                  >
+                  <div className="w-full flex rounded-2xl items-center justify-center h-64 bg-white">
                     <img
-                      src={project.image}
+                      src={`https://apis.innobrains.pk/uploads/${project.image}`} // ✅ Fixed image path
                       alt="Project Preview"
-                      className="w-44 h-32 object-contain"
+                      className="w-full h-auto max-w-[200px] max-h-[150px] object-contain"
+                      onError={(e) => (e.target.style.display = "none")} // Hide image if not found
                     />
                   </div>
+
                   {/* Text Section */}
-                  <div className="w-full rounded-2xl p-4">
-                    <h3 className="text-xl font-bold">{project.title}</h3>
-                    <p className="text-sm text-gray-500">{project.category}</p>
+                  <div className="w-full rounded-2xl p-4 text-center">
+                    <h3 className="text-xl font-bold">{project.name}</h3>
+                    <p className="text-sm text-gray-500">{project.description}</p>
+                    <a
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      View Project
+                    </a>
                   </div>
                 </div>
               ))
