@@ -4,7 +4,7 @@ const ServicesSection = () => {
   return (
     <div className="relative">
       {/* Section 1: Light Blue Background with Waves */}
-      <div className="bg-[#E5F6FF] relative pb-40">
+      <div className="relative pb-40">
         {/* Top Wave */}
         <div className="absolute inset-x-0 top-0">
           <svg
