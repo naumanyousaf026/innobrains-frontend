@@ -64,28 +64,32 @@ const Footer = () => {
 
       {/* Bottom section: Social Icons and Links */}
       <div className="text-center md:text-left mt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex justify-center md:justify-start mb-4 space-x-4 border-b-2 border-black border-solid pb-4">
-          <a href="https://wa.me/your-number" aria-label="WhatsApp">
-            <FontAwesomeIcon icon={faWhatsapp} className="text-xl text-[#103153]" />
-          </a>
-          <a href="https://facebook.com/your-page" aria-label="Facebook">
-            <FontAwesomeIcon icon={faFacebook} className="text-xl text-[#103153]" />
-          </a>
-          <a href="https://instagram.com/your-profile" aria-label="Instagram">
-            <FontAwesomeIcon icon={faInstagram} className="text-xl text-[#103153]" />
-          </a>
-        </div>
-    
-        <div className="flex flex-col md:flex-row justify-between items-center text-gray-600">
-          <div className="mb-4 md:mb-0 roboto-thin">
-            © 2025 Innobrains Technologies. All rights reserved.
-          </div>
-          <div className="space-x-3">
-            <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
-          </div>
-        </div>
-      </div>
+  <div className="flex justify-center md:justify-start mb-4 space-x-4 border-b-2 border-black border-solid pb-4">
+    <Link to="https://wa.me/your-number" aria-label="WhatsApp">
+      <FontAwesomeIcon icon={faWhatsapp} className="text-xl text-[#103153]" />
+    </Link>
+    <Link to="https://www.facebook.com/innobrains.pk" aria-label="Facebook">
+      <FontAwesomeIcon icon={faFacebook} className="text-xl text-[#103153]" />
+    </Link>
+    <Link to="https://www.instagram.com/innobrains.pk/" aria-label="Instagram">
+      <FontAwesomeIcon icon={faInstagram} className="text-xl text-[#103153]" />
+    </Link>
+    <Link to="https://www.linkedin.com/company/innobrainstech/posts/?feedView=all" aria-label="LinkedIn">
+      <FontAwesomeIcon icon={faLinkedin} className="text-xl text-[#103153]" />
+    </Link>
+  </div>
+
+  <div className="flex flex-col md:flex-row justify-between items-center text-gray-600">
+    <div className="mb-4 md:mb-0 roboto-thin">
+      © 2025 Innobrains Technologies. All rights reserved.
+    </div>
+    <div className="space-x-3">
+      <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
+      <Link to="/terms-of-service" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
+    </div>
+  </div>
+</div>
+
     </footer>
   );
 };
