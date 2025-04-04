@@ -27,7 +27,7 @@ const Servicescopmonent = ({ limit }) => {
 
   return (
     <div className="px-4 py-12 md:px-12 lg:px-[44px]">
-      <div className="flex max-w-7xl mx-auto flex-col md:flex-row justify-center gap-6 md:gap-14 flex-wrap">
+      <div className="flex max-w-7xl mx-auto flex-col md:flex-row justify-center gap-6 flex-wrap">
         {displayedServices.map((service) => (
           <div key={service._id} className="bg-[#103153] text-white p-6 rounded-3xl w-full md:w-[48%] lg:w-[28%]">
             <div className="flex mb-4">
