@@ -31,9 +31,7 @@ const FeaturedProjects = () => {
             <span className="w-2 h-2 bg-[#103153] rounded-full mr-2"></span>
             FEATURED PROJECTS
           </h3>
-          <button className="bg-[#F8AF2A] text-white px-6 py-2 rounded-lg">
-            See All Projects
-          </button>
+      
         </div>
 
         {/* Title Section */}
