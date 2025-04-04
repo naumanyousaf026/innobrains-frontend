@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDribbble, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-// Import a fallback image in case API images fail to load
-import placeholderImage from '../../images/placeholder.png';
+
 
 const TeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
