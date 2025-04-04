@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDribbble, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 // Import a fallback image in case API images fail to load
-import placeholderImage from '../../images/placeholder.png';
+
 
 const TeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -48,7 +48,7 @@ const TeamSection = () => {
   }, []);
 
   const handleMoreInfoClick = (member) => {
-    console.log('More info about:', member);
+    // console.log('More info about:', member);
     // You can implement additional functionality here, like opening a modal
   };
 
