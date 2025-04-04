@@ -30,7 +30,7 @@ const Footer = () => {
                 (047) 7502967
               </p>
               <p className="text-sm leading-relaxed roboto-thin">
-                info@innobrains.io
+                contact@innobrains.pk
               </p>
             </div>
           </div>
@@ -78,7 +78,7 @@ const Footer = () => {
     
         <div className="flex flex-col md:flex-row justify-between items-center text-gray-600">
           <div className="mb-4 md:mb-0 roboto-thin">
-            © 2024 Innobrains Technologies. All rights reserved.
+            © 2025 Innobrains Technologies. All rights reserved.
           </div>
           <div className="space-x-3">
             <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
