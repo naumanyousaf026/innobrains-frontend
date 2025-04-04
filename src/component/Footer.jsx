@@ -1,6 +1,7 @@
 import { faFacebook, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+import { FaLinkedinIn } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -75,7 +76,8 @@ const Footer = () => {
       <FontAwesomeIcon icon={faInstagram} className="text-xl text-[#103153]" />
     </Link>
     <Link to="https://www.linkedin.com/company/innobrainstech/posts/?feedView=all" aria-label="LinkedIn">
-      <FontAwesomeIcon icon={faLinkedin} className="text-xl text-[#103153]" />
+      {/* <FontAwesomeIcon icon={faLinkedin} className="text-xl text-[#103153]" /> */}
+      <FaLinkedinIn className="text-xl text-[#103153]" />
     </Link>
   </div>
 
