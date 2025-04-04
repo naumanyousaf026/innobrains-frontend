@@ -20,7 +20,7 @@ import ResetPassword from "./component/adminpanel/ResetPassword.jsx";
 import SuccessMessage from "./component/adminpanel/SuccessMessage.jsx";
 import PageNotFound from "./component/adminpanel/PageNotFound.jsx";
 import AchievementForm from "./component/adminpanel/AchievementForm.jsx";
-import ContactInfoForm from "./component/adminpanel/ContactInfoForm.jsx";
+// import ContactInfoForm from "./component/adminpanel/ContactInfoForm.jsx";
 import StepForm from "./component/adminpanel/StepForm.jsx";
 const router = createBrowserRouter([
   {
