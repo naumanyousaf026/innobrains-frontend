@@ -4,9 +4,14 @@ import '../App.css'; // Importing App.css
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showBlogSubmenu, setShowBlogSubmenu] = useState(false); // State for controlling submenu visibility
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const toggleBlogSubmenu = () => {
+    setShowBlogSubmenu(!showBlogSubmenu); // Toggle submenu on click
   };
 
   return (
@@ -18,7 +23,34 @@ const Header = () => {
             <li><Link to='/'>Home</Link></li>
             <li><Link to='/about'>About</Link></li>
             <li><Link to='/services'>Services</Link></li>
-            <li><Link to='/blog'>Blog</Link></li>
+            <li 
+              className="relative"
+              onClick={toggleBlogSubmenu} // Toggle on click
+            >
+              <Link to='/blog' className="flex items-center space-x-2">
+                <span>Blog</span>
+                <svg 
+                  className={`h-5 w-5 transform ${showBlogSubmenu ? 'rotate-180' : ''} transition-transform duration-200`} 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+
+              {/* Submenu under Blog with better design */}
+              {showBlogSubmenu && (
+                <div className="absolute left-0 mt-2 bg-white shadow-lg rounded-md w-48 p-3 border border-gray-200">
+                  <ul>
+                    <li><Link to='/blog/latest' className="block px-4 py-2 text-gray-800 hover:bg-[#103153] hover:text-white rounded-md transition duration-200">Mobile App Development</Link></li>
+                    <li><Link to='/blog/popular' className="block px-4 py-2 text-gray-800 hover:bg-[#103153] hover:text-white rounded-md transition duration-200">Web Development</Link></li>
+                    <li><Link to='/blog/categories' className="block px-4 py-2 text-gray-800 hover:bg-[#103153] hover:text-white rounded-md transition duration-200">Digital Marketing</Link></li>
+                  </ul>
+                </div>
+              )}
+            </li>
           </ul>
 
           {/* Center logo (clickable) */}
@@ -64,7 +96,7 @@ const Header = () => {
               <li><Link to='/products' className="block text-gray-600 hover:text-gray-800 px-3 py-2 rounded-md text-base font-semibold">Products</Link></li>
               <li><Link to='/blog' className="block text-gray-600 hover:text-gray-800 px-3 py-2 rounded-md text-base font-semibold">Blog</Link></li>
               <li>
-                <Link to='/contact' className="block bg-[#103153]  text-white px-3 py-2 rounded-full w-32 md:w-full mt-5 text-center text-base font-semibold">
+                <Link to='/contact' className="block bg-[#103153] text-white px-3 py-2 rounded-full w-32 md:w-full mt-5 text-center text-base font-semibold">
                   Contact us
                 </Link>
               </li>
