@@ -61,10 +61,7 @@ function RecentWork() {
                 <p className="text-gray-600 mb-4 poppins-thin">{project.description}</p>
                 {/* Button */}
                 <div className="flex justify-start">
-                  <button className="w-auto poppins-thin text-center px-4 py-2 text-[#103153] border border-[#103153] rounded-full hover:bg-[#103153] hover:text-white transition flex items-center">
-                    View Project
-                    <FontAwesomeIcon icon={faChevronRight} className='ml-2 text-sm' />
-                  </button>
+            
                 </div>
               </div>
             </div>
@@ -72,9 +69,7 @@ function RecentWork() {
         </div>
         {/* See All Projects Button */}
         <div className="mt-24 w-full text-center">
-          <button className="px-6 py-3 bg-[#F8AF2A] poppins-thin text[#101010] rounded-full hover:bg-yellow-600 transition duration-300">
-            See All Projects
-          </button>
+   
         </div>
       </section>
     </div>
