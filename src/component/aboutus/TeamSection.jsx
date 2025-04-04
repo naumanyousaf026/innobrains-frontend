@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDribbble, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-
+// Import a fallback image in case API images fail to load
+import placeholderImage from '../../images/placeholder.png';
 
 const TeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -90,19 +91,21 @@ const TeamSection = () => {
         {teamMembers.map((member) => (
           <div
             key={member.id}
-            className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
+            className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-white"
           >
-            {/* Image Container with Fixed Square Aspect Ratio (1:1) */}
-            <div className="w-full pb-[100%] relative">
+            {/* Image Container */}
+            <div 
+              className="w-full overflow-hidden flex items-center justify-center"
+              style={{ height: '369px' }}
+            >
               <img
-                className="absolute inset-0 w-full h-full object-cover object-center"
                 src={member.image}
                 alt={member.name}
+                className="w-full h-full object-contain" 
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImage;
                 }}
-                style={{ width: '369px', height: '369px', maxWidth: '100%' }}
               />
             </div>
 
