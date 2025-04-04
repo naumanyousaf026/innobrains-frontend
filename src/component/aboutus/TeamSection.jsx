@@ -54,9 +54,9 @@ const TeamSection = () => {
             className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-white"
           >
             {/* Image Section - full height display */}
-            <div className="w-full h-72 overflow-hidden">
+            <div className="w-full aspect-[4/3] overflow-hidden">
               <img
-                className="w-full h-full object-contain object-top"
+                className="w-full h-full "
                 src={member.image}
                 alt={member.name}
               />
