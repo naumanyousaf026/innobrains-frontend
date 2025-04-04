@@ -11,7 +11,6 @@ import Visitor from "./Visitor";
 import AchievementForm from "./AchievementForm";
 import ContactInfoForm from "./ContactInfoForm";
 import StepForm from "./StepForm";
-import UserSubmissions from "./UserSubmissions";
 
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
@@ -54,7 +53,8 @@ const Admin = () => {
           {section === "AchievementForm" && <AchievementForm />}
           {section === "ContactInfoForm" && <ContactInfoForm />}
           {section == "StepForm" && <StepForm />}
-          {section == "userSubmissions" && <UserSubmissions />}
+          
+          
         </div>
       </div>
     </div>
