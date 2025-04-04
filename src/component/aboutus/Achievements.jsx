@@ -49,25 +49,25 @@ const Achievements = () => {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h3 className="text-3xl font-bold">
-                  {achievementData.projectsCompleted || "N/A"}
+                  {achievementData.statistics.projectsCompleted || "N/A"}
                 </h3>
                 <p className="mt-2">Projects completed</p>
               </div>
               <div>
                 <h3 className="text-3xl font-bold">
-                  {achievementData.yearOnYearGrowth || "N/A"}
+                  {achievementData.statistics.yearOnYearGrowth || "N/A"}
                 </h3>
                 <p className="mt-2">Year on year growth</p>
               </div>
               <div>
                 <h3 className="text-3xl font-bold">
-                  {achievementData.funded || "N/A"}
+                  {achievementData.statistics.funded || "N/A"}
                 </h3>
                 <p className="mt-2">Funded</p>
               </div>
               <div>
                 <h3 className="text-3xl font-bold">
-                  {achievementData.downloads || "N/A"}
+                  {achievementData.statistics.downloads || "N/A"}
                 </h3>
                 <p className="mt-2">Downloads</p>
               </div>
