@@ -11,7 +11,8 @@ const TechSolutionsSection = () => {
           <span className="text-[#103153]">  Tech Solutions</span>
         </h1>
         <p className="text-lg md:text-xl text-[#5C5C5C] mt-4">
-          Explain what your company is working on and the value you provide to your customers.
+        Innobrains Technology is a leading-edge software house delivering scalable and high-performance digital solutions. We specialize in full-stack development, mobile apps, UI/UX design, and cloud integration, empowering businesses through innovative technology.
+
         </p>
       </div>
 
