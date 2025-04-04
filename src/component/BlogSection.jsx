@@ -47,13 +47,15 @@ const BlogSection = () => {
             blogs.slice(0, 3).map((blog, index) => (
               <div
                 key={index}
-                className="bg-white w-full aspect-[4/4] shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                className="bg-white  shadow-md overflow-hidden transition-transform transform hover:scale-105"
               >
-                <img
+              <div className="w-full aspect-[4/4] overflow-hidden">
+              <img
                   className="w-full h-full object-cover"
                   src={`https://apis.innobrains.pk${blog.image}`}
                   alt={blog.title || "Blog Post"}
                 />
+              </div>
                 <div className="p-6 bg-[#FDFDFD]">
                   <div className="text-sm font-semibold text-[#103153] mb-2">
                     <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
