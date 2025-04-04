@@ -17,6 +17,10 @@ const TeamSection = () => {
         const membersWithImages = data.map((member) => ({
           ...member,
           image: `https://apis.innobrains.pk/TeamImages/${member.image || 'defaultImage.png'}`,
+          social: {
+            linkedin: member.linkedin || 'https://linkedin.com',
+            dribbble: member.dribbble || 'https://dribbble.com',
+          },
         }));
         setTeamMembers(membersWithImages);
       } catch (error) {
@@ -47,44 +51,44 @@ const TeamSection = () => {
         {teamMembers.map((member) => (
           <div
             key={member._id || member.id}
-            className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
+            className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 bg-white"
           >
-            {/* Image Container with Fixed Aspect Ratio */}
-            <div className="w-full aspect-[4/3] overflow-hidden">
+            {/* Image Section - full height display */}
+            <div className="w-full h-72 overflow-hidden">
               <img
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain object-top"
                 src={member.image}
                 alt={member.name}
               />
             </div>
 
-            {/* Member Info */}
+            {/* Info */}
             <div className="p-6">
               <h3 className="text-xl font-semibold text-[#101010]">{member.name}</h3>
               <p className="text-[#5C5C5C]">{member.role}</p>
               <p className="mt-4 text-[#5C5C5C]">{member.description}</p>
             </div>
 
-            {/* Social Links */}
+            {/* Social Icons - always show */}
             <div className="flex px-6 space-x-4 pb-4">
-              {member.linkedin && (
-                <a
-                  href={member.linkedin}
-                  aria-label={`${member.name} LinkedIn`}
-                  className="text-gray-950 hover:text-gray-600 transition-colors duration-300"
-                >
-                  <FontAwesomeIcon icon={faLinkedinIn} className="text-xl" />
-                </a>
-              )}
-              {member.dribbble && (
-                <a
-                  href={member.dribbble}
-                  aria-label={`${member.name} Dribbble`}
-                  className="text-gray-950 hover:text-gray-600 transition-colors duration-300"
-                >
-                  <FontAwesomeIcon icon={faDribbble} className="text-xl" />
-                </a>
-              )}
+              <a
+                href={member.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name} LinkedIn`}
+                className="text-gray-950 hover:text-gray-600 transition-colors duration-300"
+              >
+                <FontAwesomeIcon icon={faLinkedinIn} className="text-xl" />
+              </a>
+              <a
+                href={member.social.dribbble}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name} Dribbble`}
+                className="text-gray-950 hover:text-gray-600 transition-colors duration-300"
+              >
+                <FontAwesomeIcon icon={faDribbble} className="text-xl" />
+              </a>
               <button
                 onClick={() => handleMoreInfoClick(member)}
                 aria-label={`${member.name} More Info`}
