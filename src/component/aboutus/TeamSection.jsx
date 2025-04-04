@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDribbble, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-// Import a fallback image in case API images fail to load
 
 
 const TeamSection = () => {
@@ -48,7 +47,7 @@ const TeamSection = () => {
   }, []);
 
   const handleMoreInfoClick = (member) => {
-    // console.log('More info about:', member);
+    console.log('More info about:', member);
     // You can implement additional functionality here, like opening a modal
   };
 
@@ -93,16 +92,17 @@ const TeamSection = () => {
             key={member.id}
             className="rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300"
           >
-            {/* Image Container with Fixed Aspect Ratio */}
-            <div className="w-full aspect-[4/3] overflow-hidden">
+            {/* Image Container with Fixed Square Aspect Ratio (1:1) */}
+            <div className="w-full pb-[100%] relative">
               <img
-                className="w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
                 src={member.image}
                 alt={member.name}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = placeholderImage;
                 }}
+                style={{ width: '369px', height: '369px', maxWidth: '100%' }}
               />
             </div>
 
