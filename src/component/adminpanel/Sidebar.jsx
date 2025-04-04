@@ -97,7 +97,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
           className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
         >
           <UserGroupIcon className="h-6 w-6" />
-          User Submissions            
+          Users data          
 </button>
         {/* Form buttons are always visible with consistent size and alignment */}
         <FormsButton setSection={setSection} />

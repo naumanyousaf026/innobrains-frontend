@@ -30,7 +30,10 @@ const TechSolutionsSection = () => {
   {/* Right Side (Paragraph) */}
   <div className="md:w-[65%]">
     <p className="text-[#5C5C5C] mt-4 leading-relaxed">
-     Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores consectetur eveniet libero, perspiciatis beatae voluptate, illo exercitationem assumenda ab explicabo culpa doloremque. A quae, non ad velit tempore fuga sapiente dolorum praesentium omnis nobis cumque iste recusandae quidem. Nam cumque consectetur ab ipsam, ipsa neque dolores numquam assumenda quas laudantium aliquam ullam mollitia laboriosam! Doloremque incidunt iusto laborum error explicabo impedit distinctio tempore, repellat laboriosam repudiandae quis molestiae debitis non maxime. A odio ipsa sequi explicabo quas? Voluptatem consectetur delectus architecto, possimus, consequuntur laudantium unde temporibus atque officia culpa magni aliquid assumenda. Vero facilis ratione eaque porro ipsa necessitatibus sunt.
+     
+Innobrains Technology is a leading-edge software house committed to delivering smart, scalable, and high-performance digital solutions. We specialize in full-stack development, UI/UX design, mobile apps, cloud integration, and custom enterprise software. Our goal is to transform businesses through innovative tech and creative strategies that drive results.
+
+Our team of passionate developers, designers, and tech experts work collaboratively to ensure every project exceeds expectations. Whether you're a startup or a well-established company, we provide tailored IT solutions that align with your vision. At Innobrains, we believe in transparency, quality, and timely delivery—making us your ideal tech partner.
       {/* Add more actual content here as needed */}
     </p>
   </div>
