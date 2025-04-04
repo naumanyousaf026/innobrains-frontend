@@ -4,7 +4,6 @@ import Header from "../Header";
 import Footer from "../Footer";
 import ContactInfo from "./ContactInfo";
 import ContactUs from "./Form";
-impo
 function Contactus() {
   return (
     <div>
