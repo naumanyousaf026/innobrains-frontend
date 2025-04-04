@@ -55,7 +55,7 @@ const Footer = () => {
             <li><Link to="/about" className="roboto-thin">About Us</Link></li>
             <li><Link to="/services" className="roboto-thin">Services</Link></li>
             <li><Link to="/" className="roboto-thin">Pages</Link></li>
-            <li><Link to="/portfolio" className="roboto-thin">Portfolio</Link></li>
+            <li><Link to="/blog" className="roboto-thin">Blog</Link></li>
             <li><Link to="/contact" className="roboto-thin">Contact Us</Link></li>
           </ul>
         </div>
@@ -65,7 +65,7 @@ const Footer = () => {
       {/* Bottom section: Social Icons and Links */}
       <div className="text-center md:text-left mt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
   <div className="flex justify-center md:justify-start mb-4 space-x-4 border-b-2 border-black border-solid pb-4">
-    <Link to="https://wa.me/your-number" aria-label="WhatsApp">
+    <Link to="https://wa.me/(047) 7502967" aria-label="WhatsApp">
       <FontAwesomeIcon icon={faWhatsapp} className="text-xl text-[#103153]" />
     </Link>
     <Link to="https://www.facebook.com/innobrains.pk" aria-label="Facebook">
@@ -84,8 +84,8 @@ const Footer = () => {
       © 2025 Innobrains Technologies. All rights reserved.
     </div>
     <div className="space-x-3">
-      <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
-      <Link to="/terms-of-service" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
+      <Link to="/" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
+      <Link to="/" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
     </div>
   </div>
 </div>
