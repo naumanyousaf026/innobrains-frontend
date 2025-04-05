@@ -2,31 +2,24 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
-  // Initialize form state
   const [formData, setFormData] = useState({
     name: "",
     role: "",
     email: "",
-    image: null,
+    image: null, // For file upload
+    imagePreview: null // For image preview
   });
-  
-  const [imagePreview, setImagePreview] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  // If member prop exists (editing mode), populate form with member data
+  // If member is provided (editing mode), set form data accordingly
   useEffect(() => {
     if (member) {
       setFormData({
-        name: member.name || "",
-        role: member.role || "",
-        email: member.email || "",
-        image: null, // We can't populate the file input, but we can show a preview
+        ...member,
+        image: null, // Don't set the file itself
+        imagePreview: member.image ? `https://apis.innobrains.pk/TeamImages/${member.image}` : null
       });
-      
-      // Set image preview if member has an image
-      if (member.image) {
-        setImagePreview(`https://apis.innobrains.pk/TeamImages/${member.image}`);
-      }
     }
   }, [member]);
 
@@ -36,14 +29,15 @@ const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      
-      // Create a preview URL for the selected image
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+          imagePreview: reader.result
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -51,48 +45,74 @@ const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsUploading(true);
 
     try {
-      // Create a FormData object to handle file uploads
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("role", formData.role);
-      formDataToSend.append("email", formData.email);
+      const form = new FormData();
+      form.append("name", formData.name);
+      form.append("role", formData.role);
+      form.append("email", formData.email);
       
-      // Only append image if a new one is selected
+      // Only append image if there's a new one selected
       if (formData.image) {
-        formDataToSend.append("image", formData.image);
+        form.append("image", formData.image);
       }
 
       if (member) {
         // Update existing member
-        onUpdateMember(formDataToSend);
+        const response = await axios.put(
+          `https://apis.innobrains.pk/api/team/${member._id}`,
+          form,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(percentCompleted);
+            }
+          }
+        );
+        onUpdateMember(response.data);
       } else {
         // Add new member
-        onAddMember(formDataToSend);
+        const response = await axios.post(
+          "https://apis.innobrains.pk/api/team",
+          form,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(percentCompleted);
+            }
+          }
+        );
+        onAddMember(response.data);
       }
     } catch (error) {
-      console.error("Form submission error:", error);
+      console.error("Error submitting form:", error);
     } finally {
-      setIsSubmitting(false);
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className="bg-white p-6 rounded-lg shadow">
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="name">
             Name
           </label>
           <input
-            type="text"
             id="name"
             name="name"
+            type="text"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded"
             required
           />
         </div>
@@ -102,12 +122,12 @@ const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
             Role
           </label>
           <input
-            type="text"
             id="role"
             name="role"
+            type="text"
             value={formData.role}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded"
             required
           />
         </div>
@@ -117,64 +137,70 @@ const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
             Email
           </label>
           <input
-            type="email"
             id="email"
             name="email"
+            type="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded"
             required
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-6">
           <label className="block text-gray-700 mb-2" htmlFor="image">
             Profile Image
           </label>
           <input
-            type="file"
             id="image"
             name="image"
-            onChange={handleImageChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="file"
             accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 border border-gray-300 rounded"
           />
-          {imagePreview && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-500 mb-1">Preview:</p>
+          {formData.imagePreview && (
+            <div className="mt-3">
               <img
-                src={imagePreview}
+                src={formData.imagePreview}
                 alt="Preview"
                 className="w-24 h-24 object-cover rounded-full"
               />
             </div>
           )}
-          {member && member.image && !formData.image && (
-            <p className="text-sm text-gray-500 mt-1">
-              Current image will be kept if no new image is selected.
-            </p>
-          )}
         </div>
 
-        <div className="flex justify-end space-x-4">
+        {isUploading && (
+          <div className="mb-4">
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+            <p className="text-gray-600 text-sm mt-1">
+              Uploading... {uploadProgress}%
+            </p>
+          </div>
+        )}
+
+        <div className="flex space-x-2">
+          <button
+            type="submit"
+            disabled={isUploading}
+            className={`bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-blue-700 ${
+              isUploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {member ? "Update Member" : "Add Member"}
+          </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
-            disabled={isSubmitting}
+            disabled={isUploading}
+            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-gray-400"
           >
             Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? "Saving..."
-              : member
-              ? "Update Member"
-              : "Add Member"}
           </button>
         </div>
       </form>
