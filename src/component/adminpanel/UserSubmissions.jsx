@@ -132,7 +132,7 @@ const UserSubmissions = () => {
                 <td className="px-6 py-4 text-center">
                   <button 
                     onClick={() => handleDelete(submission._id)}
-                    className="text-red-500 p-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
+                    className="text-red-500 p- "
                     aria-label="Delete submission"
                   >
                     <FontAwesomeIcon icon={faTrash} className="text-sm" />
