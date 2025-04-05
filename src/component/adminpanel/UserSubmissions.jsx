@@ -135,7 +135,7 @@ const UserSubmissions = () => {
                     className="text-red-500 p- "
                     aria-label="Delete submission"
                   >
-                    <FontAwesomeIcon icon={faTrash} className="text-sm" />
+                    <FontAwesomeIcon icon={faTrash} className="text-md" />
                   </button>
                 </td>
               </tr>
