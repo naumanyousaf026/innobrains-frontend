@@ -11,7 +11,7 @@ const UserSubmissions = () => {
     const fetchVisitors = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("https://apis.innobrains.pk/api/visitor");
+        const response = await fetch("https://apis.innobrains.pk/api/contact");
         if (!response.ok) {
           throw new Error("Failed to fetch user submissions");
         }
@@ -31,7 +31,7 @@ const UserSubmissions = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this submission?")) {
       try {
-        const response = await fetch(`https://apis.innobrains.pk/api/visitor/${id}`, {
+        const response = await fetch(`https://apis.innobrains.pk/api/contact/${id}`, {
           method: 'DELETE',
         });
         
