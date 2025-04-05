@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function ContactForm() {
@@ -11,12 +11,35 @@ function ContactForm() {
     termsAccepted: false,
   });
 
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+    type: "success"
+  });
+
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [id]: type === "checkbox" ? checked : value,
     });
+  };
+
+  // Show toast notification
+  const showToast = (message, type = "success") => {
+    setToast({
+      visible: true,
+      message,
+      type
+    });
+    
+    // Hide toast after 5 seconds
+    setTimeout(() => {
+      setToast(prev => ({
+        ...prev,
+        visible: false
+      }));
+    }, 5000);
   };
 
   // Handle form submission
@@ -33,8 +56,10 @@ function ContactForm() {
         message: formData.message,
       });
       
-      alert("Message sent successfully!");
-      // Optionally reset form fields after submission
+      // Show success toast instead of alert
+      showToast("Message sent successfully!");
+      
+      // Reset form fields after submission
       setFormData({
         firstName: "",
         lastName: "",
@@ -45,12 +70,41 @@ function ContactForm() {
       });
     } catch (error) {
       console.error("Error submitting form data", error);
-      alert("There was an error submitting the form. Please try again.");
+      // Show error toast instead of alert
+      showToast("There was an error submitting the form. Please try again.", "error");
     }
   };
 
+  // Toast notification component
+  const Toast = () => {
+    if (!toast.visible) return null;
+
+    // Default styles for success toast
+    let bgColor = "bg-[#F8AF2A]";
+    let textColor = "text-white";
+    let icon = "✓";
+    
+    // Modify styles for error toast
+    if (toast.type === "error") {
+      bgColor = "bg-red-500";
+      icon = "✕";
+    }
+
+    return (
+      <div className={`fixed top-6 right-6 z-50 flex items-center shadow-lg rounded-lg px-4 py-3 ${bgColor} ${textColor} animate-fade-in`}>
+        <div className="flex items-center">
+          <span className="flex items-center justify-center mr-2 w-6 h-6 text-lg font-bold">{icon}</span>
+          <p className="font-medium">{toast.message}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col bg-[#ECF5FF] items-center justify-center px-6 py-12 lg:py-20">
+    <div className="flex flex-col bg-[#ECF5FF] items-center justify-center px-6 py-12 lg:py-20 relative">
+      {/* Toast Component */}
+      <Toast />
+      
       {/* Header Section */}
       <div className="w-full max-w-7xl px-10 text-center lg:text-left">
         <h2 className="text-3xl lg:text-5xl font-bold mb-4 text-[#101010] leading-tight">
