@@ -20,7 +20,7 @@ const UserSubmissions = () => {
   ];
 
   return (
-    <div className="w-[100%] ml-auto bg-gray-100">
+    <div className="w-[80%] ml-auto  p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">User Contact Submissions</h1>
       <table className="min-w-full bg-white rounded-lg shadow overflow-hidden">
         <thead className="bg-blue-600 text-white">
