@@ -113,7 +113,7 @@ const UserSubmissions = () => {
             {submissions.map((submission, index) => (
               <tr 
                 key={submission._id} 
-                className={`hover:bg-[#F0F7FF] transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}
+                className={` transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}`}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="font-medium text-gray-900">{`${submission.FirstName} ${submission.LastName}`}</div>
@@ -132,7 +132,7 @@ const UserSubmissions = () => {
                 <td className="px-6 py-4 text-center">
                   <button 
                     onClick={() => handleDelete(submission._id)}
-                    className="text-white bg-gradient-to-r from-red-500 to-red-600 p-2 rounded-full hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-sm hover:shadow-md"
+                    className="text-red-500 p-2 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
                     aria-label="Delete submission"
                   >
                     <FontAwesomeIcon icon={faTrash} className="text-sm" />
