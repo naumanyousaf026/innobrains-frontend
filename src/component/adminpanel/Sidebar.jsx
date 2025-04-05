@@ -105,7 +105,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-5 ml-3 p-2 mt-10 text-lg font-medium text-red-600 hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-5 ml-3 p-2 mt-6 mb-4 text-lg font-medium text-red-600 hover:bg-[#103153] hover:text-white rounded-md"
         >
           <FontAwesomeIcon icon={faPowerOff} className="h-6 w-6" />
           Logout
