@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ContactUs = () => {
@@ -10,8 +10,9 @@ const ContactUs = () => {
     message: "",
   });
 
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success"); // "success" or "error"
 
   // Handle input changes
   const handleChange = (e) => {
@@ -19,6 +20,18 @@ const ContactUs = () => {
       ...formData,
       [e.target.id]: e.target.value,
     });
+  };
+
+  // Show toast notification
+  const showToast = (message, type = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setIsToastVisible(true);
+    
+    // Hide the toast after 5 seconds
+    setTimeout(() => {
+      setIsToastVisible(false);
+    }, 5000);
   };
 
   // Handle form submission
@@ -31,8 +44,10 @@ const ContactUs = () => {
         "https://apis.innobrains.pk/api/contact",
         formData
       );
-      setSuccessMessage("Your message has been sent successfully!");
-      setErrorMessage(""); // Clear any previous errors
+      
+      // Show success toast
+      showToast("Your message has been sent successfully!");
+      
       // Reset form fields
       setFormData({
         firstName: "",
@@ -42,14 +57,39 @@ const ContactUs = () => {
         message: "",
       });
     } catch (error) {
-      setErrorMessage("Failed to send the message. Please try again.");
-      setSuccessMessage(""); // Clear success message
-      console.error("Error sending message:", error);
+      // Show error toast
+      showToast("Failed to send the message. Please try again.", "error");
     }
   };
 
+  // Toast notification component
+  const Toast = () => {
+    if (!isToastVisible) return null;
+
+    // Default styles for success toast
+    let bgColor = "bg-[#F8AF2A]";
+    let textColor = "text-white";
+    let icon = "✓";
+    
+    // Modify styles for error toast
+    if (toastType === "error") {
+      bgColor = "bg-red-500";
+      icon = "✕";
+    }
+
+    return (
+      <div className={`fixed top-6 right-6 z-50 flex items-center px-4 py-3 rounded-lg shadow-lg ${bgColor} ${textColor} transition-opacity duration-300`}>
+        <div className="mr-3 text-xl font-bold">{icon}</div>
+        <p className="text-sm font-medium">{toastMessage}</p>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex justify-center items-center px-4 bg-[#F9FAFB] py-16">
+    <div className="flex justify-center items-center px-4 bg-[#F9FAFB] py-16 relative">
+      {/* Toast Notification */}
+      <Toast />
+      
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-16">
         <div className="flex flex-col">
           <h2 className="text-4xl font-bold text-gray-900">Contact Us</h2>
@@ -158,14 +198,6 @@ const ContactUs = () => {
             >
               Contact Us
             </button>
-
-            {/* Success/Error Messages */}
-            {successMessage && (
-              <p className="text-green-500 mt-4">{successMessage}</p>
-            )}
-            {errorMessage && (
-              <p className="text-red-500 mt-4">{errorMessage}</p>
-            )}
           </form>
         </div>
 
