@@ -1,209 +1,165 @@
 import React, { useState, useEffect } from "react";
+import MemberForm from "./MemberForm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
-const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    role: "",
-    email: "",
-    image: null, // For file upload
-    imagePreview: null // For image preview
-  });
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+const Team = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentMember, setCurrentMember] = useState(null); // To store the member being edited
 
-  // If member is provided (editing mode), set form data accordingly
+  // Fetching team data from API
   useEffect(() => {
-    if (member) {
-      setFormData({
-        ...member,
-        image: null, // Don't set the file itself
-        imagePreview: member.image ? `https://apis.innobrains.pk/TeamImages/${member.image}` : null
-      });
-    }
-  }, [member]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://apis.innobrains.pk/api/team");
+        setData(response.data); // Assuming the response is an array
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    fetchData();
+  }, []);
+
+  const addMember = (newMember) => {
+    setData((prev) => [...prev, newMember]);
+    setShowForm(false);
   };
 
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          image: file,
-          imagePreview: reader.result
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsUploading(true);
-
+  const updateMember = async (updatedMember) => {
     try {
-      const form = new FormData();
-      form.append("name", formData.name);
-      form.append("role", formData.role);
-      form.append("email", formData.email);
-      
-      // Only append image if there's a new one selected
-      if (formData.image) {
-        form.append("image", formData.image);
-      }
-
-      if (member) {
-        // Update existing member
-        const response = await axios.put(
-          `https://apis.innobrains.pk/api/team/${member._id}`,
-          form,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setUploadProgress(percentCompleted);
-            }
-          }
-        );
-        onUpdateMember(response.data);
-      } else {
-        // Add new member
-        const response = await axios.post(
-          "https://apis.innobrains.pk/api/team",
-          form,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setUploadProgress(percentCompleted);
-            }
-          }
-        );
-        onAddMember(response.data);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
+      await axios.put(
+        `https://apis.innobrains.pk/api/team/${updatedMember._id}`,
+        updatedMember
+      );
+      setData((prev) =>
+        prev.map((member) =>
+          member._id === updatedMember._id ? updatedMember : member
+        )
+      );
+      setShowForm(false);
+      setCurrentMember(null); // Clear current member
+    } catch (err) {
+      console.error("Error updating member:", err);
     }
   };
+
+  const handleEdit = (index) => {
+    setCurrentMember(data[index]);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (index) => {
+    try {
+      await axios.delete(`https://apis.innobrains.pk/api/team/${data[index]._id}`); // Assuming your data has _id
+      setData((prev) => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error("Error deleting member:", err);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="name">
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="role">
-            Role
-          </label>
-          <input
-            id="role"
-            name="role"
-            type="text"
-            value={formData.role}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-gray-700 mb-2" htmlFor="image">
-            Profile Image
-          </label>
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formData.imagePreview && (
-            <div className="mt-3">
-              <img
-                src={formData.imagePreview}
-                alt="Preview"
-                className="w-24 h-24 object-cover rounded-full"
-              />
-            </div>
-          )}
-        </div>
-
-        {isUploading && (
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-            <p className="text-gray-600 text-sm mt-1">
-              Uploading... {uploadProgress}%
-            </p>
-          </div>
+    <div className="min-h-screen p-6 bg-gray-100 lg:w-[80%] ml-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-gray-800">
+          {showForm
+            ? currentMember
+              ? "Edit Member"
+              : "Add New Member"
+            : "Team"}
+        </h1>
+        {!showForm && (
+          <button
+            onClick={() => {
+              setCurrentMember(null);
+              setShowForm(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-blue-700"
+          >
+            Add New Member
+          </button>
         )}
+      </div>
 
-        <div className="flex space-x-2">
-          <button
-            type="submit"
-            disabled={isUploading}
-            className={`bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-blue-700 ${
-              isUploading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {member ? "Update Member" : "Add Member"}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isUploading}
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-gray-400"
-          >
-            Cancel
-          </button>
+      {showForm ? (
+        <MemberForm
+          onAddMember={addMember}
+          onUpdateMember={updateMember} // Pass update function to form
+          member={currentMember} // Pass current member to form for editing
+          onCancel={() => {
+            setShowForm(false);
+            setCurrentMember(null); // Clear current member
+          }}
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {data.map((person, index) => (
+            <div
+              key={person._id}
+              className="bg-white rounded-lg shadow-lg p-6 text-center transition-shadow hover:shadow-xl"
+            >
+              <img
+                src={
+                  person.image
+                    ? `https://apis.innobrains.pk/TeamImages/${person.image}`
+                    : `https://apis.innobrains.pk/TeamImages/defaultImage.png`
+                }
+                alt={person.name}
+                className="w-28 h-28 rounded-full mx-auto mb-4 object-cover"
+              />
+
+              <h3 className="text-lg font-bold text-gray-900 mb-1">
+                {person.name}
+              </h3>
+              <p className="text-[#373a3e] font-semibold mb-2">{person.role}</p>
+              <abbr title={person.email} className="border-none">
+                <a
+                  href={`mailto:${person.email}`}
+                  className="block overflow-hidden whitespace-nowrap text-black text-ellipsis"
+                  style={{ maxWidth: "150px" }}
+                >
+                  {person.email}
+                </a>
+              </abbr>
+              <div className="flex justify-center mt-2 space-x-2">
+                <button
+                  className="flex items-center justify-center px-3"
+                  onClick={() => handleEdit(index)}
+                  aria-label={`Edit ${person.name}`}
+                >
+                  <abbr title="Edit" className="no-underline">
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="mr-1 text-yellow-500 rounded-full p-1"
+                    />
+                  </abbr>
+                </button>
+                <button
+                  className="flex items-center justify-center px-3"
+                  onClick={() => handleDelete(index)}
+                  aria-label={`Delete ${person.name}`}
+                >
+                  <abbr title="Delete">
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className="mr-1 text-red-500 rounded-full p-1"
+                    />
+                  </abbr>
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      </form>
+      )}
     </div>
   );
 };
