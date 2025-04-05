@@ -100,7 +100,7 @@ const UserSubmissions = () => {
       <h1 className="text-3xl font-bold text-[#1E3A8A] mb-6">User Contact Submissions</h1>
       <div className="overflow-x-auto rounded-lg shadow-lg">
         <table className="min-w-full bg-white overflow-hidden">
-          <thead className="bg-gradient-to-r from-[#1E40AF] to-[#3B82F6] text-white">
+          <thead className="bg-[#103153] text-white">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">Full Name</th>
               <th className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">Email</th>
