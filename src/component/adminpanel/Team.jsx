@@ -1,165 +1,183 @@
 import React, { useState, useEffect } from "react";
-import MemberForm from "./MemberForm";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
-const Team = () => {
-  const [showForm, setShowForm] = useState(false);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentMember, setCurrentMember] = useState(null); // To store the member being edited
+const Team = ({ onAddMember, onUpdateMember, member, onCancel }) => {
+  // Initialize form state
+  const [formData, setFormData] = useState({
+    name: "",
+    role: "",
+    email: "",
+    image: null,
+  });
+  
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetching team data from API
+  // If member prop exists (editing mode), populate form with member data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://apis.innobrains.pk/api/team");
-        setData(response.data); // Assuming the response is an array
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    if (member) {
+      setFormData({
+        name: member.name || "",
+        role: member.role || "",
+        email: member.email || "",
+        image: null, // We can't populate the file input, but we can show a preview
+      });
+      
+      // Set image preview if member has an image
+      if (member.image) {
+        setImagePreview(`https://apis.innobrains.pk/TeamImages/${member.image}`);
       }
-    };
+    }
+  }, [member]);
 
-    fetchData();
-  }, []);
-
-  const addMember = (newMember) => {
-    setData((prev) => [...prev, newMember]);
-    setShowForm(false);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const updateMember = async (updatedMember) => {
-    try {
-      await axios.put(
-        `https://apis.innobrains.pk/api/team/${updatedMember._id}`,
-        updatedMember
-      );
-      setData((prev) =>
-        prev.map((member) =>
-          member._id === updatedMember._id ? updatedMember : member
-        )
-      );
-      setShowForm(false);
-      setCurrentMember(null); // Clear current member
-    } catch (err) {
-      console.error("Error updating member:", err);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, image: file }));
+      
+      // Create a preview URL for the selected image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleEdit = (index) => {
-    setCurrentMember(data[index]);
-    setShowForm(true);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  const handleDelete = async (index) => {
     try {
-      await axios.delete(`https://apis.innobrains.pk/api/team/${data[index]._id}`); // Assuming your data has _id
-      setData((prev) => prev.filter((_, i) => i !== index));
-    } catch (err) {
-      console.error("Error deleting member:", err);
+      // Create a FormData object to handle file uploads
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("role", formData.role);
+      formDataToSend.append("email", formData.email);
+      
+      // Only append image if a new one is selected
+      if (formData.image) {
+        formDataToSend.append("image", formData.image);
+      }
+
+      if (member) {
+        // Update existing member
+        onUpdateMember(formDataToSend);
+      } else {
+        // Add new member
+        onAddMember(formDataToSend);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100 lg:w-[80%] ml-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold text-gray-800">
-          {showForm
-            ? currentMember
-              ? "Edit Member"
-              : "Add New Member"
-            : "Team"}
-        </h1>
-        {!showForm && (
-          <button
-            onClick={() => {
-              setCurrentMember(null);
-              setShowForm(true);
-            }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition duration-200 hover:bg-blue-700"
-          >
-            Add New Member
-          </button>
-        )}
-      </div>
-
-      {showForm ? (
-        <MemberForm
-          onAddMember={addMember}
-          onUpdateMember={updateMember} // Pass update function to form
-          member={currentMember} // Pass current member to form for editing
-          onCancel={() => {
-            setShowForm(false);
-            setCurrentMember(null); // Clear current member
-          }}
-        />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {data.map((person, index) => (
-            <div
-              key={person._id}
-              className="bg-white rounded-lg shadow-lg p-6 text-center transition-shadow hover:shadow-xl"
-            >
-              <img
-                src={
-                  person.image
-                    ? `https://apis.innobrains.pk/TeamImages/${person.image}`
-                    : `https://apis.innobrains.pk/TeamImages/defaultImage.png`
-                }
-                alt={person.name}
-                className="w-28 h-28 rounded-full mx-auto mb-4 object-cover"
-              />
-
-              <h3 className="text-lg font-bold text-gray-900 mb-1">
-                {person.name}
-              </h3>
-              <p className="text-[#373a3e] font-semibold mb-2">{person.role}</p>
-              <abbr title={person.email} className="border-none">
-                <a
-                  href={`mailto:${person.email}`}
-                  className="block overflow-hidden whitespace-nowrap text-black text-ellipsis"
-                  style={{ maxWidth: "150px" }}
-                >
-                  {person.email}
-                </a>
-              </abbr>
-              <div className="flex justify-center mt-2 space-x-2">
-                <button
-                  className="flex items-center justify-center px-3"
-                  onClick={() => handleEdit(index)}
-                  aria-label={`Edit ${person.name}`}
-                >
-                  <abbr title="Edit" className="no-underline">
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="mr-1 text-yellow-500 rounded-full p-1"
-                    />
-                  </abbr>
-                </button>
-                <button
-                  className="flex items-center justify-center px-3"
-                  onClick={() => handleDelete(index)}
-                  aria-label={`Delete ${person.name}`}
-                >
-                  <abbr title="Delete">
-                    <FontAwesomeIcon
-                      icon={faTrashCan}
-                      className="mr-1 text-red-500 rounded-full p-1"
-                    />
-                  </abbr>
-                </button>
-              </div>
-            </div>
-          ))}
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="name">
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
         </div>
-      )}
+
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="role">
+            Role
+          </label>
+          <input
+            type="text"
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="email">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2" htmlFor="image">
+            Profile Image
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            onChange={handleImageChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            accept="image/*"
+          />
+          {imagePreview && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500 mb-1">Preview:</p>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-24 h-24 object-cover rounded-full"
+              />
+            </div>
+          )}
+          {member && member.image && !formData.image && (
+            <p className="text-sm text-gray-500 mt-1">
+              Current image will be kept if no new image is selected.
+            </p>
+          )}
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? "Saving..."
+              : member
+              ? "Update Member"
+              : "Add Member"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
