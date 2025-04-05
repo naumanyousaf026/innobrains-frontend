@@ -13,14 +13,14 @@ import Admin from "./component/adminpanel/Admin.jsx";
 
 import ProtectedRoute from "./component/adminpanel/ProtectedRoute.jsx";
 import Login from "./component/adminpanel/Login.jsx";
-// import Signupform from "./component/adminpanel/Signupform.jsx";
+
 import EmailRequest from "./component/adminpanel/EmailRequest.jsx";
 import VerifyOTP from "./component/adminpanel/VerifyOTP.jsx";
 import ResetPassword from "./component/adminpanel/ResetPassword.jsx";
 import SuccessMessage from "./component/adminpanel/SuccessMessage.jsx";
 import PageNotFound from "./component/adminpanel/PageNotFound.jsx";
 import AchievementForm from "./component/adminpanel/AchievementForm.jsx";
-// import ContactInfoForm from "./component/adminpanel/ContactInfoForm.jsx";
+
 import StepForm from "./component/adminpanel/StepForm.jsx";
 const router = createBrowserRouter([
   {
@@ -55,14 +55,7 @@ const router = createBrowserRouter([
     path: "/StepForm",
     element: <StepForm />,
   },
-  // {
-  //   path: "/ContactInfoForm",
-  //   element: <ContactInfoForm />,
-  // },
-  // {
-  //   path: "/signupform",
-  //   element: <Signupform />,
-  // },
+
   {
     path: "/login",
     element: <Login />,
