@@ -2,32 +2,52 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const TechSolutionsSection = () => {
-  const [data, setData] = useState(null);
+  const [aboutData, setAboutData] = useState({
+    title: "",
+    description: "",
+    aboutTitle: "",
+    aboutDescription: ""
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching data with Axios...");
-    axios
-      .get("https://apis.innobrains.pk/api/aboutus")
-      .then((response) => {
-        setData(response.data);
+    const fetchAboutData = async () => {
+      try {
+        const response = await axios.get("https://apis.innobrains.pk/api/aboutus");
+        // Use the first item in the array from the API response
+        if (response.data && response.data.length > 0) {
+          setAboutData(response.data[0]);
+        }
         setLoading(false);
-        console.log("Data fetched:", response.data);
-      })
-      .catch((error) => {
-        setError(error);
+      } catch (err) {
+        console.error("Error fetching about us data:", err);
+        setError("Failed to load content. Please try again later.");
         setLoading(false);
-        console.error("Error fetching data:", error);
-      });
+      }
+    };
+
+    fetchAboutData();
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <section className="">
+        <div className="w-5/6 mx-auto py-16 text-center">
+          <p>Loading content...</p>
+        </div>
+      </section>
+    );
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <section className="">
+        <div className="w-5/6 mx-auto py-16 text-center">
+          <p>{error}</p>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -36,10 +56,11 @@ const TechSolutionsSection = () => {
         {/* Main Title Section */}
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mx-8">
-            {data.title}
+            {aboutData.title.split("Tech Solutions")[0]}
+            <span className="text-[#103153]"> Tech Solutions</span>
           </h1>
           <p className="text-lg md:text-xl text-[#5C5C5C] mt-4">
-            {data.description}
+            {aboutData.description}
           </p>
         </div>
 
@@ -47,7 +68,7 @@ const TechSolutionsSection = () => {
         <div className="flex flex-col md:flex-row mt-14 justify-between">
           {/* Left Side (Heading & Story) */}
           <div className="ms-20">
-            <h2 className="text-3xl md:text-xl font-bold">{data.aboutTitle}</h2>
+            <h2 className="text-3xl md:text-xl font-bold">{aboutData.aboutTitle}</h2>
             <h3 className="text-2xl md:text-4xl font-semibold mt-2">
               Our Story
             </h3>
@@ -56,7 +77,7 @@ const TechSolutionsSection = () => {
           {/* Right Side (Paragraph) */}
           <div className="md:w-[65%]">
             <p className="text-[#5C5C5C] mt-4 leading-relaxed">
-              {data.aboutDescription}
+              {aboutData.aboutDescription}
             </p>
           </div>
         </div>
