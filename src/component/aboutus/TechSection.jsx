@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const TechSolutionsSection = () => {
-  // State to hold the fetched data
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch the data when the component mounts
   useEffect(() => {
-    fetch("https://apis.innobrains.pk/api/aboutus")
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    console.log("Fetching data with Axios...");
+    axios
+      .get("https://apis.innobrains.pk/api/aboutus")
+      .then((response) => {
+        setData(response.data);
+        setLoading(false);
+        console.log("Data fetched:", response.data);
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
-  // Loading state
-  if (!data) {
+  if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
   }
 
   return (
