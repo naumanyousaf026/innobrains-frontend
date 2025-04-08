@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import blogDefaultImg from "../../images/WordPress.png";
+// import blogDefaultImg from "../../images/WordPress.png";
 import Header from "../Header";
 import Footer from "../Footer";
 
@@ -193,19 +193,19 @@ const BlogArticle = () => {
             ) : (
               <ul className="space-y-5">
                 <li className="flex items-center gap-4">
-                  <img src={blogDefaultImg} alt="Front-End" className="w-16 h-16 rounded-lg object-cover" />
+                  {/* <img src={blogDefaultImg} alt="Front-End" className="w-16 h-16 rounded-lg object-cover" /> */}
                   <a href="/blog/article-1" className="text-blue-700 font-medium hover:underline">
                     Future of Front-End Development in 2025
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
-                  <img src={blogDefaultImg} alt="Back-End" className="w-16 h-16 rounded-lg object-cover" />
+                  {/* <img src={blogDefaultImg} alt="Back-End" className="w-16 h-16 rounded-lg object-cover" /> */}
                   <a href="/blog/article-2" className="text-blue-700 font-medium hover:underline">
                     Back-End Technologies You Need to Know
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
-                  <img src={blogDefaultImg} alt="AI" className="w-16 h-16 rounded-lg object-cover" />
+                  {/* <img src={blogDefaultImg} alt="AI" className="w-16 h-16 rounded-lg object-cover" /> */}
                   <a href="/blog/article-3" className="text-blue-700 font-medium hover:underline">
                     How AI is Changing Web Development
                   </a>
