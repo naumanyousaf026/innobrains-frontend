@@ -1,6 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+
 const ServicesSection = () => {
+  const [stats, setStats] = useState({
+    headline: "Loading...",
+    description: "Loading...",
+    loyalClients: 0,
+    experts: 0,
+    yearsExperience: 0,
+    techAwards: 0
+  });
+  
+  const [testimonials, setTestimonials] = useState([
+    {
+      description: "Loading testimonial...",
+      customerName: "Loading..."
+    }
+  ]);
+  
+  useEffect(() => {
+    // Fetch stats data
+    fetch("https://apis.innobrains.pk/api/stats")
+      .then(response => response.json())
+      .then(data => setStats(data))
+      .catch(error => console.error("Error fetching stats:", error));
+    
+    // Fetch testimonials data
+    fetch("https://apis.innobrains.pk/api/satisfie")
+      .then(response => response.json())
+      .then(data => {
+        // If the API returns a single object, convert it to an array
+        const testimonialsData = Array.isArray(data) ? data : [data];
+        
+        // Add the static testimonial alongside the dynamic one
+        const allTestimonials = [
+          {
+            description: "We've worked with them for start-up tech consultancy, and the level of support has been just great. We have been particularly happy with the active and professional development team. I would warmly recommend them.",
+            customerName: "JASON KEATH"
+          },
+          ...testimonialsData
+        ];
+        
+        setTestimonials(allTestimonials);
+      })
+      .catch(error => console.error("Error fetching testimonials:", error));
+  }, []);
+
   return (
     <div className="relative">
       {/* Section 1: Light Blue Background with Waves */}
@@ -23,41 +68,36 @@ const ServicesSection = () => {
         {/* Content */}
         <div className="container mx-auto text-center px-6 pt-32">
           <h1 className="text-5xl font-bold text-gray-900">
-            We Provide A Wide Range Of Services
+            {stats.headline}
           </h1>
           <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-            We strive for creative and manufacturing synergy, utilizing each
-            team member's individual skills and unique perspective on design,
-            collaborating to achieve exceptional results.
+            {stats.description}
           </p>
           <Link to="/contact">
-          <button className="mt-8 bg-[#FFA500] text-white py-3 px-8 rounded-full text-lg hover:bg-yellow-600">
-            Contact Us
-          </button>
-         </Link>
+            <button className="mt-8 bg-[#FFA500] text-white py-3 px-8 rounded-full text-lg hover:bg-yellow-600">
+              Contact Us
+            </button>
+          </Link>
           {/* Stats */}
           <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-12 text-gray-800">
             <div>
-              <h2 className="text-5xl font-bold">800</h2>
+              <h2 className="text-5xl font-bold">{stats.loyalClients}</h2>
               <p className="text-lg">Loyal Clients</p>
             </div>
             <div>
-              <h2 className="text-5xl font-bold">30</h2>
+              <h2 className="text-5xl font-bold">{stats.experts}</h2>
               <p className="text-lg">Experts</p>
             </div>
             <div>
-              <h2 className="text-5xl font-bold">5</h2>
+              <h2 className="text-5xl font-bold">{stats.yearsExperience}</h2>
               <p className="text-lg">Years of Experience</p>
             </div>
             <div>
-              <h2 className="text-5xl font-bold">5</h2>
+              <h2 className="text-5xl font-bold">{stats.techAwards}</h2>
               <p className="text-lg">Tech Awards</p>
             </div>
           </div>
         </div>
-
-        {/* Bottom Wave */}
-      
       </div>
 
       {/* Section 2: Dark Blue with Testimonials */}
@@ -66,23 +106,14 @@ const ServicesSection = () => {
           Our Satisfied Customers
         </h2>
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 text-center">
-          <div>
-            <p className="italic text-lg">
-              "We've worked with them for start-up tech consultancy, and the
-              level of support has been just great. We have been particularly
-              happy with the active and professional development team. I would
-              warmly recommend them."
-            </p>
-            <p className="mt-6 font-bold text-xl">JASON KEATH</p>
-          </div>
-          <div>
-            <p className="italic text-lg">
-              "What we appreciated most about working with Innobrains and his
-              team was their ability to cut through the predictable problems of
-              a project, keep everyone happy, and deliver the expected results."
-            </p>
-            <p className="mt-6 font-bold text-xl">Umer Farooq</p>
-          </div>
+          {testimonials.map((testimonial, index) => (
+            <div key={index}>
+              <p className="italic text-lg">
+                "{testimonial.description}"
+              </p>
+              <p className="mt-6 font-bold text-xl">{testimonial.customerName}</p>
+            </div>
+          ))}
         </div>
 
         {/* Bottom Wave for Testimonials */}
