@@ -68,7 +68,8 @@ const BlogSection = () => {
                     {blog.description}
                   </p>
                   <Link
-                    to={`/blog/${blog.id}`} // Change this to your specific blog route
+                    to={`/blog/${blog.id}`}
+                    state={{ blogData: blog }}  // Pass the entire blog object
                     className="text-[#103153] hover:text-indigo-800 font-semibold"
                     aria-label={`Read more about ${blog.title}`}
                   >

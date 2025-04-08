@@ -20,7 +20,7 @@ import ResetPassword from "./component/adminpanel/ResetPassword.jsx";
 import SuccessMessage from "./component/adminpanel/SuccessMessage.jsx";
 import PageNotFound from "./component/adminpanel/PageNotFound.jsx";
 import AchievementForm from "./component/adminpanel/AchievementForm.jsx";
-
+import BlogArticle from './component/blog/BlogArticle.jsx'; // Adjust the import path as necessary
 import StepForm from "./component/adminpanel/StepForm.jsx";
 const router = createBrowserRouter([
   {
@@ -42,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "/blog",
     element: <Blog />,
+  },
+  {
+path: "/blog/:id",
+element: <BlogArticle />,
   },
   {
     path: "/products",
