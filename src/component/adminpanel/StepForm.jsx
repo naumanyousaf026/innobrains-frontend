@@ -17,15 +17,11 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
   useEffect(() => {
     if (step) {
       setFormData({
-        number: step.number || "",
-        title: step.title || "",
-        description: step.description || "",
+        number: step.number,
+        title: step.title,
+        description: step.description,
         image: null,
       });
-      // If we're editing, we could set a preview of the existing image
-      if (step.image) {
-        setImagePreview(`https://apis.innobrains.pk/GrowthStepImage/${step.image}`);
-      }
     }
   }, [step]);
 
@@ -70,7 +66,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
     if (!formData.title) newError.title = "Title is required.";
     if (!formData.description)
       newError.description = "Description is required.";
-    if (!step && !formData.image) newError.image = "Image is required.";
+    if (!formData.image) newError.image = "Image is required.";
     if (Object.keys(newError).length > 0) {
       setError(newError);
       return;
@@ -80,42 +76,28 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
     formDataObj.append("number", formData.number);
     formDataObj.append("title", formData.title);
     formDataObj.append("description", formData.description);
-    if (formData.image) formDataObj.append("image", formData.image);
+    formDataObj.append("image", formData.image);
 
     try {
-      const url = step 
-        ? `https://apis.innobrains.pk/api/growthsteps/${step._id}`
-        : "https://apis.innobrains.pk/api/growthsteps";
-      
-      const method = step ? "PUT" : "POST";
-      
-      const response = await fetch(url, {
-        method: method,
+      const response = await fetch("https://apis.innobrains.pk/api/growthsteps", {
+        method: "POST",
         body: formDataObj,
       });
 
       if (response.ok) {
         const data = await response.json();
-        setSuccessMessage(step ? "Step updated successfully!" : "Step created successfully!");
-        
-        if (!step) {
-          // Only reset form if creating a new step
-          setFormData({
-            number: "",
-            title: "",
-            description: "",
-            image: null,
-          });
-          setImagePreview(null);
-        }
-        
-        // Close form after brief delay to show success message
-        setTimeout(() => {
-          onClose();
-        }, 1000);
+        setSuccessMessage("Step created successfully!");
+        setFormData({
+          number: "",
+          title: "",
+          description: "",
+          image: null,
+        });
+        setImagePreview(null);
+        onClose(); // Close form on success
       } else {
         const errorData = await response.json();
-        setError({ general: errorData.message || `Error ${step ? 'updating' : 'creating'} step` });
+        setError({ general: errorData.message || "Error creating step" });
       }
     } catch (error) {
       setError({ general: "Error connecting to the server" });
@@ -123,12 +105,15 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-full">
-      <form onSubmit={handleSubmit}>
+    <div className="flex items-center justify-center min-h-screen lg:w-[80%] ml-auto bg-gray-100 p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-lg w-full"
+      >
         {successMessage && (
-          <p className="text-green-500 mb-4 text-center">{successMessage}</p>
+          <p className="text-green-500 mb-4">{successMessage}</p>
         )}
-        {error.general && <p className="text-red-500 mb-4 text-center">{error.general}</p>}
+        {error.general && <p className="text-red-500 mb-4">{error.general}</p>}
 
         <button
           type="button"
@@ -152,6 +137,9 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
               <FontAwesomeIcon icon={faCamera} className="text-2xl mt-2" />
             </div>
           </label>
+          {error.image && (
+            <p className="text-red-500 text-sm mt-2">{error.image}</p>
+          )}
         </div>
 
         {imagePreview && (
@@ -162,12 +150,9 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
           />
         )}
 
-        <span className="text-[#103153] text-center block cursor-pointer mb-4">
+        <span className="text-[#103153]  text-center block cursor-pointer">
           Upload Image
         </span>
-        {error.image && (
-          <p className="text-red-500 text-sm text-center mb-4">{error.image}</p>
-        )}
 
         {/* Step Number Input */}
         <div className="mb-4">
@@ -211,7 +196,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
 
         {/* Description Input */}
         <div className="mb-6">
-          <label className="block text-[#103153] font-semibold mb-2">
+          <label className="block text-[#103153]  font-semibold mb-2">
             Description
           </label>
           <textarea
