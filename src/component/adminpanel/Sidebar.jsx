@@ -17,7 +17,7 @@ const FormsButton = ({ setSection }) => {
   return (
     <div className="flex flex-col ml-3 gap-2">
       <button
-        onClick={() => setSection("Achievement")}
+        onClick={() => setSection("AchievementForm")}
         className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
       >
         <TrophyIcon className="h-6 w-6" />
