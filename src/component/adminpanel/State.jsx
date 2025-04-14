@@ -36,9 +36,9 @@ export default function StatePreview() {
         </p>
         <button
           onClick={handleAdd}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2  transition duration-300"
+          className="bg-[#103153] text-white px-6 py-2  transition duration-300"
         >
-          Add
+          Update content
         </button>
       </div>
     );
@@ -86,7 +86,7 @@ export default function StatePreview() {
           ))}
         </div>
 
-        <div className="flex justify-between gap-4">
+        <div className="flex justify-center w-[55%] gap-4">
        
           <button
             onClick={handleDelete}
