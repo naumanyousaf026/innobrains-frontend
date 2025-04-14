@@ -18,7 +18,7 @@ const Login = () => {
           password,
         }
       );
-      console.log("Login successful:", response.data);
+      // console.log("Login successful:", response.data);
 
       // Save token in localStorage and redirect to admin page
       localStorage.setItem("authToken", response.data.token);

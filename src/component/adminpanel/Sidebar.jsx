@@ -37,6 +37,13 @@ const FormsButton = ({ setSection }) => {
         <ChartBarIcon className="h-6 w-6" />
         GrowthStep
       </button>
+      <button
+        onClick={() => setSection("StateForm")}
+        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <ChartBarIcon className="h-6 w-6" />
+        StateForm
+      </button>
     </div>
   );
 };
@@ -77,6 +84,13 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
         >
           <BriefcaseIcon className="h-6 w-6" />
           Services
+        </button>
+        <button
+          onClick={() => setSection("state")}
+          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+        >
+          <BriefcaseIcon className="h-6 w-6" />
+          state
         </button>
         <button
           onClick={() => setSection("blogs")}
