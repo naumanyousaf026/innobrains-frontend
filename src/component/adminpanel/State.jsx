@@ -36,9 +36,9 @@ export default function StatePreview() {
         </p>
         <button
           onClick={handleAdd}
-          className="bg-[#103153] text-white px-6 py-2  transition duration-300"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2  transition duration-300"
         >
-          Update content
+          Add
         </button>
       </div>
     );
@@ -48,9 +48,9 @@ export default function StatePreview() {
     <div className="w-[80%] ml-auto  justify-center items-center p-6">
            <button
             onClick={handleAdd}
-            class="bg-green-50   ms-auto block nunito-sans my-4 hover:bg-green-600 text-white px-9 font-semibold py-3 rounded-md shadow-md transition duration-300"
+            class="bg-[#103153] ms-auto block nunito-sans my-4 text-white px-9 font-semibold py-3 rounded-md shadow-md transition duration-300"
           >
-            Add
+           Update Content
           </button>
       <div className="w-full bg-white rounded-xl  p-8 border border-gray-300 flex flex-col justify-between">
         <h2 className="text-3xl font-bold  text-center mb-10">
@@ -86,11 +86,11 @@ export default function StatePreview() {
           ))}
         </div>
 
-        <div className="flex justify-center w-[55%] gap-4">
+        <div className="flex justify-between gap-4">
        
           <button
             onClick={handleDelete}
-            className="bg-red-500  nunito-sans hover:bg-red-600 text-white px-9 font-semibold  py-3 rounded-md  shadow-md transition duration-300"
+            className="bg-red-500 w-[25%] mx-auto nunito-sans hover:bg-red-600 text-white px-9 font-semibold  py-3 rounded-md  shadow-md transition duration-300"
           >
             Delete
           </button>
