@@ -45,7 +45,7 @@ export default function StatePreview() {
   }
 
   return (
-    <div className="w-[80%] ml-auto flex justify-center items-center p-6">
+    <div className="w-[80%] ml-auto  justify-center items-center p-6">
            <button
             onClick={handleAdd}
             class="bg-green-50   ms-auto block nunito-sans my-4 hover:bg-green-600 text-white px-9 font-semibold py-3 rounded-md shadow-md transition duration-300"
