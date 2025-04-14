@@ -76,7 +76,7 @@ export default function StatePreview() {
           ].map(({ label, value }) => (
             <div
               key={label}
-              className=" bg-red-500 rounded-xl p-6 text-center shadow-md "
+              className=" bg-[#103153]  rounded-xl p-6 text-center shadow-md "
             >
               <h4 className="text-sm  nunito-sans font-medium uppercase tracking-wider mb-2">
                 {label}
