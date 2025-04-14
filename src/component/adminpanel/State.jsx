@@ -59,15 +59,15 @@ export default function StatePreview() {
 
         <div className="mb-8">
           <h3 className="text-xl font-semibold  text-center nunito-sans text-gray-700 mb-2">Headline</h3>
-          <p className="text-gray-800  nunito-sans text-lg">{data.headline}</p>
+          <p className="text-gray-800 text-center  nunito-sans text-lg">{data.headline}</p>
         </div>
 
         <div className="mb-10">
-          <h3 className="text-xl font-semibold  text-center nunito-sans text-gray-700 mb-2">Description</h3>
+          <h3 className="text-xl font-semibold   nunito-sans text-gray-700 mb-2">Description</h3>
           <p className="text-gray-800 leading-relaxed">{data.description}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 bg-red-500 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
             { label: "Loyal Clients", value: data.loyalClients },
             { label: "Experts", value: data.experts },
@@ -76,7 +76,7 @@ export default function StatePreview() {
           ].map(({ label, value }) => (
             <div
               key={label}
-              className="  rounded-xl p-6 text-center shadow-md "
+              className=" bg-red-500 rounded-xl p-6 text-center shadow-md "
             >
               <h4 className="text-sm  nunito-sans font-medium uppercase tracking-wider mb-2">
                 {label}
