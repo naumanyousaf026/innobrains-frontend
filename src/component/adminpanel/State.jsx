@@ -64,12 +64,12 @@ export default function StatePreview() {
           </button>
         </div>
       <Wave />
-      <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-        <div className="flex justify-end space-x-4 mb-4">
+      <div className="bg-white rounded-lg shadow-md p-4 mt-2">
+        <div className=" space-x-4 mb-2">
           {/* Always visible Delete button */}
           <button
             onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition duration-300"
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-2 rounded-md transition duration-300"
           >
             Delete
           </button>
