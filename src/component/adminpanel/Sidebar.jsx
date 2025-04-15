@@ -1,9 +1,66 @@
+import React from "react";
+import {
+  HomeIcon,
+  ShoppingCartIcon,
+  BriefcaseIcon,
+  NewspaperIcon,
+  UserGroupIcon,
+  TrophyIcon,
+  PhoneIcon,
+  ChartBarIcon,
+} from "@heroicons/react/24/solid";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
+
+// Main button with sub-buttons always displayed
+const FormsButton = ({ setSection }) => {
+  return (
+    <div className="flex flex-col ml-3 gap-2">
+      <button
+        onClick={() => setSection("AchievementForm")}
+        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <TrophyIcon className="h-6 w-6" />
+        Achievement
+      </button>
+      <button
+        onClick={() => setSection("ContactInfoForm")}
+        className="flex items-center gap-2 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <PhoneIcon className="h-6 w-6" />
+        InfoForm
+      </button>
+      <button
+        onClick={() => setSection("StepForm")}
+        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <ChartBarIcon className="h-6 w-6" />
+        GrowthStep
+      </button>
+      <button
+        onClick={() => setSection("StateForm")}
+        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <ChartBarIcon className="h-6 w-6" />
+        StateForm
+      </button>
+      <button
+        onClick={() => setSection("AboutForm")}
+        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+      >
+        <ChartBarIcon className="h-6 w-6" />
+        AboutForm
+      </button>
+    </div>
+  );
+};
+
 const Sidebar = ({ setSection, handleLogout, isOpen }) => {
   return (
     <div
       className={`fixed left-0 top-0 h-full bg-gray-100 p-4 z-20 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:w-[20%] overflow-y-auto max-h-screen`} // Add overflow-y-auto and max-h-screen
+      } lg:translate-x-0 lg:w-[20%] overflow-y-auto max-h-screen`} // Added scroll functionality
     >
       <div className="mb-8">
         <img
