@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Wave from "../TopWave"; // adjust path as needed
-import Stateform from "./StateForm";
+import Wave from "../TopWave";
+import StateForm from "./StateForm";
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editData, setEditData] = useState(null);
 
-  // Fetch stats to get ID
+  // Fetch stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const res = await axios.get("https://apis.innobrains.pk/api/stats");
         if (res.data.length > 0) {
           setStatsId(res.data[0]._id);
+          setEditData(res.data[0]);
           setShowData(true);
         } else {
           setShowData(false);
@@ -28,7 +31,7 @@ export default function StatePreview() {
     fetchStats();
   }, []);
 
-  // Handle Delete with API
+  // Delete handler
   const handleDelete = async () => {
     if (!statsId) {
       alert("No stats data to delete.");
@@ -38,6 +41,7 @@ export default function StatePreview() {
       await axios.delete(`https://apis.innobrains.pk/api/stats/${statsId}`);
       setShowData(false);
       setStatsId(null);
+      setEditData(null);
       alert("Stats deleted successfully.");
     } catch (err) {
       console.error("Failed to delete:", err);
@@ -45,9 +49,15 @@ export default function StatePreview() {
     }
   };
 
-  // Navigate to form page
-  const navigateToForm = () => {
-    window.location.href = {Stateform}; // Adjust the route as needed
+  // Toggle form display
+  const toggleForm = () => {
+    setShowForm(!showForm);
+  };
+
+  // Refresh after form submit
+  const handleFormClose = () => {
+    setShowForm(false);
+    window.location.reload(); // or re-fetch stats if you prefer
   };
 
   if (loading) {
@@ -56,37 +66,36 @@ export default function StatePreview() {
 
   return (
     <div className="ml-[250px] mt-5 px-4">
-        <div className="flex justify-end space-x-4 mb-4 ">
+      <div className="flex justify-end space-x-4 mb-4">
         <button
-            onClick={navigateToForm}
-            className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
-          >
-            {showData ? "Edit" : "Add New"}
-          </button>
-        </div>
-      <Wave className='w-[80%] ml-auto p-5 mt-5 px-4' />
+          onClick={toggleForm}
+          className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
+        >
+          {showData ? "Edit" : "Add New"}
+        </button>
+      </div>
+
+      <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
+
       <div className="bg-white rounded-lg shadow-md p-4 mt-1">
         <div className="space-x-4 mb-2 px-4">
-          {/* Always visible Delete button */}
           <button
             onClick={handleDelete}
             className="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-md transition duration-300"
           >
             Delete
           </button>
-
-          {/* Always visible Add/Edit button */}
-        
         </div>
 
-        {/* Status Message */}
-        {showData ? (
+        {showData && !showForm && (
           <div className="mt-4 text-center">
             <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
           </div>
-        ) : (
-          <div className="mt-4 text-center">
-         
+        )}
+
+        {showForm && (
+          <div className="mt-4">
+            <StateForm data={editData} onClose={handleFormClose} />
           </div>
         )}
       </div>
