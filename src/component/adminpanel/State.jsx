@@ -56,12 +56,12 @@ export default function StatePreview() {
   return (
     <div className="ml-[250px] mt-5 px-4">
         <div className="flex justify-end space-x-4 mb-4 ">
-        <button
+        {/* <button
             onClick={navigateToForm}
             className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
           >
             {showData ? "Edit" : "Add New"}
-          </button>
+          </button> */}
         </div>
       <Wave className='w-[80%] ml-auto p-5 mt-5 px-4' />
       <div className="bg-white rounded-lg shadow-md p-4 mt-1">
