@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave"; // adjust path as needed
 
-export default function StatePreview({ setSection }) {
+export default function StatePreview() {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,10 +40,8 @@ export default function StatePreview({ setSection }) {
   };
 
   // Only UI toggle (not real "add")
-
-  // Navigate to StateForm
-  const navigateToStateForm = () => {
-    setSection("stateForm");
+  const handleAdd = () => {
+    setShowData(true);
   };
 
   if (loading) {
@@ -52,16 +50,6 @@ export default function StatePreview({ setSection }) {
 
   return (
     <div className="ml-[250px] mt-5 px-4">
-      {/* Navigation button at the top */}
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={navigateToStateForm}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold shadow-md transition duration-300"
-        >
-          Go to State Form
-        </button>
-      </div>
-
       {showData ? (
         <>
           <Wave />
@@ -80,7 +68,12 @@ export default function StatePreview({ setSection }) {
             No data available. Please click{" "}
             <span className="font-semibold">Add</span> to view preview.
           </p>
-          
+          <button
+            onClick={handleAdd}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-300"
+          >
+            Add
+          </button>
         </div>
       )}
     </div>
