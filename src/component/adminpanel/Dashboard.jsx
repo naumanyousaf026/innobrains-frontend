@@ -116,7 +116,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 lg:w-[80%] ml-auto">
+    <div className="min-h-screen bg-gray-100 ">
       <div className="p-2 flex-1">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Dashboard</h1>
