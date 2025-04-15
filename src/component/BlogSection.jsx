@@ -7,8 +7,8 @@ import '../App.css';
 const BlogSection = ({ limit }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  // If limit is not provided, show all blogs (for the blog page)
-  const isHomePage = limit !== undefined;
+  // Check if we should show limited blogs or all
+  const shouldLimitBlogs = limit !== undefined;
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -29,31 +29,29 @@ const BlogSection = ({ limit }) => {
     fetchBlogs();
   }, []);
 
-  // Determine which blogs to display
-  const displayBlogs = isHomePage ? blogs.slice(0, limit) : blogs;
+  // Determine which blogs to display based on whether limit is provided
+  const displayBlogs = shouldLimitBlogs ? blogs.slice(0, limit) : blogs;
 
   return (
     <div className="py-10 max-w-7xl mx-auto">
       <div className="container mx-auto">
-        {isHomePage && (
-          <div className="text-left my-16 px-10 mx-auto">
-            <h3 className="block text-lg font-semibold poppins-thin text-[#101010] mb-2">Blog</h3>
-            <h1 className="text-4xl lg:text-5xl poppins-thin font-bold text-[#101010] mb-5">
-              Explore article and <span className="block mt-2">information</span>
-            </h1>
-            <p className="text-[#5C5C5C] poppins-thin text-lg">
-              Transforming businesses through innovative software solutions and cutting-edge technology.
-            </p>
-          </div>
-        )}
-        <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row flex-wrap gap-8 justify-center">
+        <div className="text-left my-16 px-10 mx-auto">
+          <h3 className="block text-lg font-semibold poppins-thin text-[#101010] mb-2">Blog</h3>
+          <h1 className="text-4xl lg:text-5xl poppins-thin font-bold text-[#101010] mb-5">
+            Explore article and <span className="block mt-2">information</span>
+          </h1>
+          <p className="text-[#5C5C5C] poppins-thin text-lg">
+            Transforming businesses through innovative software solutions and cutting-edge technology.
+          </p>
+        </div>
+        <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
           {loading ? (
             <div className="text-center w-full">Loading blogs...</div>
           ) : (
             displayBlogs.map((blog, index) => (
               <div
                 key={index}
-                className={`bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105 ${!isHomePage ? 'w-full md:w-[calc(33%-1.5rem)]' : ''}`}
+                className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
               >
                 <div className="w-full aspect-[4/4] overflow-hidden">
                   <img
@@ -87,8 +85,8 @@ const BlogSection = ({ limit }) => {
             ))
           )}
         </div>
-        {/* Read All Button - only show on home page when there are more blogs than the limit */}
-        {isHomePage && blogs.length > limit && (
+        {/* Read All Button - only show when limit is set and there are more blogs than the limit */}
+        {shouldLimitBlogs && blogs.length > limit && (
           <div className="mt-8 text-center">
             <Link to="/blog">
               <button
