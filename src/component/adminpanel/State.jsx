@@ -39,19 +39,17 @@ export default function StatePreview({ setSection }) {
     }
   };
 
-  // Only UI toggle (not real "add")
-
   // Navigate to StateForm
   const navigateToStateForm = () => {
     setSection("stateForm");
   };
 
   if (loading) {
-    return <p className="ml-[150px] text-gray-500 text-center mt-10">Loading...</p>;
+    return <p className="w-full max-w-4xl mx-auto text-gray-500 text-center mt-10">Loading...</p>;
   }
 
   return (
-    <div className="ml-[250px] mt-5 px-4">
+    <div className="w-full max-w-6xl mx-auto mt-5 px-4">
       {/* Navigation button at the top */}
       <div className="flex justify-end mb-4">
         <button
@@ -63,7 +61,7 @@ export default function StatePreview({ setSection }) {
       </div>
 
       {showData ? (
-        <>
+        <div className="w-full">
           <Wave />
           <div className="flex justify-center mt-6">
             <button
@@ -73,14 +71,18 @@ export default function StatePreview({ setSection }) {
               Delete
             </button>
           </div>
-        </>
+        </div>
       ) : (
-        <div className="text-center text-gray-500 mt-10">
+        <div className="w-full text-center text-gray-500 mt-10">
           <p className="mb-4 text-lg">
-            No data available. Please click{" "}
-            <span className="font-semibold">Add</span> to view preview.
+            No data available. Please add content from the State Form.
           </p>
-          
+          <button
+            onClick={navigateToStateForm}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
+          >
+            Go to State Form
+          </button>
         </div>
       )}
     </div>
