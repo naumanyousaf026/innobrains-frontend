@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Wave from "../TopWave";
-import { useNavigate } from "react-router-dom"; // 👈 import navigate
+import Wave from "../TopWave"; // adjust path as needed
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate(); // 👈 hook to navigate
-
+  // Fetch stats to get ID
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -29,6 +27,7 @@ export default function StatePreview() {
     fetchStats();
   }, []);
 
+  // Handle Delete with API
   const handleDelete = async () => {
     if (!statsId) return;
     try {
@@ -40,12 +39,9 @@ export default function StatePreview() {
     }
   };
 
+  // Only UI toggle (not real "add")
   const handleAdd = () => {
-    navigate("/state-form"); // 👈 go to form
-  };
-
-  const handleUpdate = () => {
-    navigate("/state-form", { state: { id: statsId } }); // 👈 pass ID to edit
+    setShowData(true);
   };
 
   if (loading) {
@@ -57,21 +53,12 @@ export default function StatePreview() {
       {showData ? (
         <>
           <Wave />
-          <div className="flex justify-center gap-4 mt-6">
+          <div className="flex justify-center mt-6">
             <button
               onClick={handleDelete}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
             >
               Delete
-            </button>
-            <button
-            onClick={() => {
-                setSelectedState(state); // selected object
-                setSection("StateForm");
-              }}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
-            >
-              Update
             </button>
           </div>
         </>
@@ -82,12 +69,11 @@ export default function StatePreview() {
             <span className="font-semibold">Add</span> to view preview.
           </p>
           <button
-  onClick={() => setSection("StateForm")}
-  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
->
-  Add State
-</button>
-
+            onClick={handleAdd}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-300"
+          >
+            Add
+          </button>
         </div>
       )}
     </div>
