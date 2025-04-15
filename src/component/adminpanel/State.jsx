@@ -31,7 +31,6 @@ export default function StatePreview() {
     fetchStats();
   }, []);
 
-  // Delete handler
   const handleDelete = async () => {
     if (!statsId) {
       alert("No stats data to delete.");
@@ -49,15 +48,13 @@ export default function StatePreview() {
     }
   };
 
-  // Toggle form display
   const toggleForm = () => {
     setShowForm(!showForm);
   };
 
-  // Refresh after form submit
   const handleFormClose = () => {
     setShowForm(false);
-    window.location.reload(); // or re-fetch stats if you prefer
+    window.location.reload(); // or re-fetch
   };
 
   if (loading) {
@@ -75,30 +72,34 @@ export default function StatePreview() {
         </button>
       </div>
 
-      <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
-
-      <div className="bg-white rounded-lg shadow-md p-4 mt-1">
-        <div className="space-x-4 mb-2 px-4">
-          <button
-            onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-md transition duration-300"
-          >
-            Delete
-          </button>
+      {/* Show Form */}
+      {showForm ? (
+        <div className="bg-white rounded-lg shadow-md p-4 mt-1">
+          <StateForm data={editData} onClose={handleFormClose} />
         </div>
+      ) : (
+        <>
+          {/* Show original content when form is hidden */}
+          <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
 
-        {showData && !showForm && (
-          <div className="mt-4 text-center">
-            <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
-          </div>
-        )}
+          <div className="bg-white rounded-lg shadow-md p-4 mt-1">
+            <div className="space-x-4 mb-2 px-4">
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-md transition duration-300"
+              >
+                Delete
+              </button>
+            </div>
 
-        {showForm && (
-          <div className="mt-4">
-            <StateForm data={editData} onClose={handleFormClose} />
+            {showData && (
+              <div className="mt-4 text-center">
+                <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
