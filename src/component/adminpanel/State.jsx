@@ -97,9 +97,8 @@ export default function StatePreview() {
         </div>
       ) : (
         <>
+          {/* Use Wave with custom width */}
           <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
-
-     
 
           <div className="bg-white rounded-lg shadow-md p-4 mt-1">
             <div className="space-x-4 mb-2 px-4">
