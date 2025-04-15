@@ -47,7 +47,7 @@ const Admin = () => {
       )}
       <div className="flex-1">
         <Header setSidebarOpen={toggleSidebar} />
-        <div className="p-5 shadow-md flex">
+        <div className=" w-[80%] ml-auto p-5 shadow-md flex">
           {section === "dashboard" && <Dashboard />}
           {section === "products" && <ProductSection />}
           {section === "services" && <Service />}
