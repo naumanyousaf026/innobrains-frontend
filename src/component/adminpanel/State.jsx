@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave";
+import { useNavigate } from "react-router-dom"; // 👈 import navigate
 
-export default function StatePreview({ setSection, setSelectedState }) {
+export default function StatePreview() {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
-  const [statsData, setStatsData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate(); // 👈 hook to navigate
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -14,7 +16,6 @@ export default function StatePreview({ setSection, setSelectedState }) {
         const res = await axios.get("https://apis.innobrains.pk/api/stats");
         if (res.data.length > 0) {
           setStatsId(res.data[0]._id);
-          setStatsData(res.data[0]);
           setShowData(true);
         } else {
           setShowData(false);
@@ -34,20 +35,17 @@ export default function StatePreview({ setSection, setSelectedState }) {
       await axios.delete(`https://apis.innobrains.pk/api/stats/${statsId}`);
       setShowData(false);
       setStatsId(null);
-      setStatsData(null);
     } catch (err) {
       console.error("Failed to delete:", err);
     }
   };
 
-  const handleUpdate = () => {
-    setSelectedState(statsData); // pass full state object
-    setSection("StateForm");
+  const handleAdd = () => {
+    navigate("/state-form"); // 👈 go to form
   };
 
-  const handleAdd = () => {
-    setSelectedState(null); // clear previous data
-    setSection("StateForm");
+  const handleUpdate = () => {
+    navigate("/state-form", { state: { id: statsId } }); // 👈 pass ID to edit
   };
 
   if (loading) {
@@ -67,7 +65,10 @@ export default function StatePreview({ setSection, setSelectedState }) {
               Delete
             </button>
             <button
-              onClick={handleUpdate}
+            onClick={() => {
+                setSelectedState(state); // selected object
+                setSection("StateForm");
+              }}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
             >
               Update
@@ -81,11 +82,12 @@ export default function StatePreview({ setSection, setSelectedState }) {
             <span className="font-semibold">Add</span> to view preview.
           </p>
           <button
-            onClick={handleAdd}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-          >
-            Add State
-          </button>
+  onClick={() => setSection("StateForm")}
+  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+>
+  Add State
+</button>
+
         </div>
       )}
     </div>
