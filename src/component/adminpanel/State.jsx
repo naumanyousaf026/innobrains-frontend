@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Wave from "./Wave"; // adjust path as needed
+import Wave from "../TopWave"; // adjust path as needed
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
