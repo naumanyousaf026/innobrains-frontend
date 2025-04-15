@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave"; // adjust path as needed
 
-export default function StatePreview() {
+export default function StatePreview({ setSection }) {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,12 +44,27 @@ export default function StatePreview() {
     setShowData(true);
   };
 
+  // Navigate to StateForm
+  const navigateToStateForm = () => {
+    setSection("stateForm");
+  };
+
   if (loading) {
     return <p className="ml-[150px] text-gray-500 text-center mt-10">Loading...</p>;
   }
 
   return (
     <div className="ml-[250px] mt-5 px-4">
+      {/* Navigation button at the top */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={navigateToStateForm}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold shadow-md transition duration-300"
+        >
+          Go to State Form
+        </button>
+      </div>
+
       {showData ? (
         <>
           <Wave />
