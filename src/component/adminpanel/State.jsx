@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave";
 import StateForm from "./StateForm";
-import { IoArrowBackSharp } from "react-icons/io5"; // Back icon
+import { IoAddSharp, IoArrowBackSharp } from "react-icons/io5";
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
@@ -54,7 +54,7 @@ export default function StatePreview() {
 
   const handleFormClose = () => {
     setShowForm(false);
-    window.location.reload(); // or re-fetch
+    window.location.reload(); // Or refetch if preferred
   };
 
   if (loading) {
@@ -63,32 +63,39 @@ export default function StatePreview() {
 
   return (
     <div className="w-full mt-5 px-4">
-      <div className="flex justify-end space-x-4 mb-4">
-        {!showForm && (
+      {/* Top Right Add/Edit Button */}
+      {!showForm && (
+        <div className="flex justify-end space-x-4 mb-4">
           <button
             onClick={toggleForm}
-            className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
+            className="bg-black text-white py-2 px-4 rounded-md transition duration-300 flex items-center space-x-2"
           >
-            {showData ? "Edit" : "Add New"}
+            <IoAddSharp className="text-white text-lg" />
+            <span>{showData ? "Edit" : "Add New"}</span>
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
+      {/* Show Form */}
       {showForm ? (
-        <div className="bg-white rounded-lg shadow-md p-4 mt-1">
-          {/* Back Button */}
+        <div className="bg-white rounded-lg shadow-md p-4 mt-1 relative">
+          {/* Back Icon */}
           <button
-            onClick={() => setShowForm(false)}
-            className="flex items-center text-sm text-gray-700 hover:text-black mb-4"
+            onClick={toggleForm}
+            className="absolute top-4 left-4 flex items-center text-black hover:text-gray-700 transition duration-300"
           >
-            <IoArrowBackSharp className="mr-2 text-lg" />
-            Back
+            <IoArrowBackSharp className="text-2xl mr-1" />
+            <span className="text-sm font-medium">Back</span>
           </button>
 
-          <StateForm data={editData} onClose={handleFormClose} />
+          {/* Form Content */}
+          <div className="pt-12">
+            <StateForm data={editData} onClose={handleFormClose} />
+          </div>
         </div>
       ) : (
         <>
+          {/* Show preview content */}
           <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
 
           <div className="bg-white rounded-lg shadow-md p-4 mt-1">
@@ -103,7 +110,9 @@ export default function StatePreview() {
 
             {showData && (
               <div className="mt-4 text-center">
-                <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
+                <p className="text-gray-700">
+                  Stats data exists and can be edited or deleted.
+                </p>
               </div>
             )}
           </div>
