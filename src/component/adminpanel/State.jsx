@@ -40,9 +40,6 @@ export default function StatePreview({ setSection }) {
   };
 
   // Only UI toggle (not real "add")
-  const handleAdd = () => {
-    setShowData(true);
-  };
 
   // Navigate to StateForm
   const navigateToStateForm = () => {
@@ -83,12 +80,7 @@ export default function StatePreview({ setSection }) {
             No data available. Please click{" "}
             <span className="font-semibold">Add</span> to view preview.
           </p>
-          <button
-            onClick={handleAdd}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-300"
-          >
-            Add
-          </button>
+          
         </div>
       )}
     </div>
