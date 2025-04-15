@@ -45,7 +45,7 @@ export default function StatePreview() {
   };
 
   if (loading) {
-    return <p className="ml-[250px] text-gray-500 text-center mt-10">Loading...</p>;
+    return <p className="ml-[150px] text-gray-500 text-center mt-10">Loading...</p>;
   }
 
   return (
