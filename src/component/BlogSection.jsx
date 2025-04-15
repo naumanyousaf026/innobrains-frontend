@@ -44,42 +44,44 @@ const BlogSection = ({ limit }) => {
             Transforming businesses through innovative software solutions and cutting-edge technology.
           </p>
         </div>
-        <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
+        <div className="flex max-w-7xl mx-auto px-10 flex-wrap">
           {loading ? (
             <div className="text-center w-full">Loading blogs...</div>
           ) : (
             displayBlogs.map((blog, index) => (
               <div
                 key={index}
-                className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                className="w-full md:w-1/3 px-4 mb-8"
               >
-                <div className="w-full aspect-[4/4] overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={`https://apis.innobrains.pk${blog.image}`}
-                    alt={blog.title || "Blog Post"}
-                  />
-                </div>
-                <div className="p-6 bg-[#FDFDFD]">
-                  <div className="text-sm font-semibold text-[#103153] mb-2">
-                    <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
-                    <span className="ms-2 poppins-thin">{blog.duration}</span>
+                <div className="h-full bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105">
+                  <div className="w-full aspect-[4/4] overflow-hidden">
+                    <img
+                      className="w-full h-full object-cover"
+                      src={`https://apis.innobrains.pk${blog.image}`}
+                      alt={blog.title || "Blog Post"}
+                    />
                   </div>
-                  <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                    {blog.title}
-                  </h3>
-                  <p className="text-gray-600 poppins-thin mb-4">
-                    {blog.description}
-                  </p>
-                  <Link
-                    to={`/blog/${blog.id}`}
-                    state={{ blogData: blog }}
-                    className="text-[#103153] hover:text-indigo-800 font-semibold"
-                    aria-label={`Read more about ${blog.title}`}
-                  >
-                    Read more 
-                    <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                  </Link>
+                  <div className="p-6 bg-[#FDFDFD]">
+                    <div className="text-sm font-semibold text-[#103153] mb-2">
+                      <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
+                      <span className="ms-2 poppins-thin">{blog.duration}</span>
+                    </div>
+                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 poppins-thin mb-4">
+                      {blog.description}
+                    </p>
+                    <Link
+                      to={`/blog/${blog.id}`}
+                      state={{ blogData: blog }}
+                      className="text-[#103153] hover:text-indigo-800 font-semibold"
+                      aria-label={`Read more about ${blog.title}`}
+                    >
+                      Read more 
+                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))
