@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave"; // adjust path as needed
+import Stateform from "./StateForm";
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false); // State to toggle form visibility
 
   // Fetch stats to get ID
   useEffect(() => {
@@ -45,9 +45,9 @@ export default function StatePreview() {
     }
   };
 
-  // Toggle form visibility
-  const toggleForm = () => {
-    setShowForm(!showForm);
+  // Navigate to form page
+  const navigateToForm = () => {
+    window.location.href = {Stateform}; // Adjust the route as needed
   };
 
   if (loading) {
@@ -56,17 +56,15 @@ export default function StatePreview() {
 
   return (
     <div className="ml-[250px] mt-5 px-4">
-      <div className="flex justify-end space-x-4 mb-4">
+        <div className="flex justify-end space-x-4 mb-4 ">
         <button
-          onClick={toggleForm} // Toggle form visibility on click
-          className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
-        >
-          {showForm ? "Cancel" : showData ? "Edit" : "Add New"}
-        </button>
-      </div>
-
-      <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
-
+            onClick={navigateToForm}
+            className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
+          >
+            {showData ? "Edit" : "Add New"}
+          </button>
+        </div>
+      <Wave className='w-[80%] ml-auto p-5 mt-5 px-4' />
       <div className="bg-white rounded-lg shadow-md p-4 mt-1">
         <div className="space-x-4 mb-2 px-4">
           {/* Always visible Delete button */}
@@ -76,38 +74,19 @@ export default function StatePreview() {
           >
             Delete
           </button>
+
+          {/* Always visible Add/Edit button */}
+        
         </div>
 
-        {/* Show form if showForm is true */}
-        {showForm ? (
-          <div className="mt-4">
-            <h2 className="text-center text-lg font-semibold">Add New Stats</h2>
-            <form>
-              {/* Your form fields go here */}
-              <div className="mt-2">
-                <input
-                  type="text"
-                  placeholder="Enter Stats"
-                  className="border p-2 w-full rounded-md"
-                />
-              </div>
-              <div className="mt-4 flex justify-center">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white py-2 px-6 rounded-md"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+        {/* Status Message */}
+        {showData ? (
+          <div className="mt-4 text-center">
+            <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
           </div>
         ) : (
           <div className="mt-4 text-center">
-            {showData ? (
-              <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
-            ) : (
-              <p className="text-gray-700">No stats data available.</p>
-            )}
+         
           </div>
         )}
       </div>
