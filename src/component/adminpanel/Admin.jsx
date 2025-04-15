@@ -57,9 +57,9 @@ const Admin = () => {
           {section === "AchievementForm" && <AchievementForm />}
           {section === "ContactInfoForm" && <ContactInfoForm />}
           {section == "StepForm" && <StepForm />}
-          {section ==="stateForm" && <StateForm />}
+          {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
-{section === "AboutForm" && <AboutForm />}
+          {section === "AboutForm" && <AboutForm />}
           {section === "About" && <About />}
         </div>
       </div>
