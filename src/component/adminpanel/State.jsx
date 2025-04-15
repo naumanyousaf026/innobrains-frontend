@@ -49,7 +49,7 @@ export default function StatePreview() {
   }
 
   return (
-    <div className="ml-[250px] mt-5 px-4">
+    <div className="ml-[250px] mt-10 px-4">
       <Wave />
       <div className="bg-white rounded-lg shadow-md p-6 mt-4">
         <div className="flex justify-end space-x-4 mb-4">
