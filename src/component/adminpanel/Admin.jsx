@@ -47,7 +47,7 @@ const Admin = () => {
       )}
       <div className="flex-1">
         <Header setSidebarOpen={toggleSidebar} />
-        <div className=" lg:w-[81%] bg-white p-5 shadow-md flex ml-auto justify-between items-center">
+        <div className="  bg-white p-5 shadow-md flex ml-auto justify-between items-center">
           {section === "dashboard" && <Dashboard />}
           {section === "products" && <ProductSection />}
           {section === "services" && <Service />}
