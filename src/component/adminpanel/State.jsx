@@ -29,13 +29,18 @@ export default function StatePreview() {
 
   // Handle Delete with API
   const handleDelete = async () => {
-    if (!statsId) return;
+    if (!statsId) {
+      alert("No stats data to delete.");
+      return;
+    }
     try {
       await axios.delete(`https://apis.innobrains.pk/api/stats/${statsId}`);
       setShowData(false);
       setStatsId(null);
+      alert("Stats deleted successfully.");
     } catch (err) {
       console.error("Failed to delete:", err);
+      alert("Failed to delete stats.");
     }
   };
 
@@ -43,17 +48,25 @@ export default function StatePreview() {
   const navigateToForm = () => {
     window.location.href = "/stats-form"; // Adjust the route as needed
   };
-  
+
   if (loading) {
     return <p className="ml-[150px] text-gray-500 text-center mt-10">Loading...</p>;
   }
 
   return (
-    <div className="ml-[250px] mt-10 px-4">
+    <div className="ml-[250px] mt-5 px-4">
       <Wave />
       <div className="bg-white rounded-lg shadow-md p-6 mt-4">
         <div className="flex justify-end space-x-4 mb-4">
+          {/* Always visible Delete button */}
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition duration-300"
+          >
+            Delete
+          </button>
 
+          {/* Always visible Add/Edit button */}
           <button
             onClick={navigateToForm}
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300"
@@ -61,14 +74,15 @@ export default function StatePreview() {
             {showData ? "Edit" : "Add New"}
           </button>
         </div>
-        
+
+        {/* Status Message */}
         {showData ? (
           <div className="mt-4 text-center">
-            <p className="text-gray-700">Stats data exists and can be edited or deleted</p>
+            <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
           </div>
         ) : (
           <div className="mt-4 text-center">
-            <p className="text-gray-700">No stats data available. Add new data using the button above.</p>
+            <p className="text-gray-700">No stats data available. You can add new data using the button above.</p>
           </div>
         )}
       </div>
