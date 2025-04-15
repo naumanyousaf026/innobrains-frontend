@@ -62,7 +62,7 @@ export default function StatePreview() {
   }
 
   return (
-    <div className="ml-[250px] mt-5 px-4">
+    <div className="w-full mt-5 px-4">
       <div className="flex justify-end space-x-4 mb-4">
         <button
           onClick={toggleForm}
