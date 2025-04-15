@@ -39,18 +39,46 @@ export default function StatePreview() {
     }
   };
 
- 
+  // Navigate to form page
+  const navigateToForm = () => {
+    window.location.href = "/stats-form"; // Adjust the route as needed
+  };
+  
   if (loading) {
     return <p className="ml-[150px] text-gray-500 text-center mt-10">Loading...</p>;
   }
 
   return (
     <div className="ml-[250px] mt-5 px-4">
-<Wave />
-       
-     
+      <Wave />
+      <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+        <div className="flex justify-end space-x-4 mb-4">
+          {showData ? (
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition duration-300"
+            >
+              Delete
+            </button>
+          ) : null}
+          <button
+            onClick={navigateToForm}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300"
+          >
+            {showData ? "Edit" : "Add New"}
+          </button>
+        </div>
         
-
+        {showData ? (
+          <div className="mt-4 text-center">
+            <p className="text-gray-700">Stats data exists and can be edited or deleted</p>
+          </div>
+        ) : (
+          <div className="mt-4 text-center">
+            <p className="text-gray-700">No stats data available. Add new data using the button above.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
