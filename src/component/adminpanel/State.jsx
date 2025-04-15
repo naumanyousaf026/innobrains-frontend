@@ -49,7 +49,7 @@ export default function StatePreview() {
   }
 
   return (
-    <div className="ml-[250px] px-4">
+    <div className="ml-[250px] mt-5 px-4">
       {showData ? (
         <>
           <Wave />
