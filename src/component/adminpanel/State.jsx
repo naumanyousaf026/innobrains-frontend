@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Wave from "../TopWave"; // adjust path as needed
+import Wave from "../TopWave";
 
-export default function StatePreview() {
+export default function StatePreview({ setSection, setSelectedState }) {
   const [showData, setShowData] = useState(false);
   const [statsId, setStatsId] = useState(null);
+  const [statsData, setStatsData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch stats to get ID
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const res = await axios.get("https://apis.innobrains.pk/api/stats");
         if (res.data.length > 0) {
           setStatsId(res.data[0]._id);
+          setStatsData(res.data[0]);
           setShowData(true);
         } else {
           setShowData(false);
@@ -27,21 +28,26 @@ export default function StatePreview() {
     fetchStats();
   }, []);
 
-  // Handle Delete with API
   const handleDelete = async () => {
     if (!statsId) return;
     try {
       await axios.delete(`https://apis.innobrains.pk/api/stats/${statsId}`);
       setShowData(false);
       setStatsId(null);
+      setStatsData(null);
     } catch (err) {
       console.error("Failed to delete:", err);
     }
   };
 
-  // Only UI toggle (not real "add")
+  const handleUpdate = () => {
+    setSelectedState(statsData); // pass full state object
+    setSection("StateForm");
+  };
+
   const handleAdd = () => {
-    setShowData(true);
+    setSelectedState(null); // clear previous data
+    setSection("StateForm");
   };
 
   if (loading) {
@@ -53,12 +59,18 @@ export default function StatePreview() {
       {showData ? (
         <>
           <Wave />
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center gap-4 mt-6">
             <button
               onClick={handleDelete}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
             >
               Delete
+            </button>
+            <button
+              onClick={handleUpdate}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md font-semibold shadow-md transition duration-300"
+            >
+              Update
             </button>
           </div>
         </>
@@ -70,9 +82,9 @@ export default function StatePreview() {
           </p>
           <button
             onClick={handleAdd}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-300"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
           >
-            Add
+            Add State
           </button>
         </div>
       )}
