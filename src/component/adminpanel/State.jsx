@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Wave from "./Wave"; // make sure path is correct
+import Wave from "../TopWave"; // make sure path is correct
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(true);
