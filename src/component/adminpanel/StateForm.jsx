@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { IoMdArrowBack } from "react-icons/io";
 import { IoArrowBackSharp } from "react-icons/io5";
 
 export default function StateForm({ onClose }) {
@@ -33,7 +32,7 @@ export default function StateForm({ onClose }) {
           onClick={onClose}
           className="absolute top-6 left-6 flex items-center text-black hover:text-gray-700 transition duration-300"
         >
-          <IoMdArrowBack />
+       
           <IoArrowBackSharp className="text-2xl mr-1" />
           <span className="text-sm font-medium">Back</span>
         </button>
