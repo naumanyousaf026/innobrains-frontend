@@ -55,6 +55,14 @@ export default function StatePreview() {
 
   return (
     <div className="ml-[250px] mt-5 px-4">
+        <div>
+        <button
+            onClick={navigateToForm}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300"
+          >
+            {showData ? "Edit" : "Add New"}
+          </button>
+        </div>
       <Wave />
       <div className="bg-white rounded-lg shadow-md p-6 mt-4">
         <div className="flex justify-end space-x-4 mb-4">
@@ -67,12 +75,7 @@ export default function StatePreview() {
           </button>
 
           {/* Always visible Add/Edit button */}
-          <button
-            onClick={navigateToForm}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-300"
-          >
-            {showData ? "Edit" : "Add New"}
-          </button>
+        
         </div>
 
         {/* Status Message */}
