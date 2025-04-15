@@ -82,7 +82,7 @@ export default function StatePreview() {
           </div>
         ) : (
           <div className="mt-4 text-center">
-            <p className="text-gray-700">No stats data available. You can add new data using the button above.</p>
+         
           </div>
         )}
       </div>
