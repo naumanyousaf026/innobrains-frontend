@@ -64,8 +64,8 @@ export default function StatePreview() {
           </button>
         </div>
       <Wave />
-      <div className="bg-white rounded-lg shadow-md p-4 mt-2">
-        <div className=" space-x-4 mb-2">
+      <div className="bg-white rounded-lg shadow-md p-4 mt-1">
+        <div className="space-x-4 mb-2 px-4">
           {/* Always visible Delete button */}
           <button
             onClick={handleDelete}
