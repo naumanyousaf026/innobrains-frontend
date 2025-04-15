@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Wave = () => {
+const Wave = ({ className }) => { // Accept className prop
   const [statsData, setStatsData] = useState({
     headline: "We Provide A Wide Range Of Services",
     description: "We strive for creative and manufacturing synergy, utilizing each team member's individual skills and own unique perspective on design, collaborating to achieve exceptional results.",
@@ -32,7 +32,7 @@ const Wave = () => {
   }, []);
 
   return (
-    <section className="bg-[#103153] text-white py-20 px-6 md:px-16">
+    <section className={`bg-[#103153] text-white py-20 px-6 md:px-16 ${className}`}> {/* Use className prop */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-[70px] grid md:grid-cols-2 gap-8 items-center">
         {/* Left Side Content */}
         <div>

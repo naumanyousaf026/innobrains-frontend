@@ -97,11 +97,9 @@ export default function StatePreview() {
         </div>
       ) : (
         <>
-          {/* First Wave with w-[80%] */}
           <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
 
-          {/* Full Width Wave (Second usage if needed) */}
-          {/* <Wave className="w-full p-5 mt-5" /> */}
+     
 
           <div className="bg-white rounded-lg shadow-md p-4 mt-1">
             <div className="space-x-4 mb-2 px-4">
