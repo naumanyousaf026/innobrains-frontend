@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave";
 import StateForm from "./StateForm";
+import { IoArrowBackSharp } from "react-icons/io5"; // Back icon
 
 export default function StatePreview() {
   const [showData, setShowData] = useState(false);
@@ -10,7 +11,6 @@ export default function StatePreview() {
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
 
-  // Fetch stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -64,22 +64,31 @@ export default function StatePreview() {
   return (
     <div className="w-full mt-5 px-4">
       <div className="flex justify-end space-x-4 mb-4">
-        <button
-          onClick={toggleForm}
-          className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
-        >
-          {showData ? "Edit" : "Add New"}
-        </button>
+        {!showForm && (
+          <button
+            onClick={toggleForm}
+            className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
+          >
+            {showData ? "Edit" : "Add New"}
+          </button>
+        )}
       </div>
 
-      {/* Show Form */}
       {showForm ? (
         <div className="bg-white rounded-lg shadow-md p-4 mt-1">
+          {/* Back Button */}
+          <button
+            onClick={() => setShowForm(false)}
+            className="flex items-center text-sm text-gray-700 hover:text-black mb-4"
+          >
+            <IoArrowBackSharp className="mr-2 text-lg" />
+            Back
+          </button>
+
           <StateForm data={editData} onClose={handleFormClose} />
         </div>
       ) : (
         <>
-          {/* Show original content when form is hidden */}
           <Wave className="w-[80%] ml-auto p-5 mt-5 px-4" />
 
           <div className="bg-white rounded-lg shadow-md p-4 mt-1">
