@@ -14,6 +14,8 @@ import StepForm from "./StepForm";
 import UserSubmissions from "./UserSubmissions";
 import StateForm from "./StateForm";
 import State from "./State";
+import AboutForm from "./AboutForm";
+import About from "./AboutPreview";
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -57,7 +59,8 @@ const Admin = () => {
           {section == "StepForm" && <StepForm />}
           {section ==="stateForm" && <StateForm />}
           {section === "state" && <State />}
-
+{section === "AboutForm" && <AboutForm />}
+          {section === "About" && <About />}
         </div>
       </div>
     </div>
