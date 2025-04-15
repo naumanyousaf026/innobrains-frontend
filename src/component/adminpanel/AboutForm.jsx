@@ -6,6 +6,7 @@ export default function AboutForm() {
     description: "",
     aboutTitle: "",
     aboutDescription: "",
+    
   });
 
   const handleChange = (e) => {

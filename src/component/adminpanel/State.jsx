@@ -63,7 +63,7 @@ export default function StatePreview() {
             {showData ? "Edit" : "Add New"}
           </button>
         </div>
-      <Wave />
+      <Wave className='w-[80%] ml-auto p-5 mt-5 px-4' />
       <div className="bg-white rounded-lg shadow-md p-4 mt-1">
         <div className="space-x-4 mb-2 px-4">
           {/* Always visible Delete button */}
