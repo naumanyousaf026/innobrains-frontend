@@ -46,7 +46,7 @@ export default function StatePreview() {
 
   // Navigate to form page
   const navigateToForm = () => {
-    window.location.href = "/stats-form"; // Adjust the route as needed
+    window.location.href = "/StateForm"; // Adjust the route as needed
   };
 
   if (loading) {
