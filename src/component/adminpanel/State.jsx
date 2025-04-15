@@ -61,7 +61,7 @@ export default function StatePreview() {
           onClick={toggleForm} // Toggle form visibility on click
           className="bg-black text-white py-2 px-4 rounded-md transition duration-300"
         >
-          {showForm ? "Cancel" : "Add New"}
+          {showForm ? "Cancel" : showData ? "Edit" : "Add New"}
         </button>
       </div>
 
@@ -103,11 +103,11 @@ export default function StatePreview() {
           </div>
         ) : (
           <div className="mt-4 text-center">
-            <p className="text-gray-700">
-              {showData
-                ? "Stats data exists and can be edited or deleted."
-                : "No stats data available."}
-            </p>
+            {showData ? (
+              <p className="text-gray-700">Stats data exists and can be edited or deleted.</p>
+            ) : (
+              <p className="text-gray-700">No stats data available.</p>
+            )}
           </div>
         )}
       </div>
