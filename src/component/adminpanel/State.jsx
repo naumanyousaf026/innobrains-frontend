@@ -69,7 +69,7 @@ export default function StatePreview() {
           {/* Always visible Delete button */}
           <button
             onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-2 rounded-md transition duration-300"
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-10 rounded-md transition duration-300"
           >
             Delete
           </button>
