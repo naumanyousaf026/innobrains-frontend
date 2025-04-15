@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Wave from "../TopWave";
 import StateForm from "./StateForm";
+import { IoMdArrowBack } from "react-icons/io";
 import { IoAddSharp, IoArrowBackSharp } from "react-icons/io5";
 
 export default function StatePreview() {
@@ -84,6 +85,7 @@ export default function StatePreview() {
             onClick={toggleForm}
             className="absolute top-4 left-4 flex items-center text-black hover:text-gray-700 transition duration-300"
           >
+            <IoMdArrowBack />
             <IoArrowBackSharp className="text-2xl mr-1" />
             <span className="text-sm font-medium">Back</span>
           </button>
