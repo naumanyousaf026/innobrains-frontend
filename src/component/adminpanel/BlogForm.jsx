@@ -1,397 +1,205 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { PlusCircle, Trash2, MoveUp, MoveDown, Image as ImageIcon } from 'lucide-react';
+import React, { useState } from "react";
+import { FaHeading, FaListUl, FaAlignLeft, FaCloudUploadAlt } from "react-icons/fa";
+import { useDropzone } from "react-dropzone";
+import axios from "axios";
 
 const BlogForm = () => {
-  const [title, setTitle] = useState('');
-  const [duration, setDuration] = useState('');
-  const [category, setCategory] = useState('');
-  const [mainImage, setMainImage] = useState(null);
-  const [mainImagePreview, setMainImagePreview] = useState('');
-  const [content, setContent] = useState([
-    { type: 'paragraph', value: '' }
-  ]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [title, setTitle] = useState("");
+  const [duration, setDuration] = useState("");
+  const [category, setCategory] = useState("");
+  const [contentBlocks, setContentBlocks] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imageURL, setImageURL] = useState("");
+  const [showContentControls, setShowContentControls] = useState(false);
 
-  // Add a new content block
-  const addContentBlock = (type) => {
-    setContent([...content, { type, value: '' }]);
+  const handleAddBlock = (type) => {
+    setContentBlocks([...contentBlocks, { type, value: "" }]);
+    setShowContentControls(false);
   };
 
-  // Remove a content block
-  const removeContentBlock = (index) => {
-    const newContent = [...content];
-    newContent.splice(index, 1);
-    setContent(newContent);
+  const handleBlockChange = (index, value) => {
+    const updated = [...contentBlocks];
+    updated[index].value = value;
+    setContentBlocks(updated);
   };
 
-  // Move a content block up
-  const moveBlockUp = (index) => {
-    if (index === 0) return;
-    const newContent = [...content];
-    [newContent[index - 1], newContent[index]] = [newContent[index], newContent[index - 1]];
-    setContent(newContent);
+  const handleImageURLChange = (e) => {
+    setImageURL(e.target.value);
   };
 
-  // Move a content block down
-  const moveBlockDown = (index) => {
-    if (index === content.length - 1) return;
-    const newContent = [...content];
-    [newContent[index], newContent[index + 1]] = [newContent[index + 1], newContent[index]];
-    setContent(newContent);
+  const onDrop = (acceptedFiles) => {
+    setImageFiles(acceptedFiles);
   };
 
-  // Update content block value
-  const updateContentValue = (index, value) => {
-    const newContent = [...content];
-    newContent[index].value = value;
-    setContent(newContent);
-  };
-
-  // Handle image selection for content blocks
-  const handleContentImageChange = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateContentValue(index, reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle image URL input for content blocks
-  const handleImageUrlInput = (index, url) => {
-    updateContentValue(index, url);
-  };
-
-  // Handle main image change
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMainImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMainImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Submit the form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("duration", duration);
+    formData.append("category", category);
+    formData.append("content", JSON.stringify(contentBlocks));
+    imageFiles.forEach((file) => formData.append("images", file));
+    formData.append("imageURL", imageURL);
 
     try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('duration', duration);
-      formData.append('category', category);
-
-      // Process content blocks
-      const processedContent = content.map(item => {
-        // For image blocks that use DataURLs, we need to extract the file
-        if (item.type === 'image' && item.value.startsWith('data:image')) {
-          // Convert DataURL to Blob
-          const byteString = atob(item.value.split(',')[1]);
-          const mimeString = item.value.split(',')[0].split(':')[1].split(';')[0];
-          const ab = new ArrayBuffer(byteString.length);
-          const ia = new Uint8Array(ab);
-          for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-          }
-          const blob = new Blob([ab], { type: mimeString });
-          const fileName = `content-image-${Date.now()}.${mimeString.split('/')[1]}`;
-          formData.append('images', new File([blob], fileName, { type: mimeString }));
-          
-          // Return a placeholder to be replaced by the backend
-          return { type: 'image', value: fileName };
-        }
-        return item;
+      const res = await axios.post("https://apis.innobrains.pk/api/blog", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
-      formData.append('content', JSON.stringify(processedContent));
-
-      // Append main image if exists
-      if (mainImage) {
-        formData.append('images', mainImage);
-      }
-
-      const response = await axios.post('/api/blogs', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      setSuccess('Blog post created successfully!');
-      // Reset form or redirect
-      // window.location.href = `/blogs/${response.data._id}`;
+      alert("Blog uploaded successfully!");
+      console.log(res.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create blog post');
-    } finally {
-      setLoading(false);
+      console.error("Error uploading blog:", err);
+      alert("Failed to upload blog. Please check the console for more info.");
     }
   };
 
-  // Render different content block types
-  const renderContentBlock = (block, index) => {
-    switch (block.type) {
-      case 'heading':
-        return (
-          <div className="mb-4 flex items-center">
-            <input
-              type="text"
-              value={block.value}
-              onChange={(e) => updateContentValue(index, e.target.value)}
-              placeholder="Heading"
-              className="w-full p-2 text-xl font-bold border rounded"
-            />
-            {renderBlockControls(index)}
-          </div>
-        );
-      case 'subheading':
-        return (
-          <div className="mb-4 flex items-center">
-            <input
-              type="text"
-              value={block.value}
-              onChange={(e) => updateContentValue(index, e.target.value)}
-              placeholder="Subheading"
-              className="w-full p-2 text-lg font-semibold border rounded"
-            />
-            {renderBlockControls(index)}
-          </div>
-        );
-      case 'image':
-        return (
-          <div className="mb-4">
-            <div className="flex items-center mb-2">
-              <span className="font-medium">Image</span>
-              {renderBlockControls(index)}
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleContentImageChange(index, e)}
-                  className="p-2 border rounded"
-                />
-                <span className="text-gray-500">OR</span>
-                <input
-                  type="text"
-                  placeholder="Image URL"
-                  value={block.value.startsWith('data:image') ? '' : block.value}
-                  onChange={(e) => handleImageUrlInput(index, e.target.value)}
-                  className="flex-1 p-2 border rounded"
-                />
-              </div>
-              {block.value && (
-                <div className="mt-2">
-                  <img 
-                    src={block.value} 
-                    alt="Preview" 
-                    className="max-w-full max-h-64 object-contain border rounded"
-                    onError={(e) => {
-                      if (!block.value.startsWith('data:image')) {
-                        e.target.style.display = 'none';
-                      }
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      case 'paragraph':
-      default:
-        return (
-          <div className="mb-4 flex items-start">
-            <textarea
-              value={block.value}
-              onChange={(e) => updateContentValue(index, e.target.value)}
-              placeholder="Paragraph content"
-              className="w-full p-2 min-h-32 border rounded resize-y"
-              rows={4}
-            />
-            {renderBlockControls(index)}
-          </div>
-        );
-    }
-  };
-
-  // Render block controls (move up/down, delete)
-  const renderBlockControls = (index) => {
-    return (
-      <div className="flex flex-col ml-2 space-y-1">
-        <button
-          type="button"
-          onClick={() => moveBlockUp(index)}
-          disabled={index === 0}
-          className={`p-1 rounded-full ${index === 0 ? 'text-gray-300' : 'text-gray-600 hover:bg-gray-100'}`}
-          title="Move Up"
-        >
-          <MoveUp size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => moveBlockDown(index)}
-          disabled={index === content.length - 1}
-          className={`p-1 rounded-full ${index === content.length - 1 ? 'text-gray-300' : 'text-gray-600 hover:bg-gray-100'}`}
-          title="Move Down"
-        >
-          <MoveDown size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => removeContentBlock(index)}
-          className="p-1 text-red-500 rounded-full hover:bg-red-50"
-          title="Remove Block"
-        >
-          <Trash2 size={18} />
-        </button>
-      </div>
-    );
-  };
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: "image/*",
+  });
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Create New Blog Post</h1>
-      
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
+    <div className="max-w-3xl mx-auto p-8 my-4 bg-white shadow-lg rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">Create New Blog</h2>
+        <button
+          type="button"
+          onClick={() => setShowContentControls(!showContentControls)}
+          className="bg-[#103153] text-white px-6 py-3 rounded-full text-lg font-medium transition duration-300"
+        >
+          + Add Content Block
+        </button>
+      </div>
+
+      {showContentControls && (
+        <div className="flex gap-6 mb-6">
+          {[
+            {
+              icon: <FaHeading size={20} />,
+              label: "Heading",
+              type: "heading",
+              bg: "bg-[#1031530f]",
+            },
+            {
+              icon: <FaListUl size={20} />,
+              label: "Subheading",
+              type: "subheading",
+              bg: "bg-[#1031530f]",
+            },
+            {
+              icon: <FaAlignLeft size={20} />,
+              label: "Paragraph",
+              type: "paragraph",
+              bg: "bg-[#1031530f]",
+            },
+          ].map((btn, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleAddBlock(btn.type)}
+              className={`flex flex-col items-center justify-center w-24 h-24 rounded-xl ${btn.bg}`}
+            >
+              {btn.icon}
+              <span className="text-sm font-semibold nunito-sans mt-3">
+                {btn.label}
+              </span>
+            </button>
+          ))}
         </div>
       )}
-      
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-          {success}
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Info Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="col-span-3 md:col-span-1">
-            <label className="block mb-1 font-medium">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Reading Duration</label>
-            <input
-              type="text"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              placeholder="e.g. 5 min read"
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Category</label>
-            <input
-              type="text"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-        </div>
-        
-        {/* Featured Image */}
+
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-8">
         <div>
-          <label className="block mb-1 font-medium">Featured Image</label>
+          <label htmlFor="title" className="block text-lg font-semibold text-gray-700 mb-2">
+            Title
+          </label>
           <input
-            type="file"
-            accept="image/*"
-            onChange={handleMainImageChange}
-            className="w-full p-2 border rounded"
+            id="title"
+            type="text"
+            placeholder="Enter blog title"
+            className="w-full p-3 rounded-lg border border-gray-300 text-lg focus:ring-2 focus:ring-indigo-600"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
-          {mainImagePreview && (
-            <div className="mt-2">
-              <img 
-                src={mainImagePreview} 
-                alt="Featured preview" 
-                className="max-h-64 object-contain" 
-              />
-            </div>
-          )}
         </div>
-        
-        {/* Content Blocks */}
+
         <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-medium">Content</h2>
-            <div className="flex space-x-2">
-              <button
-                type="button"
-                onClick={() => addContentBlock('heading')}
-                className="flex items-center px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
-              >
-                <PlusCircle size={16} className="mr-1" /> Heading
-              </button>
-              <button
-                type="button"
-                onClick={() => addContentBlock('subheading')}
-                className="flex items-center px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
-              >
-                <PlusCircle size={16} className="mr-1" /> Subheading
-              </button>
-              <button
-                type="button"
-                onClick={() => addContentBlock('paragraph')}
-                className="flex items-center px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
-              >
-                <PlusCircle size={16} className="mr-1" /> Paragraph
-              </button>
-              <button
-                type="button"
-                onClick={() => addContentBlock('image')}
-                className="flex items-center px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
-              >
-                <ImageIcon size={16} className="mr-1" /> Image
-              </button>
-            </div>
-          </div>
-          
-          <div className="space-y-4 border p-4 rounded-md bg-gray-50">
-            {content.map((block, index) => (
-              <div key={index} className="bg-white p-3 rounded shadow-sm">
-                {renderContentBlock(block, index)}
-              </div>
-            ))}
-            
-            {content.length === 0 && (
-              <div className="text-center p-6 text-gray-500">
-                Add content blocks using the buttons above
-              </div>
-            )}
-          </div>
+          <label htmlFor="duration" className="block text-lg font-semibold text-gray-700 mb-2">
+            Duration (e.g., 5 min read)
+          </label>
+          <input
+            id="duration"
+            type="text"
+            placeholder="Enter estimated reading time"
+            className="w-full p-3 rounded-lg border border-gray-300 text-lg focus:ring-2 focus:ring-indigo-600"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            required
+          />
         </div>
-        
-        {/* Submit Button */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-          >
-            {loading ? 'Saving...' : 'Publish Blog'}
-          </button>
+
+        <div>
+          <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
+            Category
+          </label>
+          <input
+            id="category"
+            type="text"
+            placeholder="Enter blog category"
+            className="w-full p-3 rounded-lg border border-gray-300 text-lg focus:ring-2 focus:ring-indigo-600"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          />
         </div>
+
+        {contentBlocks.map((block, index) => (
+          <div key={index}>
+            <label className="block text-lg font-semibold text-gray-700 capitalize mb-2">
+              {block.type}
+            </label>
+            <input
+              type="text"
+              placeholder={`Enter ${block.type}`}
+              className="w-full p-3 rounded-lg border border-gray-300 text-lg focus:ring-2 focus:ring-indigo-600"
+              value={block.value}
+              onChange={(e) => handleBlockChange(index, e.target.value)}
+              required
+            />
+          </div>
+        ))}
+
+        <div>
+          <label htmlFor="imageURL" className="block text-lg font-semibold text-gray-700 mb-2">
+            Image URL (optional)
+          </label>
+          <input
+            id="imageURL"
+            type="url"
+            placeholder="Enter image URL"
+            className="w-full p-3 rounded-lg border border-gray-300 text-lg focus:ring-2 focus:ring-indigo-600"
+            value={imageURL}
+            onChange={handleImageURLChange}
+          />
+        </div>
+
+        <div
+          {...getRootProps()}
+          className="border-4 border-dashed border-[#103153] p-5 text-center rounded-lg transition-all"
+        >
+          <input {...getInputProps()} />
+          <FaCloudUploadAlt className="mx-auto text-4xl" />
+          <p className="text-lg text-gray-600">Drag & Drop or Click to Upload Images</p>
+          <p className="text-sm text-gray-500">Supports only image files</p>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#103153] text-white py-4 rounded-lg font-semibold text-lg transition-all"
+        >
+          Submit Blog Post
+        </button>
       </form>
     </div>
   );
