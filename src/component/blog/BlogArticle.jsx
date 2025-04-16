@@ -9,6 +9,7 @@ const BlogArticle = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedBlogs, setRelatedBlogs] = useState([]);
+  const [imageErrors, setImageErrors] = useState({});
   const defaultImagePath = "/images/default-image.jpg";
 
   useEffect(() => {
@@ -56,9 +57,45 @@ const BlogArticle = () => {
     }
   };
 
+  const handleImageError = (id) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [id]: true
+    }));
+  };
+
+  // Check if blog has valid image
+  const hasValidImage = (blog) => {
+    if (!blog) return false;
+    
+    // Check if blog has images array
+    if (blog.images && blog.images.length > 0) {
+      return true;
+    }
+    
+    // Look for first image in content blocks
+    if (blog.content && Array.isArray(blog.content)) {
+      const imageBlock = blog.content.find(block => block.type === "image");
+      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
+        return true;
+      }
+    }
+    
+    // If image property exists (for backward compatibility)
+    if (blog.image) {
+      return true;
+    }
+    
+    return false;
+  };
+
   // Get blog image using the same strategy as in Blog component
   const getBlogImage = (blog) => {
     if (!blog) return defaultImagePath;
+    
+    if (imageErrors[blog._id]) {
+      return defaultImagePath;
+    }
     
     // Check if blog has images array
     if (blog.images && blog.images.length > 0) {
@@ -108,16 +145,17 @@ const BlogArticle = () => {
           ? null // These should be replaced with actual paths from the server
           : block.value;
           
-        return imageUrl ? (
+        if (!imageUrl) return null;
+        
+        const imageId = `content-image-${index}`;
+        
+        return !imageErrors[imageId] ? (
           <div key={index} className="my-4">
             <img
               src={imageUrl}
               alt="Blog content"
               className="max-w-full h-auto rounded-lg mx-auto"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultImagePath;
-              }}
+              onError={() => handleImageError(imageId)}
             />
           </div>
         ) : null;
@@ -181,18 +219,17 @@ const BlogArticle = () => {
               </div>
             </div>
 
-            {/* Featured Image */}
-            <div className="mb-8">
-              <img
-                src={getBlogImage(blog)}
-                alt={blog.title}
-                className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = defaultImagePath;
-                }}
-              />
-            </div>
+            {/* Featured Image - Only show if valid and not errored */}
+            {hasValidImage(blog) && !imageErrors[blog._id] && (
+              <div className="mb-8">
+                <img
+                  src={getBlogImage(blog)}
+                  alt={blog.title}
+                  className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
+                  onError={() => handleImageError(blog._id)}
+                />
+              </div>
+            )}
 
             {/* Article Content */}
             <article className="prose lg:prose-xl prose-slate max-w-none">
@@ -250,26 +287,30 @@ const BlogArticle = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Related Articles</h3>
             {relatedBlogs.length > 0 ? (
               <ul className="space-y-5">
-                {relatedBlogs.map((relatedBlog) => (
-                  <li key={relatedBlog._id} className="flex items-center gap-4">
-                    <img 
-                      src={getBlogImage(relatedBlog)} 
-                      alt={relatedBlog.title} 
-                      className="w-16 h-16 rounded-lg object-cover" 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = defaultImagePath;
-                      }}
-                    />
-                    <Link 
-                      to={`/blog/${relatedBlog._id}`}
-                      state={{ blogData: relatedBlog }}
-                      className="text-blue-700 font-medium hover:underline"
-                    >
-                      {relatedBlog.title}
-                    </Link>
-                  </li>
-                ))}
+                {relatedBlogs.map((relatedBlog) => {
+                  const blogId = relatedBlog._id;
+                  const hasImage = hasValidImage(relatedBlog) && !imageErrors[blogId];
+                  
+                  return (
+                    <li key={blogId} className="flex items-center gap-4">
+                      {hasImage && (
+                        <img 
+                          src={getBlogImage(relatedBlog)} 
+                          alt={relatedBlog.title} 
+                          className="w-16 h-16 rounded-lg object-cover" 
+                          onError={() => handleImageError(blogId)}
+                        />
+                      )}
+                      <Link 
+                        to={`/blog/${blogId}`}
+                        state={{ blogData: relatedBlog }}
+                        className={`text-blue-700 font-medium hover:underline ${hasImage ? '' : 'flex-1'}`}
+                      >
+                        {relatedBlog.title}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <ul className="space-y-5">
