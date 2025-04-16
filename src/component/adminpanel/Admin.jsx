@@ -21,6 +21,8 @@ import ContactInfo from "../contact/ContactInfo";
 import ContactInfoManager from "./ContactInfoManager";
 import GrowthSteps from "../ourservices/GrowthSteps";
 import GrowthStepsManager from "./GrowthStepsManager";
+import TechSolutionsManager from "./TechSolutionsManager";
+
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,7 +66,7 @@ const Admin = () => {
           {section == "StepForm" && <GrowthStepsManager />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
-          {section === "AboutForm" && <AboutForm />}
+          {section === "AboutForm" &&<TechSolutionsManager />}
           {section === "About" && <About />}
         </div>
       </div>
