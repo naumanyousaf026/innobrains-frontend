@@ -50,7 +50,7 @@ const BlogSection = ({ limit }) => {
       return `https://apis.innobrains.pk${blog.image}`;
     }
     
-    return defaultImagePath;
+    return null; // Return null if no image found instead of default
   };
 
   // Get blog description using the same strategy as in Blog component
@@ -89,47 +89,54 @@ const BlogSection = ({ limit }) => {
           {loading ? (
             <div className="text-center w-full">Loading blogs...</div>
           ) : (
-            displayBlogs.map((blog, index) => (
-              <div
-                key={index}
-                className="w-full md:w-1/3 px-4 mb-8"
-              >
-                <div className="h-full bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105">
-                  <div className="w-full aspect-[4/4] overflow-hidden">
-                    <img
-                      className="w-full h-full object-cover"
-                      src={getBlogImage(blog)}
-                      alt={blog.title || "Blog Post"}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = defaultImagePath;
-                      }}
-                    />
-                  </div>
-                  <div className="p-6 bg-[#FDFDFD]">
-                    <div className="text-sm font-semibold text-[#103153] mb-2">
-                      <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
-                      <span className="ms-2 poppins-thin">{blog.duration}</span>
+            displayBlogs.map((blog, index) => {
+              const blogImage = getBlogImage(blog);
+              return (
+                <div
+                  key={index}
+                  className="w-full md:w-1/3 px-4 mb-8"
+                >
+                  <div className="h-full bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105">
+                    {blogImage ? (
+                      <div className="w-full h-64 overflow-hidden">
+                        <img
+                          className="w-full h-full object-cover"
+                          src={blogImage}
+                          alt={blog.title || "Blog Post"}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = "none";
+                            e.target.parentElement.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                    <div className="p-6 bg-[#FDFDFD]">
+                      <div className="text-sm font-semibold text-[#103153] mb-2">
+                        <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
+                        <span className="ms-2 poppins-thin">{blog.duration}</span>
+                      </div>
+                      <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                        {blog.title}
+                      </h3>
+                      <p className="text-gray-600 poppins-thin mb-4">
+                        {getBlogDescription(blog)}
+                      </p>
+                      <Link
+                        to={`/blog/${blog._id || blog.id}`}
+                        state={{ blogData: blog }}
+                        className="text-[#103153] hover:text-indigo-800 font-semibold"
+                        aria-label={`Read more about ${blog.title}`}
+                      >
+                        Read more 
+                        <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                      </Link>
                     </div>
-                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                      {blog.title}
-                    </h3>
-                    <p className="text-gray-600 poppins-thin mb-4">
-                      {getBlogDescription(blog)}
-                    </p>
-                    <Link
-                      to={`/blog/${blog._id || blog.id}`}
-                      state={{ blogData: blog }}
-                      className="text-[#103153] hover:text-indigo-800 font-semibold"
-                      aria-label={`Read more about ${blog.title}`}
-                    >
-                      Read more 
-                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </Link>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         {/* Read All Button - only show when limit is set and there are more blogs than the limit */}
