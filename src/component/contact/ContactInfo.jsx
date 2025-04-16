@@ -6,11 +6,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ContactInfo = ({widthClass = "w-full"}) => {
+const ContactInfo = ({ className = "" }) => {
   const [contactInfo, setContactInfo] = useState(null);
 
   useEffect(() => {
-    fetch("https://apis.innobrains.pk/api/contact-info") // Change the URL as needed
+    fetch("https://apis.innobrains.pk/api/contact-info")
       .then((response) => response.json())
       .then((data) => {
         setContactInfo(data);
@@ -21,13 +21,17 @@ const ContactInfo = ({widthClass = "w-full"}) => {
   }, []);
 
   if (!contactInfo) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full flex justify-center items-center py-20">
+        <p className="text-gray-500">Loading contact info...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex bg-[#F9FAFB] justify-center items-center px-4">
-      <div className={ ` ${widthClass} my-24  grid grid-cols-1 md:grid-cols-3 gap-12 text-center`}>
-        {/* Email Section */}
+    <div className={`flex bg-[#F9FAFB] justify-center items-center px-4 ${className}`}>
+      <div className="w-full max-w-6xl my-24 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+        {/* Email */}
         <div className="flex flex-col items-center">
           <FontAwesomeIcon
             icon={faEnvelope}
@@ -35,19 +39,16 @@ const ContactInfo = ({widthClass = "w-full"}) => {
             aria-label="Email Icon"
           />
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Email</h3>
-          <p className="text-gray-500 mb-2">
-            Our friendly team is here to help.
-          </p>
+          <p className="text-gray-500 mb-2">Our friendly team is here to help.</p>
           <a
             href={`mailto:${contactInfo.email}`}
             className="text-[#103153] font-medium hover:underline transition duration-300"
-            aria-label={`Email ${contactInfo.email}`}
           >
             {contactInfo.email}
           </a>
         </div>
 
-        {/* Location Section */}
+        {/* Location */}
         <div className="flex flex-col items-center">
           <FontAwesomeIcon
             icon={faLocationDot}
@@ -59,7 +60,7 @@ const ContactInfo = ({widthClass = "w-full"}) => {
           <p className="text-[#103153] font-medium">{contactInfo.location}</p>
         </div>
 
-        {/* Phone Section */}
+        {/* Phone */}
         <div className="flex flex-col items-center">
           <FontAwesomeIcon
             icon={faPhone}
@@ -71,7 +72,6 @@ const ContactInfo = ({widthClass = "w-full"}) => {
           <a
             href={`tel:${contactInfo.phone}`}
             className="text-[#103153] font-medium hover:underline transition duration-300"
-            aria-label={`Call ${contactInfo.phone}`}
           >
             {contactInfo.phone}
           </a>
