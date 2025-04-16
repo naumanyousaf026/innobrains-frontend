@@ -105,7 +105,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen lg:w-[80%] ml-auto bg-gray-100 p-6">
+    <div className="flex items-center justify-center min-h-screen w-full ml-auto bg-gray-100 p-6">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-lg w-full"
