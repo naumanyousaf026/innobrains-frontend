@@ -29,8 +29,8 @@ const ContactInfo = ({ className = "" }) => {
   }
 
   return (
-    <div className={`flex bg-[#F9FAFB] justify-center items-center px-4 ${className}`}>
-      <div className="w-full max-w-6xl my-24 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+    <div className={`w-full bg-[#F9FAFB] px-4 py-20 ${className}`}>
+      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
         {/* Email */}
         <div className="flex flex-col items-center">
           <FontAwesomeIcon
