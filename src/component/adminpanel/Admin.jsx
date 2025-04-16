@@ -9,7 +9,7 @@ import Team from "./Team";
 import Service from "./Service";
 import Visitor from "./Visitor";
 import AchievementForm from "./AchievementForm";
-// import ContactInfoForm from "./ContactInfoForm";
+import ContactInfoForm from "./ContactInfoForm";
 import StepForm from "./StepForm";
 import UserSubmissions from "./UserSubmissions";
 import StateForm from "./StateForm";
@@ -57,7 +57,19 @@ const Admin = () => {
           {section === "team" && <Team />}
           {section === "userSubmissions" && <UserSubmissions />}
           {section === "AchievementForm" && <Achievement />}
-          {section === "ContactInfoForm" && (<ContactInfo className="ml-auto w-[80%]" /> )}
+          {section === "ContactInfoForm" && (
+  <div className="w-[80%] ml-auto">
+    <button
+      className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      onClick={() => setShowForm((prev) => !prev)}
+    >
+      {showForm ? "Show Contact Info" : "Edit Contact Info"}
+    </button>
+
+    {showForm ? <ContactInfoForm /> : <ContactInfo />}
+  </div>
+)}
+
           {section == "StepForm" && <StepForm />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
