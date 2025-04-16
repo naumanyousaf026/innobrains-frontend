@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import ContactInfoForm from "./ContactInfoForm";
-import ContactInfo from "../contact/ContactInfo";
+import GrowthStepForm from "./StepForm";
+import GrowthSteps from "../ourservices/GrowthSteps";
 
-const ContactInfoManager = () => {
+const GrowthStepsManager = () => {
   const [showForm, setShowForm] = useState(false);
 
   const handleToggle = () => {
@@ -17,23 +17,23 @@ const ContactInfoManager = () => {
     <div className="min-h-screen p-6 bg-gray-100 lg:w-[80%] ml-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">
-          {showForm ? "Edit Contact Info" : "Contact Info"}
+          {showForm ? "Add Growth Step" : "Growth Steps"}
         </h1>
         <button
           onClick={handleToggle}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          {showForm ? "Show Contact Info" : "Edit Contact Info"}
+          {showForm ? "Show Growth Steps" : "Add Growth Step"}
         </button>
       </div>
 
       {showForm ? (
-        <ContactInfoForm onClose={handleFormClose} />
+        <GrowthStepForm onClose={handleFormClose} />
       ) : (
-        <ContactInfo widthClass="w-[80%] ml-auto" />
+        <GrowthSteps widthClass="w-[80%] ml-auto" />
       )}
     </div>
   );
 };
 
-export default ContactInfoManager;
+export default GrowthStepsManager;
