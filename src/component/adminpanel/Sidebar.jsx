@@ -37,13 +37,7 @@ const FormsButton = ({ setSection }) => {
         <ChartBarIcon className="h-6 w-6" />
         GrowthStep
       </button>
-      <button
-        onClick={() => setSection("StateForm")}
-        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
-      >
-        <ChartBarIcon className="h-6 w-6" />
-        StateForm
-      </button>
+
       <button
         onClick={() => setSection("AboutForm")}
         className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
