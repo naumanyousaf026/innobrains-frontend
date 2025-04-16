@@ -25,7 +25,7 @@ export default function StateForm({ onClose }) {
   };
 
   return (
-    <div className="w-[80%] ml-auto flex justify-center items-center p-6">
+    <div className=" flex justify-center items-center p-6">
       <div className="w-full bg-white rounded-xl p-8 border border-gray-300 flex flex-col justify-between relative">
         {/* Back Button */}
         <button
