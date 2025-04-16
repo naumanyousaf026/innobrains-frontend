@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import AchievementForm from "./AchievementForm";
+import Achievements from "../aboutus/Achievements";
 
 const Achievement = () => {
   const [achievements, setAchievements] = useState([]);
@@ -95,6 +96,8 @@ const Achievement = () => {
         <AchievementForm achievement={editAchievement} onClose={handleFormClose} />
       ) : (
         <>
+
+        <Achievements />
           <div className="max-w-7xl mx-auto bg-white shadow-md rounded-lg">
             <div className="overflow-x-auto">
               <table className="table-auto w-full text-left">
