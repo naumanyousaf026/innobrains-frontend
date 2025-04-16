@@ -57,7 +57,7 @@ const Admin = () => {
           {section === "team" && <Team />}
           {section === "userSubmissions" && <UserSubmissions />}
           {section === "AchievementForm" && <Achievement />}
-          {section === "ContactInfoForm" && <ContactInfo className='w-[80%] ml-auto' />}
+          {section === "ContactInfoForm" && <ContactInfo widthClass="w-[80%] ml-auto" />}
           {section == "StepForm" && <StepForm />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
