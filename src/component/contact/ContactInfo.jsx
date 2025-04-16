@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ContactInfo = () => {
+const ContactInfo = ({widthClass = "w-full"}) => {
   const [contactInfo, setContactInfo] = useState(null);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const ContactInfo = () => {
 
   return (
     <div className="flex bg-[#F9FAFB] justify-center items-center px-4">
-      <div className="max-w-6xl my-24 w-full grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+      <div className={ ` ${widthClass} my-24  grid grid-cols-1 md:grid-cols-3 gap-12 text-center`}>
         {/* Email Section */}
         <div className="flex flex-col items-center">
           <FontAwesomeIcon
