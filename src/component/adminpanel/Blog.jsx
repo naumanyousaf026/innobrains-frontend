@@ -4,6 +4,9 @@ import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import BlogForm from "./BlogForm";
 
 const Blog = () => {
+  // Define a default image path to use when image loading fails
+  const defaultImagePath = "/images/default-image.jpg"; // Update this path to your actual default image
+  
   const [blogs, setBlogs] = useState([]); // Initialize as empty array
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 9; // Total blogs per page
@@ -117,11 +120,12 @@ const Blog = () => {
                       className="bg-white rounded-lg shadow-md p-4 flex flex-col"
                     >
                       <img
-                        src={`https://apis.innobrains.pk${blog.image}`}
-                        alt={blog.title}
+                        src={blog.image ? `https://apis.innobrains.pk${blog.image}` : defaultImagePath}
+                        alt={blog.title || "Blog image"}
                         className="w-full h-32 object-cover rounded-md"
                         onError={(e) => {
-                          e.target.src = "/images/default-image.jpg";
+                          e.target.onerror = null; // Prevent infinite loop
+                          e.target.src = defaultImagePath;
                         }}
                       />
                       <h2 className="text-lg font-semibold mt-2">{blog.title}</h2>
