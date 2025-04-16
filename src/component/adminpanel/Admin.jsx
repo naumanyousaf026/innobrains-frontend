@@ -17,13 +17,9 @@ import State from "./State";
 import AboutForm from "./AboutForm";
 import About from "./AboutPreview";
 import Achievement from "./Achievement";
-import ContactInfo from "../contact/ContactInfo";
-
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showForm, setShowForm] = useState(false); // <-- Add toggle state
-
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -43,6 +39,7 @@ const Admin = () => {
         isOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
       />
+      {/* Overlay when sidebar is open */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black opacity-30 z-10"
@@ -51,7 +48,7 @@ const Admin = () => {
       )}
       <div className="flex-1">
         <Header setSidebarOpen={toggleSidebar} />
-        <div className="p-5 shadow-md flex flex-col gap-5">
+        <div className="  p-5 shadow-md flex">
           {section === "dashboard" && <Dashboard />}
           {section === "products" && <ProductSection />}
           {section === "services" && <Service />}
@@ -59,25 +56,8 @@ const Admin = () => {
           {section === "team" && <Team />}
           {section === "userSubmissions" && <UserSubmissions />}
           {section === "AchievementForm" && <Achievement />}
-          {section === "ContactInfoForm" && (
-            <div className="w-full">
-              {/* Toggle Button */}
-              <button
-                onClick={() => setShowForm((prev) => !prev)}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-fit mb-4"
-              >
-                {showForm ? "Show Contact Info" : "Edit Contact Info"}
-              </button>
-
-              {/* Conditional Rendering */}
-              {showForm ? (
-                <ContactInfoForm /> // Replace with your actual form
-              ) : (
-                <ContactInfo widthClass="w-[80%] ml-auto" />
-              )}
-            </div>
-          )}
-          {section === "StepForm" && <StepForm />}
+          {section === "ContactInfoForm" && <ContactInfoForm />}
+          {section == "StepForm" && <StepForm />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
           {section === "AboutForm" && <AboutForm />}

@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { faEdit, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import AchievementForm from "./AchievementForm";
 import Achievements from "../aboutus/Achievements";
 
 const Achievement = () => {
   const [achievements, setAchievements] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const achievementsPerPage = 9;
   const [showForm, setShowForm] = useState(false);
   const [editAchievement, setEditAchievement] = useState(null);
 
@@ -17,52 +15,20 @@ const Achievement = () => {
 
   const fetchAchievements = async () => {
     try {
-      const response = await fetch("https://apis.innobrains.pk/api/achievement");
-      if (!response.ok) {
-        throw new Error("Failed to fetch achievements");
-      }
-      const data = await response.json();
+      const res = await fetch("https://apis.innobrains.pk/api/achievement");
+      const data = await res.json();
       setAchievements(data);
-    } catch (error) {
-      console.error("Error fetching achievements:", error);
+    } catch (err) {
+      console.error("Error fetching achievements:", err);
     }
   };
-
-  const handleDelete = async (achievementId) => {
-    try {
-      const response = await fetch(
-        `https://apis.innobrains.pk/api/achievement/${achievementId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        setAchievements((prevAchievements) =>
-          prevAchievements.filter((achievement) => achievement._id !== achievementId)
-        );
-      } else {
-        throw new Error("Failed to delete achievement");
-      }
-    } catch (error) {
-      console.error("Error deleting achievement:", error);
-    }
-  };
-
-  const indexOfLastAchievement = currentPage * achievementsPerPage;
-  const indexOfFirstAchievement = indexOfLastAchievement - achievementsPerPage;
-  const currentAchievements = achievements.slice(
-    indexOfFirstAchievement,
-    indexOfLastAchievement
-  );
-  const totalPages = Math.ceil(achievements.length / achievementsPerPage);
 
   const handleEdit = (achievement) => {
     setEditAchievement(achievement);
     setShowForm(true);
   };
 
-  const handleAddNewAchievement = () => {
+  const handleAddNew = () => {
     setEditAchievement(null);
     setShowForm(true);
   };
@@ -84,10 +50,10 @@ const Achievement = () => {
         </h1>
         {!showForm && (
           <button
-            onClick={handleAddNewAchievement}
+            onClick={handleAddNew}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Add New Achievement
+            Add New
           </button>
         )}
       </div>
@@ -95,9 +61,7 @@ const Achievement = () => {
       {showForm ? (
         <AchievementForm achievement={editAchievement} onClose={handleFormClose} />
       ) : (
-        <>
-        <Achievements />
-        </>
+        <Achievements onEdit={handleEdit} data={achievements} />
       )}
     </div>
   );
