@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import BlogForm from "./BlogForm";
+
 const Blog = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]); // Initialize as empty array
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 9; // Total blogs per page
   const [showForm, setShowForm] = useState(false);
@@ -20,17 +21,13 @@ const Blog = () => {
         throw new Error("Failed to fetch blogs");
       }
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setBlogs(data);
-      } else {
-        setBlogs([]); // If data is not an array, set blogs to an empty array
-      }
+      // Ensure that data is an array, otherwise set to empty array
+      setBlogs(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching blogs:", error);
       setBlogs([]); // Set blogs to an empty array on error
     }
   };
-  
 
   const handleDelete = async (blogId) => {
     try {
@@ -52,10 +49,9 @@ const Blog = () => {
 
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = blogs && blogs.length ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) : [];
+  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  const totalPages = blogs && blogs.length ? Math.ceil(blogs.length / blogsPerPage) : 0;
-
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
 
   const handleEdit = (blog) => {
     setEditBlog(blog);
