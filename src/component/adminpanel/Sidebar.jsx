@@ -12,7 +12,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
-// Main button with sub-buttons always displayed
 const FormsButton = ({ setSection }) => {
   return (
     <div className="flex flex-col ml-3 gap-2">
@@ -37,7 +36,6 @@ const FormsButton = ({ setSection }) => {
         <ChartBarIcon className="h-6 w-6" />
         GrowthStep
       </button>
-
       <button
         onClick={() => setSection("AboutForm")}
         className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
@@ -52,10 +50,11 @@ const FormsButton = ({ setSection }) => {
 const Sidebar = ({ setSection, handleLogout, isOpen }) => {
   return (
     <div
-      className={`fixed left-0 top-0 h-full bg-gray-100 p-4 z-20 ${
+      className={`fixed left-0 top-0 h-full bg-gray-100 p-4 z-20 overflow-y-auto ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:w-[20%]`}
+      } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-[20%]`}
     >
+      {/* Logo */}
       <div className="mb-8">
         <img
           src="https://portal.innobrains.pk/files/system/_file64d57376183f5-site-logo.png"
@@ -64,6 +63,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
         />
       </div>
 
+      {/* Navigation Links */}
       <div className="flex flex-col gap-2">
         <button
           onClick={() => setSection("dashboard")}
@@ -91,7 +91,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
           className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
         >
           <BriefcaseIcon className="h-6 w-6" />
-          state
+          State
         </button>
         <button
           onClick={() => setSection("blogs")}
@@ -107,14 +107,15 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
           <UserGroupIcon className="h-6 w-6" />
           Team
         </button>
-<button
+        <button
           onClick={() => setSection("userSubmissions")}
           className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
         >
           <UserGroupIcon className="h-6 w-6" />
-          Users Contact     
-</button>
-        {/* Form buttons are always visible with consistent size and alignment */}
+          Users Contact
+        </button>
+
+        {/* Form Section */}
         <FormsButton setSection={setSection} />
 
         {/* Logout Button */}
