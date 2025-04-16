@@ -23,7 +23,7 @@ export default function AboutForm() {
   };
 
   return (
-    <div className="w-[80%] ml-auto flex justify-center items-center p-6">
+    <div className=" flex justify-center items-center p-6">
       <div className="w-full bg-white rounded-xl p-8 border border-gray-300 flex flex-col justify-between">
         <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center">
           About Section Form
