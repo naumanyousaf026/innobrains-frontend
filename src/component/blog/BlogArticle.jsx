@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-// import blogDefaultImg from "../../images/WordPress.png";
 import Header from "../Header";
 import Footer from "../Footer";
 
@@ -10,6 +9,7 @@ const BlogArticle = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedBlogs, setRelatedBlogs] = useState([]);
+  const defaultImagePath = "/images/default-image.jpg";
 
   useEffect(() => {
     // First check if blog data was passed via navigation state
@@ -48,11 +48,81 @@ const BlogArticle = () => {
       const data = await response.json();
       // Filter out current blog and limit to 3
       const filteredData = data
-        .filter(item => item.id !== id)
+        .filter(item => item._id !== id)
         .slice(0, 3);
       setRelatedBlogs(filteredData);
     } catch (error) {
       console.error("Failed to fetch related blogs", error);
+    }
+  };
+
+  // Get blog image using the same strategy as in Blog component
+  const getBlogImage = (blog) => {
+    if (!blog) return defaultImagePath;
+    
+    // Check if blog has images array
+    if (blog.images && blog.images.length > 0) {
+      return `https://apis.innobrains.pk${blog.images[0]}`;
+    }
+    
+    // Look for first image in content blocks
+    if (blog.content && Array.isArray(blog.content)) {
+      const imageBlock = blog.content.find(block => block.type === "image");
+      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
+        return imageBlock.value;
+      }
+    }
+    
+    // If image property exists (for backward compatibility)
+    if (blog.image) {
+      return `https://apis.innobrains.pk${blog.image}`;
+    }
+    
+    return defaultImagePath;
+  };
+
+  // Render content blocks based on their type (similar to Blog component)
+  const renderContentBlock = (block, index) => {
+    switch (block.type) {
+      case "heading":
+        return (
+          <h2 key={index} className="text-2xl font-bold my-4">
+            {block.value}
+          </h2>
+        );
+      case "subheading":
+        return (
+          <h3 key={index} className="text-xl font-semibold my-3 text-gray-700">
+            {block.value}
+          </h3>
+        );
+      case "paragraph":
+        return (
+          <p key={index} className="my-3 text-gray-600 leading-relaxed">
+            {block.value}
+          </p>
+        );
+      case "image":
+        // Handle both uploaded images and image URLs
+        const imageUrl = block.value.startsWith("contentImage_")
+          ? null // These should be replaced with actual paths from the server
+          : block.value;
+          
+        return imageUrl ? (
+          <div key={index} className="my-4">
+            <img
+              src={imageUrl}
+              alt="Blog content"
+              className="max-w-full h-auto rounded-lg mx-auto"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultImagePath;
+              }}
+            />
+          </div>
+        ) : null;
+      default:
+        return null;
     }
   };
 
@@ -93,7 +163,8 @@ const BlogArticle = () => {
                 {blog.title}
               </h1>
               <p className="text-lg text-gray-700 mt-4">
-                {blog.description}
+                {blog.description || (blog.content && Array.isArray(blog.content) && 
+                  blog.content.find(block => block.type === "paragraph")?.value)}
               </p>
             </div>
 
@@ -113,22 +184,28 @@ const BlogArticle = () => {
             {/* Featured Image */}
             <div className="mb-8">
               <img
-                src={blog.image ? `https://apis.innobrains.pk${blog.image}` : blogDefaultImg}
+                src={getBlogImage(blog)}
                 alt={blog.title}
                 className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultImagePath;
+                }}
               />
             </div>
 
             {/* Article Content */}
             <article className="prose lg:prose-xl prose-slate max-w-none">
-              {/* If blog.content exists, use it, otherwise use static content */}
-              {blog.content ? (
-                <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+              {/* If blog has content blocks, render them */}
+              {blog.content && Array.isArray(blog.content) ? (
+                <div>
+                  {blog.content.map(renderContentBlock)}
+                </div>
               ) : (
                 <>
                   <h2>Understanding {blog.title}</h2>
                   <p>
-                    {blog.description}
+                    {blog.description || "This is a comprehensive article about the topic."}
                   </p>
 
                   <h3>Key Points</h3>
@@ -174,14 +251,18 @@ const BlogArticle = () => {
             {relatedBlogs.length > 0 ? (
               <ul className="space-y-5">
                 {relatedBlogs.map((relatedBlog) => (
-                  <li key={relatedBlog.id} className="flex items-center gap-4">
+                  <li key={relatedBlog._id} className="flex items-center gap-4">
                     <img 
-                      src={relatedBlog.image ? `https://apis.innobrains.pk${relatedBlog.image}` : blogDefaultImg} 
+                      src={getBlogImage(relatedBlog)} 
                       alt={relatedBlog.title} 
                       className="w-16 h-16 rounded-lg object-cover" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultImagePath;
+                      }}
                     />
                     <Link 
-                      to={`/blog/${relatedBlog.id}`}
+                      to={`/blog/${relatedBlog._id}`}
                       state={{ blogData: relatedBlog }}
                       className="text-blue-700 font-medium hover:underline"
                     >
@@ -193,19 +274,19 @@ const BlogArticle = () => {
             ) : (
               <ul className="space-y-5">
                 <li className="flex items-center gap-4">
-                  {/* <img src={blogDefaultImg} alt="Front-End" className="w-16 h-16 rounded-lg object-cover" /> */}
+                  <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
                   <a href="/blog/article-1" className="text-blue-700 font-medium hover:underline">
                     Future of Front-End Development in 2025
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
-                  {/* <img src={blogDefaultImg} alt="Back-End" className="w-16 h-16 rounded-lg object-cover" /> */}
+                  <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
                   <a href="/blog/article-2" className="text-blue-700 font-medium hover:underline">
                     Back-End Technologies You Need to Know
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
-                  {/* <img src={blogDefaultImg} alt="AI" className="w-16 h-16 rounded-lg object-cover" /> */}
+                  <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
                   <a href="/blog/article-3" className="text-blue-700 font-medium hover:underline">
                     How AI is Changing Web Development
                   </a>

@@ -7,6 +7,7 @@ import '../App.css';
 const BlogSection = ({ limit }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const defaultImagePath = "/images/default-image.jpg";
   // Check if we should show limited blogs or all
   const shouldLimitBlogs = limit !== undefined;
 
@@ -28,6 +29,46 @@ const BlogSection = ({ limit }) => {
 
     fetchBlogs();
   }, []);
+
+  // Get blog image using the same strategy as in Blog component
+  const getBlogImage = (blog) => {
+    // Check if blog has images array
+    if (blog.images && blog.images.length > 0) {
+      return `https://apis.innobrains.pk${blog.images[0]}`;
+    }
+    
+    // Look for first image in content blocks if available
+    if (blog.content && Array.isArray(blog.content)) {
+      const imageBlock = blog.content.find(block => block.type === "image");
+      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
+        return imageBlock.value;
+      }
+    }
+    
+    // If image property exists (for backward compatibility)
+    if (blog.image) {
+      return `https://apis.innobrains.pk${blog.image}`;
+    }
+    
+    return defaultImagePath;
+  };
+
+  // Get blog description using the same strategy as in Blog component
+  const getBlogDescription = (blog) => {
+    if (blog.description) {
+      return blog.description;
+    }
+    
+    if (blog.content && Array.isArray(blog.content)) {
+      const paragraphBlock = blog.content.find(block => block.type === "paragraph");
+      if (paragraphBlock) {
+        const text = paragraphBlock.value;
+        return text.length > 120 ? text.substring(0, 120) + "..." : text;
+      }
+    }
+    
+    return "No description available";
+  };
 
   // Determine which blogs to display based on whether limit is provided
   const displayBlogs = shouldLimitBlogs ? blogs.slice(0, limit) : blogs;
@@ -57,8 +98,12 @@ const BlogSection = ({ limit }) => {
                   <div className="w-full aspect-[4/4] overflow-hidden">
                     <img
                       className="w-full h-full object-cover"
-                      src={`https://apis.innobrains.pk${blog.image}`}
+                      src={getBlogImage(blog)}
                       alt={blog.title || "Blog Post"}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultImagePath;
+                      }}
                     />
                   </div>
                   <div className="p-6 bg-[#FDFDFD]">
@@ -70,10 +115,10 @@ const BlogSection = ({ limit }) => {
                       {blog.title}
                     </h3>
                     <p className="text-gray-600 poppins-thin mb-4">
-                      {blog.description}
+                      {getBlogDescription(blog)}
                     </p>
                     <Link
-                      to={`/blog/${blog.id}`}
+                      to={`/blog/${blog._id || blog.id}`}
                       state={{ blogData: blog }}
                       className="text-[#103153] hover:text-indigo-800 font-semibold"
                       aria-label={`Read more about ${blog.title}`}
