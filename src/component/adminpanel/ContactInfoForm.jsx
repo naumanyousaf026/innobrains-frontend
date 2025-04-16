@@ -44,7 +44,7 @@ function ContactInfoForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ml-auto bg-[#ECECEE] lg:w-[80%] p-6">
+    <div className="flex items-center justify-center min-h-screen ml-auto bg-[#ECECEE] w-full p-6">
       <div className="w-[100%] bg-white bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg p-10">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-black mb-4">
