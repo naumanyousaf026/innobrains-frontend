@@ -19,6 +19,8 @@ import About from "./AboutPreview";
 import Achievement from "./Achievement";
 import ContactInfo from "../contact/ContactInfo";
 import ContactInfoManager from "./ContactInfoManager";
+import GrowthSteps from "../ourservices/GrowthSteps";
+import GrowthStepsManager from "./GrowthStepsManager";
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,7 +61,7 @@ const Admin = () => {
           {section === "userSubmissions" && <UserSubmissions />}
           {section === "AchievementForm" && <Achievement />}
           {section === "ContactInfoForm" && <ContactInfoManager />}
-          {section == "StepForm" && <StepForm />}
+          {section == "StepForm" && <GrowthStepsManager />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
           {section === "AboutForm" && <AboutForm />}
