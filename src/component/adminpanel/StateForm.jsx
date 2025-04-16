@@ -38,7 +38,7 @@ export default function StateForm({ onClose }) {
         </button>
 
         <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-10">
-          Company Profile
+          Stats Section Form
         </h2>
 
         <form onSubmit={handleSubmit} className="flex-grow space-y-6">

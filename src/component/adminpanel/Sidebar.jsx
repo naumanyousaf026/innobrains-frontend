@@ -60,7 +60,7 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
     <div
       className={`fixed left-0 top-0 h-full bg-gray-100 p-4 z-20 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:w-[20%] overflow-y-auto max-h-screen`} // Added scroll functionality
+      } lg:translate-x-0 lg:w-[20%]`}
     >
       <div className="mb-8">
         <img
@@ -113,14 +113,13 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
           <UserGroupIcon className="h-6 w-6" />
           Team
         </button>
-        <button
+<button
           onClick={() => setSection("userSubmissions")}
           className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
         >
           <UserGroupIcon className="h-6 w-6" />
-          Users Contact
-        </button>
-
+          Users Contact     
+</button>
         {/* Form buttons are always visible with consistent size and alignment */}
         <FormsButton setSection={setSection} />
 
