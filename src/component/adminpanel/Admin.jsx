@@ -8,8 +8,8 @@ import Blog from "./Blog";
 import Team from "./Team";
 import Service from "./Service";
 import Visitor from "./Visitor";
-import AchievementForm from "./AchievementForm";
-import ContactInfoForm from "./ContactInfoForm";
+// import AchievementForm from "./AchievementForm";
+// import ContactInfoForm from "./ContactInfoForm";
 import StepForm from "./StepForm";
 import UserSubmissions from "./UserSubmissions";
 import StateForm from "./StateForm";
@@ -17,6 +17,8 @@ import State from "./State";
 import AboutForm from "./AboutForm";
 import About from "./AboutPreview";
 import Achievement from "./Achievement";
+import ContactInfo from "../contact/ContactInfo";
+import ContactInfoManager from "./ContactInfoManager";
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,7 +58,7 @@ const Admin = () => {
           {section === "team" && <Team />}
           {section === "userSubmissions" && <UserSubmissions />}
           {section === "AchievementForm" && <Achievement />}
-          {section === "ContactInfoForm" && <ContactInfoForm />}
+          {section === "ContactInfoForm" && <ContactInfoManager />}
           {section == "StepForm" && <StepForm />}
           {section === "stateForm" && <StateForm />}
           {section === "state" && <State />}
