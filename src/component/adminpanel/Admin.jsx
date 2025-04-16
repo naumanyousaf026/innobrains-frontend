@@ -16,7 +16,8 @@ import StateForm from "./StateForm";
 import State from "./State";
 import AboutForm from "./AboutForm";
 import About from "./AboutPreview";
-import Achievement from "./Achievement";
+import Achievements from "../aboutus/Achievements";
+
 const Admin = () => {
   const [section, setSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -55,7 +56,7 @@ const Admin = () => {
           {section === "blogs" && <Blog />}
           {section === "team" && <Team />}
           {section === "userSubmissions" && <UserSubmissions />}
-          {section === "AchievementForm" && <Achievement />}
+          {section === "AchievementForm" && <Achievements />}
           {section === "ContactInfoForm" && <ContactInfoForm />}
           {section == "StepForm" && <StepForm />}
           {section === "stateForm" && <StateForm />}
