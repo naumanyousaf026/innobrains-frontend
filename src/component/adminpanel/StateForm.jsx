@@ -25,14 +25,13 @@ export default function StateForm({ onClose }) {
   };
 
   return (
-    <div className=" flex justify-center items-center p-6">
-      <div className="w-full bg-white rounded-xl p-8 border border-gray-300 flex flex-col justify-between relative">
+    <div className="flex justify-center items-center min-h-screen w-full p-6">
+      <div className="w-full bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
         {/* Back Button */}
         <button
           onClick={onClose}
           className="absolute top-6 left-6 flex items-center text-black hover:text-gray-700 transition duration-300"
         >
-       
           <IoArrowBackSharp className="text-2xl mr-1" />
           <span className="text-sm font-medium">Back</span>
         </button>
@@ -41,7 +40,7 @@ export default function StateForm({ onClose }) {
           Stats Section Form
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex-grow space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Headline */}
           <div>
             <label className="block text-gray-700 nunito-sans font-medium mb-2">Headline</label>
@@ -71,7 +70,7 @@ export default function StateForm({ onClose }) {
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 mt-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
             {[
               { label: "Loyal Clients", name: "loyalClients", placeholder: "Enter number of clients" },
               { label: "Experts", name: "experts", placeholder: "Enter number of experts" },
