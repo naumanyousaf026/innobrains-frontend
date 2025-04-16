@@ -20,11 +20,17 @@ const Blog = () => {
         throw new Error("Failed to fetch blogs");
       }
       const data = await response.json();
-      setBlogs(data);
+      if (Array.isArray(data)) {
+        setBlogs(data);
+      } else {
+        setBlogs([]); // If data is not an array, set blogs to an empty array
+      }
     } catch (error) {
       console.error("Error fetching blogs:", error);
+      setBlogs([]); // Set blogs to an empty array on error
     }
   };
+  
 
   const handleDelete = async (blogId) => {
     try {
@@ -46,8 +52,10 @@ const Blog = () => {
 
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
-  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const currentBlogs = blogs && blogs.length ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) : [];
+
+  const totalPages = blogs && blogs.length ? Math.ceil(blogs.length / blogsPerPage) : 0;
+
 
   const handleEdit = (blog) => {
     setEditBlog(blog);
