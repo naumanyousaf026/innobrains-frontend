@@ -267,14 +267,14 @@ const BlogArticle = () => {
                 <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">LinkedIn</button>
               </div>
 
-              <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
+              {/* <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
                 <img src="https://i.pravatar.cc/100" className="w-16 h-16 rounded-full" alt="Author" />
                 <div>
                   <p className="font-semibold text-gray-900">Ali from Innobrains</p>
                   <p className="text-gray-600 text-sm">Front-End Developer who loves clean UI and future tech trends.</p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Back to Blog */}
             <div className="mt-8">
