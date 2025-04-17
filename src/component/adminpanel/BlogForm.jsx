@@ -68,12 +68,44 @@ const BlogForm = () => {
         <option value="Technology">Technology</option>
         <option value="Business">Business</option>
       </select>
+      
+      {/* TinyMCE Editor with API key */}
       <Editor
-        apiKey="your-api-key"
+        apiKey="jfqeefu7t3b4a8cpf1ph9ljax441no81qenakmkpl3f7qc4o" // Your TinyMCE API key here
         onInit={(evt, editor) => editorRef.current = editor}
         value={blog.content}
         onEditorChange={handleEditorChange}
+        init={{
+          height: 500,
+          menubar: true,
+          plugins: [
+            'advlist autolink lists link image charmap print preview anchor',
+            'searchreplace visualblocks code fullscreen',
+            'insertdatetime media table paste code help wordcount',
+            'imagetools'
+          ],
+          toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter ' +
+                   'alignright alignjustify | bullist numlist outdent indent | removeformat | image | help',
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          images_upload_handler: async (blobInfo, success, failure) => {
+            try {
+              const formData = new FormData();
+              formData.append('image', blobInfo.blob(), blobInfo.filename());
+              
+              const response = await axios.post('/api/blogs/upload-image', formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              });
+              
+              success(response.data.location);
+            } catch (err) {
+              failure('Image upload failed');
+            }
+          },
+        }}
       />
+
       <button type="submit">Save Blog</button>
     </form>
   );
