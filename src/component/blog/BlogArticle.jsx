@@ -200,10 +200,10 @@ const BlogArticle = () => {
               <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
                 {blog.title}
               </h1>
-              <p className="text-lg text-gray-700 mt-4">
+              {/* <p className="text-lg text-gray-700 mt-4">
                 {blog.description || (blog.content && Array.isArray(blog.content) && 
                   blog.content.find(block => block.type === "paragraph")?.value)}
-              </p>
+              </p> */}
             </div>
 
             {/* Meta Info */}
