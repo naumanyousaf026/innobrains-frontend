@@ -4,6 +4,16 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import '../App.css';
 
+// Helper function to create slugs from titles - same as in BlogArticle
+const createSlug = (title) => {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
+    .trim();                  // Trim leading/trailing spaces
+};
+
 const BlogSection = ({ limit }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,6 +101,8 @@ const BlogSection = ({ limit }) => {
           ) : (
             displayBlogs.map((blog, index) => {
               const blogImage = getBlogImage(blog);
+              const blogSlug = createSlug(blog.title);
+              
               return (
                 <div
                   key={index}
@@ -124,7 +136,7 @@ const BlogSection = ({ limit }) => {
                         {getBlogDescription(blog)}
                       </p>
                       <Link
-                        to={`/blog/${blog._id || blog.id}`}
+                        to={`/blog/${blogSlug}`}
                         state={{ blogData: blog }}
                         className="text-[#103153] hover:text-indigo-800 font-semibold"
                         aria-label={`Read more about ${blog.title}`}

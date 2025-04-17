@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaHeading, FaListUl, FaAlignLeft, FaImage, FaCloudUploadAlt, FaTimes } from "react-icons/fa";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import slugify from "slugify"; // Import slugify
 
 const BlogForm = ({ blog, onClose }) => {
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState(""); // Add state for slug
   const [duration, setDuration] = useState("");
   const [category, setCategory] = useState("");
   const [contentBlocks, setContentBlocks] = useState([]);
@@ -18,6 +20,7 @@ const BlogForm = ({ blog, onClose }) => {
   useEffect(() => {
     if (blog) {
       setTitle(blog.title || "");
+      setSlug(blog.slug || "");
       setDuration(blog.duration || "");
       setCategory(blog.category || "");
       setContentBlocks(blog.content || []);
@@ -27,6 +30,14 @@ const BlogForm = ({ blog, onClose }) => {
       }
     }
   }, [blog]);
+
+  // Auto-generate slug when title changes
+  useEffect(() => {
+    if (title) {
+      const generatedSlug = slugify(title, { lower: true, strict: true });
+      setSlug(generatedSlug);
+    }
+  }, [title]);
 
   const handleAddBlock = (type) => {
     setContentBlocks([...contentBlocks, { type, value: "" }]);
@@ -102,6 +113,7 @@ const BlogForm = ({ blog, onClose }) => {
 
     const formData = new FormData();
     formData.append("title", title);
+    formData.append("slug", slug); // Add slug to formData
     formData.append("duration", duration);
     formData.append("category", category);
 
@@ -247,6 +259,26 @@ const BlogForm = ({ blog, onClose }) => {
           </div>
 
           <div>
+            <label htmlFor="slug" className="block text-lg font-semibold text-gray-700 mb-2">
+              Slug (URL)
+            </label>
+            <input
+              id="slug"
+              type="text"
+              placeholder="blog-post-url"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              required
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              This will appear in the URL: https://innobrains.pk/blog/{slug}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
             <label htmlFor="duration" className="block text-lg font-semibold text-gray-700 mb-2">
               Reading Time
             </label>
@@ -260,21 +292,21 @@ const BlogForm = ({ blog, onClose }) => {
               required
             />
           </div>
-        </div>
 
-        <div>
-          <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
-            Category
-          </label>
-          <input
-            id="category"
-            type="text"
-            placeholder="Enter blog category"
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          />
+          <div>
+            <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
+              Category
+            </label>
+            <input
+              id="category"
+              type="text"
+              placeholder="Enter blog category"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <div>

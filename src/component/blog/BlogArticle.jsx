@@ -3,8 +3,18 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 
+// Helper function to create slugs from titles
+const createSlug = (title) => {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
+    .trim();                  // Trim leading/trailing spaces
+};
+
 const BlogArticle = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const location = useLocation();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,21 +28,41 @@ const BlogArticle = () => {
       setBlog(location.state.blogData);
       setLoading(false);
       fetchRelatedBlogs(location.state.blogData.category);
-    } else if (id) {
-      // If not found in state, fetch it from API
+    } else if (slug) {
+      // If not found in state, fetch it from API by slug
       fetchBlogData();
     }
-  }, [id, location.state]);
+  }, [slug, location.state]);
 
   const fetchBlogData = async () => {
     try {
-      const response = await fetch(`https://apis.innobrains.pk/api/blog/${id}`);
+      // First try to fetch by slug if your API supports it
+      let response = await fetch(`https://apis.innobrains.pk/api/blog/by-slug/${slug}`);
+      
+      // If your API doesn't have a slug endpoint yet, we'll need to fetch all blogs and find by slug
       if (!response.ok) {
-        throw new Error("Failed to fetch blog data");
+        response = await fetch(`https://apis.innobrains.pk/api/blog`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch blog data");
+        }
+        
+        const allBlogs = await response.json();
+        // Find the blog with matching slug
+        const matchingBlog = allBlogs.find(blog => createSlug(blog.title) === slug);
+        
+        if (matchingBlog) {
+          setBlog(matchingBlog);
+          fetchRelatedBlogs(matchingBlog.category);
+        } else {
+          throw new Error("Blog not found");
+        }
+      } else {
+        // If your API supports slug endpoint
+        const data = await response.json();
+        setBlog(data);
+        fetchRelatedBlogs(data.category);
       }
-      const data = await response.json();
-      setBlog(data);
-      fetchRelatedBlogs(data.category);
+      
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch blog data", error);
@@ -49,7 +79,7 @@ const BlogArticle = () => {
       const data = await response.json();
       // Filter out current blog and limit to 3
       const filteredData = data
-        .filter(item => item._id !== id)
+        .filter(item => createSlug(item.title) !== slug)
         .slice(0, 3);
       setRelatedBlogs(filteredData);
     } catch (error) {
@@ -200,10 +230,6 @@ const BlogArticle = () => {
               <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
                 {blog.title}
               </h1>
-              {/* <p className="text-lg text-gray-700 mt-4">
-                {blog.description || (blog.content && Array.isArray(blog.content) && 
-                  blog.content.find(block => block.type === "paragraph")?.value)}
-              </p> */}
             </div>
 
             {/* Meta Info */}
@@ -290,6 +316,7 @@ const BlogArticle = () => {
                 {relatedBlogs.map((relatedBlog) => {
                   const blogId = relatedBlog._id;
                   const hasImage = hasValidImage(relatedBlog) && !imageErrors[blogId];
+                  const blogSlug = createSlug(relatedBlog.title);
                   
                   return (
                     <li key={blogId} className="flex items-center gap-4">
@@ -302,7 +329,7 @@ const BlogArticle = () => {
                         />
                       )}
                       <Link 
-                        to={`/blog/${blogId}`}
+                        to={`/blog/${blogSlug}`}
                         state={{ blogData: relatedBlog }}
                         className={`text-blue-700 font-medium hover:underline ${hasImage ? '' : 'flex-1'}`}
                       >
@@ -316,19 +343,19 @@ const BlogArticle = () => {
               <ul className="space-y-5">
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/article-1" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/future-of-front-end-development-in-2025" className="text-blue-700 font-medium hover:underline">
                     Future of Front-End Development in 2025
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/article-2" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/back-end-technologies-you-need-to-know" className="text-blue-700 font-medium hover:underline">
                     Back-End Technologies You Need to Know
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/article-3" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/how-ai-is-changing-web-development" className="text-blue-700 font-medium hover:underline">
                     How AI is Changing Web Development
                   </a>
                 </li>
