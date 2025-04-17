@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Editor } from '@tinymce/tinymce-react';
 import slugify from "slugify";
+import 'tinymce/tinymce';
+import 'tinymce/themes/silver';
+import 'tinymce/icons/default';
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/autolink';
+import 'tinymce/plugins/lists';
 import { 
   FaPlus, 
   FaTimes, 
@@ -11,24 +17,6 @@ import {
   FaArrowLeft 
 } from "react-icons/fa";
 
-
-<Editor
-  apiKey="jfqeefu7t3b4a8cpf1ph9ljax441no81qenakmkpl3f7qc4o"
-  initialValue="<p>Write your blog content here...</p>"
-  init={{
-    height: 500,
-    menubar: false,
-    plugins: [
-      'advlist autolink lists link image charmap preview anchor',
-      'searchreplace visualblocks code fullscreen',
-      'insertdatetime media table code help wordcount',
-    ],
-    toolbar:
-      'undo redo | formatselect | bold italic backcolor | \
-      alignleft aligncenter alignright alignjustify | \
-      bullist numlist outdent indent | removeformat | help',
-  }}
-/>
 const BlogForm = () => {
   const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +80,7 @@ const BlogForm = () => {
     setIsEditorOpen(true);
     setViewBlog(null);
   };
- 
+  // jfqeefu7t3b4a8cpf1ph9ljax441no81qenakmkpl3f7qc4o
   const handleEdit = (blog) => {
     // Transform the content blocks into TinyMCE compatible HTML
     let editorContent = "";
