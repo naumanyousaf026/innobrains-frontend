@@ -1,182 +1,108 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { FaHeading, FaListUl, FaAlignLeft, FaImage, FaCloudUploadAlt, FaTimes } from "react-icons/fa";
+import { useDropzone } from "react-dropzone";
 import axios from "axios";
-import { Editor } from '@tinymce/tinymce-react';
-import slugify from "slugify";
-import 'tinymce/tinymce';
-import 'tinymce/themes/silver';
-import 'tinymce/icons/default';
-import 'tinymce/plugins/advlist';
-import 'tinymce/plugins/autolink';
-import 'tinymce/plugins/lists';
-import { 
-  FaPlus, 
-  FaTimes, 
-  FaCloudUploadAlt, 
-  FaSave, 
-  FaTrash, 
-  FaArrowLeft 
-} from "react-icons/fa";
+import slugify from "slugify"; // Import slugify
 
-const BlogForm = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [blogsPerPage] = useState(9);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [viewBlog, setViewBlog] = useState(null);
+const BlogForm = ({ blog, onClose }) => {
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState(""); // Add state for slug
+  const [duration, setDuration] = useState("");
+  const [category, setCategory] = useState("");
+  const [contentBlocks, setContentBlocks] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [featuredImage, setFeaturedImage] = useState(null);
+  const [showContentControls, setShowContentControls] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [imageErrors, setImageErrors] = useState({});
-  const defaultImagePath = "/images/default-image.jpg";
-  
-  // Current blog state
-  const [currentBlog, setCurrentBlog] = useState({
-    id: null,
-    title: "",
-    slug: "",
-    duration: "",
-    category: "",
-    content: "",
-    featuredImage: null
-  });
-  
-  const editorRef = useRef(null);
 
+  // Load blog data when editing
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    if (blog) {
+      setTitle(blog.title || "");
+      setSlug(blog.slug || "");
+      setDuration(blog.duration || "");
+      setCategory(blog.category || "");
+      setContentBlocks(blog.content || []);
+      // Featured image would be the first one in images array
+      if (blog.images && blog.images.length > 0) {
+        setFeaturedImage({ preview: `https://apis.innobrains.pk${blog.images[0]}` });
+      }
+    }
+  }, [blog]);
 
   // Auto-generate slug when title changes
   useEffect(() => {
-    if (currentBlog.title) {
-      const generatedSlug = slugify(currentBlog.title, { lower: true, strict: true });
-      setCurrentBlog(prev => ({ ...prev, slug: generatedSlug }));
+    if (title) {
+      const generatedSlug = slugify(title, { lower: true, strict: true });
+      setSlug(generatedSlug);
     }
-  }, [currentBlog.title]);
+  }, [title]);
 
-  const fetchBlogs = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get("https://apis.innobrains.pk/api/blog");
-      setBlogs(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      setBlogs([]);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleAddBlock = (type) => {
+    setContentBlocks([...contentBlocks, { type, value: "" }]);
+    setShowContentControls(false);
   };
 
-  const handleAddNewBlog = () => {
-    setCurrentBlog({
-      id: null,
-      title: "",
-      slug: "",
-      duration: "",
-      category: "",
-      content: "",
-      featuredImage: null
-    });
-    setIsEditorOpen(true);
-    setViewBlog(null);
+  const handleBlockChange = (index, value) => {
+    const updated = [...contentBlocks];
+    updated[index].value = value;
+    setContentBlocks(updated);
   };
-  // jfqeefu7t3b4a8cpf1ph9ljax441no81qenakmkpl3f7qc4o
-  const handleEdit = (blog) => {
-    // Transform the content blocks into TinyMCE compatible HTML
-    let editorContent = "";
-    if (Array.isArray(blog.content)) {
-      blog.content.forEach(block => {
-        switch (block.type) {
-          case "heading":
-            editorContent += `<h2>${block.value}</h2>`;
-            break;
-          case "subheading":
-            editorContent += `<h3>${block.value}</h3>`;
-            break;
-          case "paragraph":
-            editorContent += `<p>${block.value}</p>`;
-            break;
-          case "image":
-            if (block.value && !block.value.startsWith("contentImage_")) {
-              editorContent += `<div class="image-container"><img src="${block.value}" alt="Blog content" /></div>`;
-            }
-            break;
-          default:
-            break;
-        }
+
+  const handleAddImageBlock = () => {
+    setContentBlocks([...contentBlocks, { type: "image", value: "" }]);
+    setShowContentControls(false);
+  };
+
+  const handleImageBlockChange = (index, file) => {
+    const updated = [...contentBlocks];
+    if (file) {
+      updated[index].file = file;
+      updated[index].value = URL.createObjectURL(file);
+    }
+    setContentBlocks(updated);
+  };
+
+  const handleImageURLBlockChange = (index, url) => {
+    const updated = [...contentBlocks];
+    updated[index].value = url;
+    setContentBlocks(updated);
+  };
+
+  const handleFeaturedImageChange = (acceptedFiles) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setFeaturedImage({
+        file,
+        preview: URL.createObjectURL(file),
       });
     }
-    
-    // Set featured image if exists
-    let featuredImage = null;
-    if (blog.images && blog.images.length > 0) {
-      featuredImage = {
-        preview: `https://apis.innobrains.pk${blog.images[0]}`
-      };
-    }
-    
-    setCurrentBlog({
-      id: blog._id,
-      title: blog.title || "",
-      slug: blog.slug || "",
-      duration: blog.duration || "",
-      category: blog.category || "",
-      content: editorContent,
-      featuredImage
-    });
-    
-    setIsEditorOpen(true);
-    setViewBlog(null);
   };
 
-  const handleDelete = async (blogId) => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      try {
-        await axios.delete(`https://apis.innobrains.pk/api/blog/${blogId}`);
-        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
-        if (viewBlog && viewBlog._id === blogId) {
-          setViewBlog(null);
-        }
-      } catch (error) {
-        console.error("Error deleting blog:", error);
-        alert("Failed to delete blog. Please try again.");
-      }
+  const removeBlock = (index) => {
+    const updated = [...contentBlocks];
+    updated.splice(index, 1);
+    setContentBlocks(updated);
+  };
+
+  const moveBlockUp = (index) => {
+    if (index > 0) {
+      const updated = [...contentBlocks];
+      const temp = updated[index];
+      updated[index] = updated[index - 1];
+      updated[index - 1] = temp;
+      setContentBlocks(updated);
     }
   };
 
-  const handleViewBlog = (blog) => {
-    setViewBlog(blog);
-    setIsEditorOpen(false);
-  };
-
-  const handleFormClose = () => {
-    setIsEditorOpen(false);
-    setCurrentBlog({
-      id: null,
-      title: "",
-      slug: "",
-      duration: "",
-      category: "",
-      content: "",
-      featuredImage: null
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentBlog(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setCurrentBlog(prev => ({
-        ...prev,
-        featuredImage: {
-          file,
-          preview: URL.createObjectURL(file)
-        }
-      }));
+  const moveBlockDown = (index) => {
+    if (index < contentBlocks.length - 1) {
+      const updated = [...contentBlocks];
+      const temp = updated[index];
+      updated[index] = updated[index + 1];
+      updated[index + 1] = temp;
+      setContentBlocks(updated);
     }
   };
 
@@ -185,65 +111,38 @@ const BlogForm = () => {
     setIsSubmitting(true);
     setError("");
 
-    try {
-      if (!editorRef.current) {
-        throw new Error("Editor not initialized");
-      }
-      
-      const editorContent = editorRef.current.getContent();
-      
-      // Convert TinyMCE content to our API format
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(editorContent, 'text/html');
-      const elements = doc.body.children;
-      
-      const contentBlocks = [];
-      
-      Array.from(elements).forEach(element => {
-        switch (element.tagName.toLowerCase()) {
-          case 'h1':
-            contentBlocks.push({ type: "heading", value: element.textContent });
-            break;
-          case 'h2':
-            contentBlocks.push({ type: "heading", value: element.textContent });
-            break;
-          case 'h3':
-          case 'h4':
-          case 'h5':
-          case 'h6':
-            contentBlocks.push({ type: "subheading", value: element.textContent });
-            break;
-          case 'p':
-            contentBlocks.push({ type: "paragraph", value: element.textContent });
-            break;
-          case 'div':
-            if (element.classList.contains('image-container') && element.querySelector('img')) {
-              const img = element.querySelector('img');
-              contentBlocks.push({ type: "image", value: img.src });
-            }
-            break;
-          default:
-            contentBlocks.push({ type: "paragraph", value: element.outerHTML });
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("slug", slug); // Add slug to formData
+    formData.append("duration", duration);
+    formData.append("category", category);
+
+    // Process content blocks
+    const processedBlocks = await Promise.all(
+      contentBlocks.map(async (block, index) => {
+        // For image blocks with file attachments, we need to remove the file property
+        // before JSON stringifying and add the file to formData
+        if (block.type === "image" && block.file) {
+          formData.append(`contentImage_${index}`, block.file);
+          return { type: block.type, value: `contentImage_${index}` };
         }
-      });
+        return { type: block.type, value: block.value };
+      })
+    );
 
-      const formData = new FormData();
-      formData.append("title", currentBlog.title);
-      formData.append("slug", currentBlog.slug);
-      formData.append("duration", currentBlog.duration);
-      formData.append("category", currentBlog.category);
-      formData.append("content", JSON.stringify(contentBlocks));
+    formData.append("content", JSON.stringify(processedBlocks));
 
-      // Add featured image if exists
-      if (currentBlog.featuredImage && currentBlog.featuredImage.file) {
-        formData.append("images", currentBlog.featuredImage.file);
-      }
+    // Add featured image if exists
+    if (featuredImage && featuredImage.file) {
+      formData.append("images", featuredImage.file);
+    }
 
+    try {
       let response;
-      if (currentBlog.id) {
+      if (blog) {
         // Update existing blog
         response = await axios.put(
-          `https://apis.innobrains.pk/api/blog/${currentBlog.id}`,
+          `https://apis.innobrains.pk/api/blog/${blog._id}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -255,10 +154,8 @@ const BlogForm = () => {
           { headers: { "Content-Type": "multipart/form-data" } }
         );
       }
-      
-      alert(currentBlog.id ? "Blog updated successfully!" : "Blog created successfully!");
-      handleFormClose();
-      fetchBlogs();
+      alert(blog ? "Blog updated successfully!" : "Blog created successfully!");
+      onClose();
     } catch (err) {
       console.error("Error saving blog:", err);
       setError("Failed to save blog. Please try again.");
@@ -267,520 +164,323 @@ const BlogForm = () => {
     }
   };
 
-  // Calculate pagination values
-  const totalBlogs = blogs?.length || 0;
-  const totalPages = Math.max(1, Math.ceil(totalBlogs / blogsPerPage));
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = Array.isArray(blogs) 
-    ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) 
-    : [];
-
-  const truncateDescription = (content, maxLength = 120) => {
-    if (!content || !Array.isArray(content)) return "";
-    
-    // Find the first paragraph content
-    const paragraphBlock = content.find(block => block.type === "paragraph");
-    if (!paragraphBlock) return "";
-    
-    const text = paragraphBlock.value;
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + "...";
-    }
-    return text;
-  };
-
-  // Function to check if a blog has a valid image
-  const hasValidImage = (blog) => {
-    // Check uploaded images
-    if (blog.images && blog.images.length > 0) {
-      return true;
-    }
-    
-    // Check content blocks for images
-    if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block.type === "image");
-      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
-        return true;
-      }
-    }
-    
-    return false;
-  };
-
-  // Function to get the featured image from a blog
-  const getBlogImage = (blog) => {
-    if (imageErrors[blog._id]) {
-      return defaultImagePath;
-    }
-    
-    if (blog.images && blog.images.length > 0) {
-      return `https://apis.innobrains.pk${blog.images[0]}`;
-    }
-    
-    // Look for first image in content blocks
-    if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block.type === "image");
-      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
-        return imageBlock.value;
-      }
-    }
-    
-    return defaultImagePath;
-  };
-
-  const handleImageError = (blogId) => {
-    setImageErrors(prev => ({
-      ...prev,
-      [blogId]: true
-    }));
-  };
-
-  // Render content blocks based on their type for blog view
-  const renderContentBlock = (block, index) => {
-    switch (block.type) {
-      case "heading":
-        return (
-          <h2 key={index} className="text-2xl font-bold my-4">
-            {block.value}
-          </h2>
-        );
-      case "subheading":
-        return (
-          <h3 key={index} className="text-xl font-semibold my-3 text-gray-700">
-            {block.value}
-          </h3>
-        );
-      case "paragraph":
-        return (
-          <p key={index} className="my-3 text-gray-600 leading-relaxed">
-            {block.value}
-          </p>
-        );
-      case "image":
-        // Handle both uploaded images and image URLs
-        const imageUrl = block.value.startsWith("contentImage_")
-          ? null // These should be replaced with actual paths from the server
-          : block.value;
-          
-        if (!imageUrl) return null;
-        
-        const imageId = `content-image-${index}`;
-        
-        return (
-          <div key={index} className="my-4">
-            {!imageErrors[imageId] && (
-              <img
-                src={imageUrl}
-                alt="Blog content"
-                className="max-w-full h-auto rounded-lg mx-auto"
-                onError={() => handleImageError(imageId)}
-              />
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  // Define TinyMCE Editor init configuration
-  const tinyMceInit = {
-    height: 500,
-    menubar: true,
-    plugins: [
-      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-      'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
-      'emoticons', 'hr'
-    ],
-    toolbar: 'undo redo | formatselect | ' +
-      'bold italic forecolor backcolor | alignleft aligncenter ' +
-      'alignright alignjustify | bullist numlist outdent indent | ' +
-      'removeformat | h1 h2 h3 h4 h5 h6 | help | ' +
-      'link image media | table | emoticons | hr code',
-    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px }',
-    image_advtab: true,
-    image_caption: true,
-    image_dimensions: false,
-    formats: {
-      alignleft: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,figure', classes: 'text-left' },
-      aligncenter: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,figure', classes: 'text-center' },
-      alignright: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img,figure', classes: 'text-right' },
-      alignjustify: { selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-justify' }
-    },
-    file_picker_types: 'image',
-    file_picker_callback: function(callback, value, meta) {
-      // Custom file picker logic would go here
-      // For now, we'll just use a file input
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      
-      input.onchange = function() {
-        const file = this.files[0];
-        const reader = new FileReader();
-        reader.onload = function() {
-          // Create a blob URL and pass it to the callback
-          callback(reader.result, {
-            title: file.name
-          });
-        };
-        reader.readAsDataURL(file);
-      };
-      
-      input.click();
-    }
-  };
+  const { getRootProps: getFeaturedImageRootProps, getInputProps: getFeaturedImageInputProps } = 
+    useDropzone({
+      onDrop: handleFeaturedImageChange,
+      accept: "image/*",
+      maxFiles: 1,
+    });
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      {isEditorOpen ? (
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold">
-              {currentBlog.id ? "Edit Blog" : "Create New Blog"}
-            </h1>
-            <button
-              onClick={handleFormClose}
-              className="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 transition flex items-center"
-            >
-              <FaArrowLeft className="mr-2" /> Back
-            </button>
-          </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white shadow-md rounded-lg p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="title" className="block text-lg font-semibold text-gray-700 mb-2">
-                  Title
-                </label>
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  placeholder="Enter blog title"
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
-                  value={currentBlog.title}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="slug" className="block text-lg font-semibold text-gray-700 mb-2">
-                  Slug (URL)
-                </label>
-                <input
-                  id="slug"
-                  name="slug"
-                  type="text"
-                  placeholder="blog-post-url"
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
-                  value={currentBlog.slug}
-                  onChange={handleChange}
-                  required
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  This will appear in the URL: https://innobrains.pk/blog/{currentBlog.slug}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="duration" className="block text-lg font-semibold text-gray-700 mb-2">
-                  Reading Time
-                </label>
-                <input
-                  id="duration"
-                  name="duration"
-                  type="text"
-                  placeholder="E.g., 5 min read"
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
-                  value={currentBlog.duration}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
-                  Category
-                </label>
-                <input
-                  id="category"
-                  name="category"
-                  type="text"
-                  placeholder="Enter blog category"
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
-                  value={currentBlog.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">
-                Featured Image
-              </label>
-              <div className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition hover:border-[#103153]">
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  id="featuredImage"
-                  onChange={handleImageChange}
-                  className="hidden" 
-                />
-                <label htmlFor="featuredImage" className="cursor-pointer w-full h-full block">
-                  {currentBlog.featuredImage ? (
-                    <div className="relative">
-                      <img
-                        src={currentBlog.featuredImage.preview}
-                        alt="Featured"
-                        className="h-40 mx-auto object-contain"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentBlog(prev => ({ ...prev, featuredImage: null }));
-                        }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                      >
-                        <FaTimes size={16} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="py-4">
-                      <FaCloudUploadAlt className="mx-auto text-4xl text-gray-400" />
-                      <p className="mt-2 text-gray-600">Click or drag to upload featured image</p>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">
-                Blog Content
-              </label>
-              <Editor
-                onInit={(evt, editor) => editorRef.current = editor}
-                initialValue={currentBlog.content}
-                init={tinyMceInit}
-              />
-            </div>
-
-            <div className="flex justify-end space-x-4 mt-8">
-              <button
-                type="button"
-                onClick={handleFormClose}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition flex items-center"
-              >
-                <FaTimes className="mr-2" /> Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-6 py-3 bg-[#103153] text-white rounded-lg hover:bg-[#1e4b7c] transition flex items-center"
-              >
-                <FaSave className="mr-2" /> {isSubmitting ? "Saving..." : currentBlog.id ? "Update Blog" : "Create Blog"}
-              </button>
-            </div>
-          </form>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-800">
+          {blog ? "Edit Blog" : "Create New Blog"}
+        </h2>
+        <div className="flex space-x-4">
+          <button
+            type="button"
+            onClick={() => setShowContentControls(!showContentControls)}
+            className="bg-[#103153] text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-[#1e4b7c] transition"
+          >
+            + Add Content Block
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg text-lg font-medium hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
         </div>
-      ) : viewBlog ? (
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold">{viewBlog.title}</h1>
-            <div className="flex space-x-3">
-              <button
-                onClick={() => handleEdit(viewBlog)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => setViewBlog(null)}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
-              >
-                Back to Blogs
-              </button>
-            </div>
+      </div>
+
+      {showContentControls && (
+        <div className="flex flex-wrap gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
+          {[
+            {
+              icon: <FaHeading size={20} />,
+              label: "Heading",
+              type: "heading",
+              bg: "bg-blue-50 hover:bg-blue-100",
+            },
+            {
+              icon: <FaListUl size={20} />,
+              label: "Subheading",
+              type: "subheading",
+              bg: "bg-green-50 hover:bg-green-100",
+            },
+            {
+              icon: <FaAlignLeft size={20} />,
+              label: "Paragraph",
+              type: "paragraph",
+              bg: "bg-yellow-50 hover:bg-yellow-100",
+            },
+            {
+              icon: <FaImage size={20} />,
+              label: "Image",
+              type: "image",
+              bg: "bg-purple-50 hover:bg-purple-100",
+              onClick: handleAddImageBlock,
+            },
+          ].map((btn, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => btn.onClick ? btn.onClick() : handleAddBlock(btn.type)}
+              className={`flex flex-col items-center justify-center w-28 h-28 rounded-xl ${btn.bg} transition-all`}
+            >
+              {btn.icon}
+              <span className="text-sm font-semibold mt-2">{btn.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="title" className="block text-lg font-semibold text-gray-700 mb-2">
+              Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              placeholder="Enter blog title"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
           </div>
-          
-          <div className="bg-white shadow-md rounded-lg p-6">
-            {hasValidImage(viewBlog) && !imageErrors[viewBlog._id] && (
-              <div className="mb-6">
+
+          <div>
+            <label htmlFor="slug" className="block text-lg font-semibold text-gray-700 mb-2">
+              Slug (URL)
+            </label>
+            <input
+              id="slug"
+              type="text"
+              placeholder="blog-post-url"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              required
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              This will appear in the URL: https://innobrains.pk/blog/{slug}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="duration" className="block text-lg font-semibold text-gray-700 mb-2">
+              Reading Time
+            </label>
+            <input
+              id="duration"
+              type="text"
+              placeholder="E.g., 5 min read"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
+              Category
+            </label>
+            <input
+              id="category"
+              type="text"
+              placeholder="Enter blog category"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#103153] focus:border-transparent"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-lg font-semibold text-gray-700 mb-2">
+            Featured Image
+          </label>
+          <div
+            {...getFeaturedImageRootProps()}
+            className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition ${
+              featuredImage ? "border-green-500 bg-green-50" : "border-gray-300 hover:border-[#103153]"
+            }`}
+          >
+            <input {...getFeaturedImageInputProps()} />
+            {featuredImage ? (
+              <div className="relative">
                 <img
-                  src={getBlogImage(viewBlog)}
-                  alt={viewBlog.title}
-                  className="w-full h-64 object-cover rounded-lg"
-                  onError={() => handleImageError(viewBlog._id)}
+                  src={featuredImage.preview}
+                  alt="Featured"
+                  className="h-40 mx-auto object-contain"
                 />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFeaturedImage(null);
+                  }}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                >
+                  <FaTimes size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="py-4">
+                <FaCloudUploadAlt className="mx-auto text-4xl text-gray-400" />
+                <p className="mt-2 text-gray-600">Click or drag to upload featured image</p>
               </div>
             )}
-            
-            <div className="flex items-center mb-4 text-sm text-gray-500">
-              <span className="mr-4">{viewBlog.category}</span>
-              <span>{viewBlog.duration}</span>
-            </div>
-            
-            <div className="prose max-w-none">
-              {Array.isArray(viewBlog.content) && viewBlog.content.map(renderContentBlock)}
-            </div>
           </div>
         </div>
-      ) : (
-        <>
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold">Blogs</h1>
-            <div>
-              {blogs.length > 0 ? (
-                <button
-                  onClick={handleAddNewBlog}
-                  className="bg-[#103153] text-white px-5 py-2 rounded-lg hover:bg-[#1e4b7c] transition flex items-center"
-                >
-                  <FaPlus className="mr-2" /> Add New Blog
-                </button>
-              ) : null}
-            </div>
-          </div>
 
-          {isLoading ? (
-            <div className="text-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#103153] mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading blogs...</p>
-            </div>
-          ) : blogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg shadow p-8">
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">No blogs yet</h2>
-                <p className="text-gray-500">Start creating your first blog post</p>
-              </div>
-              <button
-                onClick={handleAddNewBlog}
-                className="flex items-center justify-center w-16 h-16 bg-[#103153] text-white rounded-full hover:bg-[#1e4b7c] transition shadow-lg"
-              >
-                <FaPlus size={24} />
-              </button>
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">Content Blocks</h3>
+          {contentBlocks.length === 0 ? (
+            <div className="p-8 bg-gray-50 text-center rounded-lg">
+              <p className="text-gray-500">No content blocks added yet. Click "Add Content Block" to start building your blog.</p>
             </div>
           ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentBlogs.map((blog) => (
-                  <div
-                    key={blog._id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1"
-                  >
-                    <div 
-                      className="cursor-pointer"
-                      onClick={() => handleViewBlog(blog)}
-                    >
-                      {hasValidImage(blog) && !imageErrors[blog._id] && (
-                        <div className="h-48 overflow-hidden">
+            <div className="space-y-6">
+              {contentBlocks.map((block, index) => (
+                <div key={index} className="p-4 border rounded-lg bg-gray-50 relative">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium text-gray-700 capitalize">{block.type}</span>
+                    <div className="flex space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => moveBlockUp(index)}
+                        disabled={index === 0}
+                        className={`p-1 rounded ${
+                          index === 0 ? "text-gray-400" : "text-blue-600 hover:bg-blue-100"
+                        }`}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveBlockDown(index)}
+                        disabled={index === contentBlocks.length - 1}
+                        className={`p-1 rounded ${
+                          index === contentBlocks.length - 1
+                            ? "text-gray-400"
+                            : "text-blue-600 hover:bg-blue-100"
+                        }`}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeBlock(index)}
+                        className="p-1 text-red-600 hover:bg-red-100 rounded"
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+                  </div>
+
+                  {block.type === "image" ? (
+                    <div>
+                      {block.value ? (
+                        <div className="relative mb-2">
                           <img
-                            src={getBlogImage(blog)}
-                            alt={blog.title || "Blog image"}
-                            className="w-full h-full object-cover transition-transform hover:scale-105"
-                            onError={() => handleImageError(blog._id)}
+                            src={block.value}
+                            alt="Content"
+                            className="h-32 mx-auto object-contain"
                           />
                         </div>
-                      )}
-                      <div className="p-4">
-                        <div className="flex items-center text-xs text-gray-500 mb-2">
-                          <span className="mr-3">{blog.category}</span>
-                          <span>{blog.duration}</span>
+                      ) : null}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Upload Image
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleImageBlockChange(index, e.target.files[0]);
+                              }
+                            }}
+                            className="w-full p-2 border rounded"
+                          />
                         </div>
-                        <h2 className="text-lg font-semibold mb-2 line-clamp-2">{blog.title}</h2>
-                        <p className="text-gray-600 text-sm line-clamp-3">
-                          {truncateDescription(blog.content)}
-                        </p>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Or Image URL
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://example.com/image.jpg"
+                            value={block.value}
+                            onChange={(e) => handleImageURLBlockChange(index, e.target.value)}
+                            className="w-full p-2 border rounded"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="border-t px-4 py-3 flex justify-end space-x-4">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(blog);
-                        }}
-                        className="text-yellow-500 hover:text-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(blog._id);
-                        }}
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <FaTrash size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {totalBlogs > blogsPerPage && (
-                <div className="flex flex-col md:flex-row justify-between items-center mt-8 bg-white p-4 rounded-lg shadow">
-                  <span className="mb-2 md:mb-0 text-gray-600">
-                    Showing {indexOfFirstBlog + 1}-{Math.min(indexOfLastBlog, totalBlogs)} of {totalBlogs}
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === 1 ? "bg-gray-300" : "bg-[#103153] text-white"
-                      }`}
-                    >
-                      Previous
-                    </button>
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else {
-                        const middlePoint = Math.min(Math.max(3, currentPage), totalPages - 2);
-                        pageNum = i - 2 + middlePoint;
-                      }
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1 rounded ${
-                            pageNum === currentPage
-                              ? "bg-[#103153] text-white"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                    <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === totalPages ? "bg-gray-300" : "bg-[#103153] text-white"
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
+                  ) : block.type === "heading" ? (
+                    <input
+                      type="text"
+                      placeholder="Enter heading"
+                      className="w-full p-3 border border-gray-300 rounded text-xl font-bold"
+                      value={block.value}
+                      onChange={(e) => handleBlockChange(index, e.target.value)}
+                    />
+                  ) : block.type === "subheading" ? (
+                    <input
+                      type="text"
+                      placeholder="Enter subheading"
+                      className="w-full p-3 border border-gray-300 rounded text-lg font-semibold"
+                      value={block.value}
+                      onChange={(e) => handleBlockChange(index, e.target.value)}
+                    />
+                  ) : (
+                    <textarea
+                      placeholder="Enter paragraph text"
+                      rows="4"
+                      className="w-full p-3 border border-gray-300 rounded"
+                      value={block.value}
+                      onChange={(e) => handleBlockChange(index, e.target.value)}
+                    />
+                  )}
                 </div>
-              )}
-            </>
+              ))}
+            </div>
           )}
-        </>
-      )}
+        </div>
+
+        <div className="flex justify-end space-x-4 mt-8">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-6 py-3 bg-[#103153] text-white rounded-lg hover:bg-[#1e4b7c] transition flex items-center"
+          >
+            {isSubmitting ? "Saving..." : blog ? "Update Blog" : "Create Blog"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
