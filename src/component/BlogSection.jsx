@@ -21,15 +21,15 @@ const BlogSection = () => {
     try {
       setLoading(true);
       let url = `https://apis.innobrains.pk/api/blog?page=${currentPage}&limit=6`;
-      
+
       if (categoryFilter) {
         url += `&category=${categoryFilter}`;
       }
-      
+
       if (statusFilter) {
         url += `&status=${statusFilter}`;
       }
-      
+
       const response = await axios.get(url);
       setBlogs(response.data.blogs);
       setTotalPages(response.data.totalPages);
@@ -64,6 +64,24 @@ const BlogSection = () => {
     return tempDiv.textContent || tempDiv.innerText || '';
   };
 
+  // Ensure full image URL handling (absolute URL)
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/images/default-image.jpg"; // default image if no image is available
+
+    // If the image path already includes the domain, use it as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    // If the path starts with a slash, it's probably a relative path
+    if (imagePath.startsWith('/')) {
+      return `https://apis.innobrains.pk${imagePath}`;
+    }
+
+    // Otherwise, assume it's a relative path without a leading slash
+    return `https://apis.innobrains.pk/${imagePath}`;
+  };
+
   return (
     <div className="bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,7 +106,7 @@ const BlogSection = () => {
               ))}
             </select>
           </div>
-          
+
           <div>
             <select
               value={statusFilter}
@@ -100,7 +118,7 @@ const BlogSection = () => {
               <option value="draft">Draft</option>
             </select>
           </div>
-          
+
           <button
             onClick={() => {
               setCategoryFilter('');
@@ -132,8 +150,9 @@ const BlogSection = () => {
                     {blog.featuredImage ? (
                       <img
                         className="h-48 w-full object-cover"
-                        src={blog.featuredImage}
+                        src={getImageUrl(blog.featuredImage)}
                         alt={blog.title}
+                        onError={(e) => e.target.src = "/images/default-image.jpg"} // Handle image error
                       />
                     ) : (
                       <div className="h-48 w-full bg-gray-200 flex justify-center items-center">
