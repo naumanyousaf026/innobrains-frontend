@@ -14,23 +14,15 @@ const BlogSection = () => {
     const fetchBlogs = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://apis.innobrains.pk/api/blog');
+        // Replace with your actual API endpoint
+        const response = await fetch('YOUR_API_ENDPOINT_HERE');
         
         if (!response.ok) {
           throw new Error('Failed to fetch blog posts');
         }
         
         const data = await response.json();
-        
-        // Handle both array or single object responses
-        if (Array.isArray(data)) {
-          setBlogPosts(data);
-        } else if (data && data._id) {
-          // If it's a single blog post object
-          setBlogPosts([data]);
-        } else {
-          setBlogPosts([]);
-        }
+        setBlogPosts(data);
       } catch (err) {
         setError(err.message);
         console.error('Error fetching blog posts:', err);
@@ -42,7 +34,7 @@ const BlogSection = () => {
     fetchBlogs();
   }, []);
 
-  // Function to truncate text and remove HTML tags
+  // Function to truncate text to a specific length
   const truncateText = (text, maxLength) => {
     // Remove HTML tags and decode HTML entities
     const div = document.createElement('div');
@@ -53,31 +45,6 @@ const BlogSection = () => {
       ? plainText.substring(0, maxLength) + '...' 
       : plainText;
   };
-
-  // Function to create dummy blog posts to fill remaining slots
-  const getDummyPosts = (count) => {
-    const dummyPosts = [];
-    
-    for (let i = 0; i < count; i++) {
-      dummyPosts.push({
-        _id: `dummy-${i}`,
-        title: "Exploring New Technologies",
-        slug: "exploring-new-technologies",
-        duration: "3",
-        category: "Tech",
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.",
-        featuredImage: null
-      });
-    }
-    
-    return dummyPosts;
-  };
-  
-  // Combine real posts with dummy posts if needed to have 3 total
-  const displayPosts = [...blogPosts];
-  if (displayPosts.length < 3) {
-    displayPosts.push(...getDummyPosts(3 - displayPosts.length));
-  }
 
   return (
     <div className="py-10 max-w-7xl mx-auto">
@@ -106,38 +73,42 @@ const BlogSection = () => {
 
         {!isLoading && !error && (
           <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
-            {displayPosts.map((post, index) => (
-              <div
-                key={post._id}
-                className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
-              >
-                <img
-                  className="w-full h-52 object-cover"
-                  src={post.featuredImage || '/default-blog-image.jpg'}
-                  alt={post.title}
-                />
-                <div className="p-6 bg-[#FDFDFD]">
-                  <div className="text-sm font-semibold text-[#103153] mb-2">
-                    <span className="bg-[#EEEEEE] poppins-thin p-1">{post.category}</span>
-                    <span className="ms-2 poppins-thin">{post.duration} min read</span>
+            {blogPosts.length > 0 ? (
+              blogPosts.slice(0, 3).map((post) => (
+                <div
+                  key={post._id}
+                  className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                >
+                  <img
+                    className="w-full h-52 object-cover"
+                    src={post.featuredImage || '/default-blog-image.jpg'}
+                    alt={post.title}
+                  />
+                  <div className="p-6 bg-[#FDFDFD]">
+                    <div className="text-sm font-semibold text-[#103153] mb-2">
+                      <span className="bg-[#EEEEEE] poppins-thin p-1">{post.category}</span>
+                      <span className="ms-2 poppins-thin">{post.duration} min read</span>
+                    </div>
+                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-600 poppins-thin mb-4">
+                      {truncateText(post.content, 120)}
+                    </p>
+                    <a
+                      href={`/blog/${post.slug}`}
+                      className="text-[#103153] hover:text-indigo-800 font-semibold"
+                      aria-label={`Read more about ${post.title}`}
+                    >
+                      Read more 
+                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                    </a>
                   </div>
-                  <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-gray-600 poppins-thin mb-4">
-                    {truncateText(post.content, 120)}
-                  </p>
-                  <a
-                    href={`/blog/${post.slug}`}
-                    className="text-[#103153] hover:text-indigo-800 font-semibold"
-                    aria-label={`Read more about ${post.title}`}
-                  >
-                    Read more 
-                    <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                  </a>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center w-full py-10 text-gray-600">No blog posts available.</p>
+            )}
           </div>
         )}
 
