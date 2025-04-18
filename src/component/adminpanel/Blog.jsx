@@ -24,17 +24,16 @@ const Blog = () => {
         throw new Error(`Failed to fetch blogs: ${response.status}`);
       }
       const data = await response.json();
-      // Ensure data.blogs is an array
       if (Array.isArray(data.blogs)) {
         setBlogs(data.blogs);
       } else {
-        setBlogs([]); // Set blogs to empty array if not an array
+        setBlogs([]); 
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching blogs:", error);
       setError(error.message);
-      setBlogs([]); // Set blogs to empty array on error
+      setBlogs([]); 
       setLoading(false);
     }
   };
@@ -81,24 +80,21 @@ const Blog = () => {
     if (description && description.length > maxLength) {
       return description.substring(0, maxLength) + "...";
     }
-    return description || ''; // Safeguard for undefined or null description
+    return description || ''; 
   };
 
-  // Create a proper image URL function to handle different image path formats
+  // Proper image URL construction
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/images/default-image.jpg";
     
-    // If the image path already includes the domain, use it as is
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    
-    // If the path starts with a slash, it's probably a relative path
+
     if (imagePath.startsWith('/')) {
       return `https://apis.innobrains.pk${imagePath}`;
     }
-    
-    // Otherwise, assume it's a relative path without a leading slash
+
     return `https://apis.innobrains.pk/${imagePath}`;
   };
 
@@ -160,7 +156,7 @@ const Blog = () => {
                       alt={blog.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        // Only set the error image once to prevent flickering
+                        // Set the error image once to avoid flickering
                         if (!e.target.src.includes('default-image.jpg')) {
                           e.target.src = "/images/default-image.jpg";
                         }
