@@ -1,368 +1,187 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faEdit, faPlus } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import BlogForm from "./BlogForm";
-
 const Blog = () => {
-  const defaultImagePath = "/images/default-image.jpg";
-  
   const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [blogsPerPage, setBlogsPerPage] = useState(9);
+  const blogsPerPage = 9; // Total blogs per page
   const [showForm, setShowForm] = useState(false);
   const [editBlog, setEditBlog] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [viewBlog, setViewBlog] = useState(null);
 
   useEffect(() => {
     fetchBlogs();
   }, []);
 
   const fetchBlogs = async () => {
-    setIsLoading(true);
     try {
-      const response = await axios.get("https://apis.innobrains.pk/api/blog");
-      setBlogs(Array.isArray(response.data) ? response.data : []);
+      const response = await fetch("https://apis.innobrains.pk/api/blog");
+      if (!response.ok) {
+        throw new Error("Failed to fetch blogs");
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setBlogs(data);
+      } else {
+        setBlogs([]); // If data is not an array, set blogs to an empty array
+      }
     } catch (error) {
       console.error("Error fetching blogs:", error);
-      setBlogs([]);
-    } finally {
-      setIsLoading(false);
+      setBlogs([]); // Set blogs to an empty array on error
     }
   };
+  
 
   const handleDelete = async (blogId) => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      try {
-        await axios.delete(`https://apis.innobrains.pk/api/blog/${blogId}`);
-        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
-        if (viewBlog && viewBlog._id === blogId) {
-          setViewBlog(null);
-        }
-      } catch (error) {
-        console.error("Error deleting blog:", error);
-        alert("Failed to delete blog. Please try again.");
+    try {
+      const response = await fetch(`https://apis.innobrains.pk/api/blog/${blogId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setBlogs((prevBlogs) =>
+          prevBlogs.filter((blog) => blog._id !== blogId)
+        );
+      } else {
+        throw new Error("Failed to delete blog");
       }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
     }
   };
 
-  // Calculate pagination values
-  const totalBlogs = blogs?.length || 0;
-  const totalPages = Math.max(1, Math.ceil(totalBlogs / blogsPerPage));
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = Array.isArray(blogs) 
-    ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) 
-    : [];
+  const currentBlogs = blogs && blogs.length ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) : [];
+
+  const totalPages = blogs && blogs.length ? Math.ceil(blogs.length / blogsPerPage) : 0;
+
 
   const handleEdit = (blog) => {
     setEditBlog(blog);
     setShowForm(true);
-    setViewBlog(null);
   };
 
   const handleAddNewBlog = () => {
     setEditBlog(null);
     setShowForm(true);
-    setViewBlog(null);
   };
 
   const handleFormClose = () => {
     setShowForm(false);
-    setEditBlog(null);
     fetchBlogs();
   };
 
-  const handleViewBlog = (blog) => {
-    setViewBlog(blog);
-    setShowForm(false);
-  };
-
-  // FIXED: Enhanced safety checks in this function
-  const truncateDescription = (content, maxLength = 120) => {
-    // Return empty string if content is not provided
-    if (!content) return "";
-    
-    // If content is not an array, check if it's a string
-    if (!Array.isArray(content)) {
-      // If it's a string, truncate it directly
-      if (typeof content === 'string') {
-        return content.length > maxLength ? content.substring(0, maxLength) + "..." : content;
-      }
-      return "";
+  // Function to truncate the description
+  const truncateDescription = (description, maxLength = 100) => {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + "...";
     }
-    
-    // Find the first paragraph content
-    const paragraphBlock = content.find(block => block && block.type === "paragraph");
-    if (!paragraphBlock || !paragraphBlock.value) return "";
-    
-    const text = paragraphBlock.value;
-    if (typeof text === 'string' && text.length > maxLength) {
-      return text.substring(0, maxLength) + "...";
-    }
-    return text || "";
-  };
-
-  // Function to get the featured image from a blog
-  const getBlogImage = (blog) => {
-    if (!blog) return defaultImagePath;
-    
-    if (blog.images && Array.isArray(blog.images) && blog.images.length > 0) {
-      return `https://apis.innobrains.pk${blog.images[0]}`;
-    }
-    
-    // Look for first image in content blocks
-    if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block && block.type === "image");
-      if (imageBlock && imageBlock.value && typeof imageBlock.value === 'string' && !imageBlock.value.startsWith("contentImage_")) {
-        return imageBlock.value;
-      }
-    }
-    
-    return defaultImagePath;
-  };
-
-  // Render content blocks based on their type
-  const renderContentBlock = (block, index) => {
-    if (!block || typeof block !== 'object') return null;
-    
-    switch (block.type) {
-      case "heading":
-        return (
-          <h2 key={index} className="text-2xl font-bold my-4">
-            {block.value}
-          </h2>
-        );
-      case "subheading":
-        return (
-          <h3 key={index} className="text-xl font-semibold my-3 text-gray-700">
-            {block.value}
-          </h3>
-        );
-      case "paragraph":
-        return (
-          <p key={index} className="my-3 text-gray-600 leading-relaxed">
-            {block.value}
-          </p>
-        );
-      case "image":
-        // Handle both uploaded images and image URLs
-        if (!block.value) return null;
-        
-        const imageUrl = typeof block.value === 'string' && block.value.startsWith("contentImage_")
-          ? null // These should be replaced with actual paths from the server
-          : block.value;
-          
-        return imageUrl ? (
-          <div key={index} className="my-4">
-            <img
-              src={imageUrl}
-              alt="Blog content"
-              className="max-w-full h-auto rounded-lg mx-auto"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultImagePath;
-              }}
-            />
-          </div>
-        ) : null;
-      default:
-        return null;
-    }
+    return description;
   };
 
   return (
     <div className="min-h-screen p-6 bg-gray-100 lg:w-[80%] ml-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">
-          {showForm 
-            ? (editBlog ? "Edit Blog" : "Add New Blog") 
-            : viewBlog ? viewBlog.title : "Blogs"}
+          {showForm ? (editBlog ? "Edit Blog" : "Add New Blog") : "Blogs"}
         </h1>
-        <div>
-          {!showForm && !viewBlog && (
-            <button
-              onClick={handleAddNewBlog}
-              className="bg-[#103153] text-white px-5 py-2 rounded-lg hover:bg-[#1e4b7c] transition flex items-center"
-            >
-              <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add New Blog
-            </button>
-          )}
-          {viewBlog && (
-            <div className="flex space-x-3">
-              <button
-                onClick={() => handleEdit(viewBlog)}
-                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
-              >
-                <FontAwesomeIcon icon={faEdit} className="mr-2" /> Edit
-              </button>
-              <button
-                onClick={() => setViewBlog(null)}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-              >
-                Back to Blogs
-              </button>
-            </div>
-          )}
-        </div>
+        {!showForm && (
+          <button
+            onClick={handleAddNewBlog}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add New Blog
+          </button>
+        )}
       </div>
 
       {showForm ? (
         <BlogForm blog={editBlog} onClose={handleFormClose} />
-      ) : viewBlog ? (
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <div className="mb-6">
-            <img
-              src={getBlogImage(viewBlog)}
-              alt={viewBlog.title}
-              className="w-full h-64 object-cover rounded-lg"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultImagePath;
-              }}
-            />
-          </div>
-          
-          <div className="flex items-center mb-4 text-sm text-gray-500">
-            <span className="mr-4">{viewBlog.category}</span>
-            <span>{viewBlog.duration}</span>
-          </div>
-          
-          <div className="prose max-w-none">
-            {Array.isArray(viewBlog.content) && viewBlog.content.map(renderContentBlock)}
-          </div>
-        </div>
       ) : (
         <>
-          {isLoading ? (
-            <div className="text-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#103153] mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading blogs...</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentBlogs.length > 0 ? (
-                  currentBlogs.map((blog) => (
-                    <div
-                      key={blog._id}
-                      className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1"
-                    >
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => handleViewBlog(blog)}
-                      >
-                        <div className="h-48 overflow-hidden">
-                          <img
-                            src={getBlogImage(blog)}
-                            alt={blog.title || "Blog image"}
-                            className="w-full h-full object-cover transition-transform hover:scale-105"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = defaultImagePath;
-                            }}
-                          />
-                        </div>
-                        <div className="p-4">
-                          <div className="flex items-center text-xs text-gray-500 mb-2">
-                            <span className="mr-3">{blog.category}</span>
-                            <span>{blog.duration}</span>
-                          </div>
-                          <h2 className="text-lg font-semibold mb-2 line-clamp-2">{blog.title}</h2>
-                          <p className="text-gray-600 text-sm line-clamp-3">
-                            {truncateDescription(blog.content)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="border-t px-4 py-3 flex justify-end space-x-4">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(blog);
-                          }}
-                          className="text-yellow-500 hover:text-yellow-600"
-                        >
-                          <FontAwesomeIcon icon={faEdit} size="lg" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(blog._id);
-                          }}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          <FontAwesomeIcon icon={faTrashCan} size="lg" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center py-10 bg-white rounded-lg shadow">
-                    <div className="text-gray-400 text-lg mb-4">No blogs found</div>
-                    <button
-                      onClick={handleAddNewBlog}
-                      className="bg-[#103153] text-white px-4 py-2 rounded-md hover:bg-[#1e4b7c]"
-                    >
-                      Create your first blog
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {totalBlogs > blogsPerPage && (
-                <div className="flex flex-col md:flex-row justify-between items-center mt-8 bg-white p-4 rounded-lg shadow">
-                  <span className="mb-2 md:mb-0 text-gray-600">
-                    Showing {indexOfFirstBlog + 1}-{Math.min(indexOfLastBlog, totalBlogs)} of {totalBlogs}
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === 1 ? "bg-gray-300" : "bg-[#103153] text-white"
-                      }`}
-                    >
-                      Previous
-                    </button>
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        // If 5 or fewer pages, show all page numbers
-                        pageNum = i + 1;
-                      } else {
-                        // For more than 5 pages, show a window around the current page
-                        const middlePoint = Math.min(Math.max(3, currentPage), totalPages - 2);
-                        pageNum = i - 2 + middlePoint;
-                      }
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1 rounded ${
-                            pageNum === currentPage
-                              ? "bg-[#103153] text-white"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                    <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === totalPages ? "bg-gray-300" : "bg-[#103153] text-white"
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentBlogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="bg-white rounded-lg shadow-md p-4 flex flex-col"
+              >
+                <img
+                  src={`https://apis.innobrains.pk${blog.image}`}
+                  alt={blog.title}
+                  className="w-full h-32 object-cover rounded-md"
+                  onError={(e) => {
+                    e.target.src = "/images/default-image.jpg";
+                  }}
+                />
+                <h2 className="text-lg font-semibold mt-2">{blog.title}</h2>
+                <p className="text-gray-600">{blog.category}</p>
+                <p className="text-gray-800 mt-2 flex-grow">
+                  {truncateDescription(blog.description, 90)}{" "}
+                  {/* Limit description length */}
+                </p>
+                <hr className="my-2" />
+                <div className="flex justify-between mt-3 px-10 shadow-sm">
+                  <button
+                    onClick={() => handleEdit(blog)}
+                    className="text-yellow-500 hover:text-yellow-600 transform hover:scale-110 transition-transform"
+                  >
+                    <FontAwesomeIcon icon={faEdit} size="lg" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(blog._id)}
+                    className="text-red-500 hover:text-red-600 transform hover:scale-110 transition-transform"
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} size="lg" />
+                  </button>
                 </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between items-center mt-4">
+            <span className="mb-2 md:mb-0">
+              Showing {indexOfFirstBlog + 1}-{" "}
+              {Math.min(indexOfLastBlog, blogs.length)} of {blogs.length}
+            </span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded ${
+                  currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white"
+                }`}
+              >
+                Previous
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1 rounded ${
+                      page === currentPage
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-300"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
               )}
-            </>
-          )}
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded ${
+                  currentPage === totalPages
+                    ? "bg-gray-300"
+                    : "bg-blue-500 text-white"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </>
       )}
     </div>

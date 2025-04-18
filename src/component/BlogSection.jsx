@@ -4,16 +4,6 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import '../App.css';
 
-// Helper function to create slugs from titles - same as in BlogArticle
-const createSlug = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')     // Replace spaces with hyphens
-    .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
-    .trim();                  // Trim leading/trailing spaces
-};
-
 const BlogSection = ({ limit }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +19,6 @@ const BlogSection = ({ limit }) => {
           throw new Error("Failed to fetch blog data");
         }
         const data = await response.json();
-        console.log(data); // Log the data to check its structure
         setBlogs(data);
         setLoading(false);
       } catch (error) {
@@ -44,7 +33,7 @@ const BlogSection = ({ limit }) => {
   // Get blog image using the same strategy as in Blog component
   const getBlogImage = (blog) => {
     // Check if blog has images array
-    if (blog.images && Array.isArray(blog.images) && blog.images.length > 0) {
+    if (blog.images && blog.images.length > 0) {
       return `https://apis.innobrains.pk${blog.images[0]}`;
     }
     
@@ -61,7 +50,7 @@ const BlogSection = ({ limit }) => {
       return `https://apis.innobrains.pk${blog.image}`;
     }
     
-    return defaultImagePath; // Return default image if no image found
+    return defaultImagePath;
   };
 
   // Get blog description using the same strategy as in Blog component
@@ -100,56 +89,47 @@ const BlogSection = ({ limit }) => {
           {loading ? (
             <div className="text-center w-full">Loading blogs...</div>
           ) : (
-            displayBlogs.map((blog, index) => {
-              const blogImage = getBlogImage(blog);
-              const blogSlug = createSlug(blog.title);
-              
-              return (
-                <div
-                  key={index}
-                  className="w-full md:w-1/3 px-4 mb-8"
-                >
-                  <div className="h-full bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105">
-                    {blogImage ? (
-                      <div className="w-full h-64 overflow-hidden">
-                        <img
-                          className="w-full h-full object-cover"
-                          src={blogImage}
-                          alt={blog.title || "Blog Post"}
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.style.display = "none";
-                            e.target.parentElement.style.display = "none";
-                          }}
-                        />
-                      </div>
-                    ) : null}
-                    <div className="p-6 bg-[#FDFDFD]">
-                      <div className="text-sm font-semibold text-[#103153] mb-2">
-                        <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
-                        <span className="ms-2 poppins-thin">{blog.duration}</span>
-                      </div>
-                      <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                        {blog.title}
-                      </h3>
-                      <p className="text-gray-600 poppins-thin mb-4">
-                        {getBlogDescription(blog)}
-                      </p>
-                      <Link
-                        to={`/blog/${blogSlug}`}
-                        state={{ blogData: blog }}
-                        className="text-[#103153] hover:text-indigo-800 font-semibold"
-                        aria-label={`Read more about ${blog.title}`}
-                      >
-                        Read more 
-                        <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                      </Link>
+            displayBlogs.map((blog, index) => (
+              <div
+                key={index}
+                className="w-full md:w-1/3 px-4 mb-8"
+              >
+                <div className="h-full bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105">
+                  <div className="w-full aspect-[4/4] overflow-hidden">
+                    <img
+                      className="w-full h-full object-cover"
+                      src={getBlogImage(blog)}
+                      alt={blog.title || "Blog Post"}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultImagePath;
+                      }}
+                    />
+                  </div>
+                  <div className="p-6 bg-[#FDFDFD]">
+                    <div className="text-sm font-semibold text-[#103153] mb-2">
+                      <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>  
+                      <span className="ms-2 poppins-thin">{blog.duration}</span>
                     </div>
+                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 poppins-thin mb-4">
+                      {getBlogDescription(blog)}
+                    </p>
+                    <Link
+                      to={`/blog/${blog._id || blog.id}`}
+                      state={{ blogData: blog }}
+                      className="text-[#103153] hover:text-indigo-800 font-semibold"
+                      aria-label={`Read more about ${blog.title}`}
+                    >
+                      Read more 
+                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                    </Link>
                   </div>
                 </div>
-              );
-            })
+              </div>
+            ))
           )}
         </div>
         {/* Read All Button - only show when limit is set and there are more blogs than the limit */}

@@ -3,23 +3,12 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 
-// Helper function to create slugs from titles
-const createSlug = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')     // Replace spaces with hyphens
-    .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
-    .trim();                  // Trim leading/trailing spaces
-};
-
 const BlogArticle = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedBlogs, setRelatedBlogs] = useState([]);
-  const [imageErrors, setImageErrors] = useState({});
   const defaultImagePath = "/images/default-image.jpg";
 
   useEffect(() => {
@@ -28,41 +17,21 @@ const BlogArticle = () => {
       setBlog(location.state.blogData);
       setLoading(false);
       fetchRelatedBlogs(location.state.blogData.category);
-    } else if (slug) {
-      // If not found in state, fetch it from API by slug
+    } else if (id) {
+      // If not found in state, fetch it from API
       fetchBlogData();
     }
-  }, [slug, location.state]);
+  }, [id, location.state]);
 
   const fetchBlogData = async () => {
     try {
-      // First try to fetch by slug if your API supports it
-      let response = await fetch(`https://apis.innobrains.pk/api/blog/by-slug/${slug}`);
-      
-      // If your API doesn't have a slug endpoint yet, we'll need to fetch all blogs and find by slug
+      const response = await fetch(`https://apis.innobrains.pk/api/blog/${id}`);
       if (!response.ok) {
-        response = await fetch(`https://apis.innobrains.pk/api/blog`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch blog data");
-        }
-        
-        const allBlogs = await response.json();
-        // Find the blog with matching slug
-        const matchingBlog = allBlogs.find(blog => createSlug(blog.title) === slug);
-        
-        if (matchingBlog) {
-          setBlog(matchingBlog);
-          fetchRelatedBlogs(matchingBlog.category);
-        } else {
-          throw new Error("Blog not found");
-        }
-      } else {
-        // If your API supports slug endpoint
-        const data = await response.json();
-        setBlog(data);
-        fetchRelatedBlogs(data.category);
+        throw new Error("Failed to fetch blog data");
       }
-      
+      const data = await response.json();
+      setBlog(data);
+      fetchRelatedBlogs(data.category);
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch blog data", error);
@@ -79,7 +48,7 @@ const BlogArticle = () => {
       const data = await response.json();
       // Filter out current blog and limit to 3
       const filteredData = data
-        .filter(item => createSlug(item.title) !== slug)
+        .filter(item => item._id !== id)
         .slice(0, 3);
       setRelatedBlogs(filteredData);
     } catch (error) {
@@ -87,45 +56,9 @@ const BlogArticle = () => {
     }
   };
 
-  const handleImageError = (id) => {
-    setImageErrors(prev => ({
-      ...prev,
-      [id]: true
-    }));
-  };
-
-  // Check if blog has valid image
-  const hasValidImage = (blog) => {
-    if (!blog) return false;
-    
-    // Check if blog has images array
-    if (blog.images && blog.images.length > 0) {
-      return true;
-    }
-    
-    // Look for first image in content blocks
-    if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block.type === "image");
-      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
-        return true;
-      }
-    }
-    
-    // If image property exists (for backward compatibility)
-    if (blog.image) {
-      return true;
-    }
-    
-    return false;
-  };
-
   // Get blog image using the same strategy as in Blog component
   const getBlogImage = (blog) => {
     if (!blog) return defaultImagePath;
-    
-    if (imageErrors[blog._id]) {
-      return defaultImagePath;
-    }
     
     // Check if blog has images array
     if (blog.images && blog.images.length > 0) {
@@ -175,17 +108,16 @@ const BlogArticle = () => {
           ? null // These should be replaced with actual paths from the server
           : block.value;
           
-        if (!imageUrl) return null;
-        
-        const imageId = `content-image-${index}`;
-        
-        return !imageErrors[imageId] ? (
+        return imageUrl ? (
           <div key={index} className="my-4">
             <img
               src={imageUrl}
               alt="Blog content"
               className="max-w-full h-auto rounded-lg mx-auto"
-              onError={() => handleImageError(imageId)}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultImagePath;
+              }}
             />
           </div>
         ) : null;
@@ -230,6 +162,10 @@ const BlogArticle = () => {
               <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
                 {blog.title}
               </h1>
+              <p className="text-lg text-gray-700 mt-4">
+                {blog.description || (blog.content && Array.isArray(blog.content) && 
+                  blog.content.find(block => block.type === "paragraph")?.value)}
+              </p>
             </div>
 
             {/* Meta Info */}
@@ -245,17 +181,18 @@ const BlogArticle = () => {
               </div>
             </div>
 
-            {/* Featured Image - Only show if valid and not errored */}
-            {hasValidImage(blog) && !imageErrors[blog._id] && (
-              <div className="mb-8">
-                <img
-                  src={getBlogImage(blog)}
-                  alt={blog.title}
-                  className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
-                  onError={() => handleImageError(blog._id)}
-                />
-              </div>
-            )}
+            {/* Featured Image */}
+            <div className="mb-8">
+              <img
+                src={getBlogImage(blog)}
+                alt={blog.title}
+                className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultImagePath;
+                }}
+              />
+            </div>
 
             {/* Article Content */}
             <article className="prose lg:prose-xl prose-slate max-w-none">
@@ -294,11 +231,11 @@ const BlogArticle = () => {
               </div>
 
               <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-                {/* <img src="https://i.pravatar.cc/100" className="w-16 h-16 rounded-full" alt="Author" />
+                <img src="https://i.pravatar.cc/100" className="w-16 h-16 rounded-full" alt="Author" />
                 <div>
                   <p className="font-semibold text-gray-900">Ali from Innobrains</p>
                   <p className="text-gray-600 text-sm">Front-End Developer who loves clean UI and future tech trends.</p>
-                </div> */}
+                </div>
               </div>
             </div>
 
@@ -313,49 +250,44 @@ const BlogArticle = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Related Articles</h3>
             {relatedBlogs.length > 0 ? (
               <ul className="space-y-5">
-                {relatedBlogs.map((relatedBlog) => {
-                  const blogId = relatedBlog._id;
-                  const hasImage = hasValidImage(relatedBlog) && !imageErrors[blogId];
-                  const blogSlug = createSlug(relatedBlog.title);
-                  
-                  return (
-                    <li key={blogId} className="flex items-center gap-4">
-                      {hasImage && (
-                        <img 
-                          src={getBlogImage(relatedBlog)} 
-                          alt={relatedBlog.title} 
-                          className="w-16 h-16 rounded-lg object-cover" 
-                          onError={() => handleImageError(blogId)}
-                        />
-                      )}
-                      <Link 
-                        to={`/blog/${blogSlug}`}
-                        state={{ blogData: relatedBlog }}
-                        className={`text-blue-700 font-medium hover:underline ${hasImage ? '' : 'flex-1'}`}
-                      >
-                        {relatedBlog.title}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {relatedBlogs.map((relatedBlog) => (
+                  <li key={relatedBlog._id} className="flex items-center gap-4">
+                    <img 
+                      src={getBlogImage(relatedBlog)} 
+                      alt={relatedBlog.title} 
+                      className="w-16 h-16 rounded-lg object-cover" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultImagePath;
+                      }}
+                    />
+                    <Link 
+                      to={`/blog/${relatedBlog._id}`}
+                      state={{ blogData: relatedBlog }}
+                      className="text-blue-700 font-medium hover:underline"
+                    >
+                      {relatedBlog.title}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             ) : (
               <ul className="space-y-5">
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/future-of-front-end-development-in-2025" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/article-1" className="text-blue-700 font-medium hover:underline">
                     Future of Front-End Development in 2025
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/back-end-technologies-you-need-to-know" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/article-2" className="text-blue-700 font-medium hover:underline">
                     Back-End Technologies You Need to Know
                   </a>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                  <a href="/blog/how-ai-is-changing-web-development" className="text-blue-700 font-medium hover:underline">
+                  <a href="/blog/article-3" className="text-blue-700 font-medium hover:underline">
                     How AI is Changing Web Development
                   </a>
                 </li>
