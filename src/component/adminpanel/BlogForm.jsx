@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const BlogForm = ({ blogId, onSubmitSuccess }) => {
+const BlogForm = ({ blog, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     duration: '',
@@ -23,38 +23,42 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
   const categories = ['Technology', 'Business', 'Health', 'Travel', 'Food', 'Lifestyle', 'Other'];
 
   useEffect(() => {
-    if (blogId) {
+    if (blog && blog._id) {
       setIsEditing(true);
-      fetchBlogData();
-    }
-  }, [blogId]);
-
-  const fetchBlogData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`https://apis.innobrains.pk/api/blog/${blogId}`);
-      const blog = response.data;
-      
       setFormData({
-        title: blog.title,
-        duration: blog.duration,
-        category: blog.category,
-        content: blog.content,
-        status: blog.status,
+        title: blog.title || '',
+        duration: blog.duration || '',
+        category: blog.category || '',
+        content: blog.content || '',
+        status: blog.status || 'draft',
         tags: blog.tags || [],
-        author: blog.author
+        author: blog.author || 'Admin'
       });
       
-      if (blog.featuredImage) {
-        setImagePreview(blog.featuredImage);
+      if (blog.image || blog.featuredImage) {
+        // Create a proper URL for image preview
+        const imageUrl = getImageUrl(blog.image || blog.featuredImage);
+        setImagePreview(imageUrl);
       }
-      
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch blog data');
-      setLoading(false);
-      console.error('Error fetching blog:', err);
     }
+  }, [blog]);
+
+  // Helper function to get proper image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    
+    // If the image path already includes the domain, use it as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // If the path starts with a slash, it's probably a relative path
+    if (imagePath.startsWith('/')) {
+      return `https://apis.innobrains.pk${imagePath}`;
+    }
+    
+    // Otherwise, assume it's a relative path without a leading slash
+    return `https://apis.innobrains.pk/${imagePath}`;
   };
 
   const handleChange = (e) => {
@@ -69,8 +73,22 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+      
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setError('Image must be JPEG, PNG, GIF or WEBP format');
+        return;
+      }
+      
       setFeaturedImage(file);
       setImagePreview(URL.createObjectURL(file));
+      setError(''); // Clear any previous errors
     }
   };
 
@@ -104,8 +122,14 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
     setError('');
 
     try {
+      // Verify required fields
+      if (!formData.title || !formData.category) {
+        throw new Error('Title and category are required');
+      }
+
       const formDataToSend = new FormData();
       
+      // Add all form fields
       for (const key in formData) {
         if (key === 'tags') {
           formDataToSend.append('tags', JSON.stringify(formData.tags));
@@ -114,37 +138,45 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
         }
       }
       
+      // Add the image only if there's a new one
       if (featuredImage) {
         formDataToSend.append('featuredImage', featuredImage);
       }
 
-      let response;
-      if (isEditing) {
-        response = await axios.put(
-          `https://apis.innobrains.pk/api/blog/${blogId}`,
-          formDataToSend,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
-      } else {
-        response = await axios.post(
-          'https://apis.innobrains.pk/api/blog',
-          formDataToSend,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
-      }
+      // Set up API request
+      const apiEndpoint = isEditing
+        ? `https://apis.innobrains.pk/api/blog/${blog._id}`
+        : 'https://apis.innobrains.pk/api/blog';
+        
+      const config = {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          // Add CORS headers
+          'Access-Control-Allow-Origin': '*'
+        },
+        withCredentials: false
+      };
 
+      // Make the request
+      const response = isEditing
+        ? await axios.put(apiEndpoint, formDataToSend, config)
+        : await axios.post(apiEndpoint, formDataToSend, config);
+
+      // Handle response
       setLoading(false);
-      if (onSubmitSuccess) {
-        onSubmitSuccess(response.data);
+      
+      if (onClose) {
+        onClose(response.data);
       }
 
+      // Reset form if it's a new blog
       if (!isEditing) {
         resetForm();
       }
     } catch (err) {
-      setLoading(false);
-      setError('Failed to save blog');
       console.error('Error saving blog:', err);
+      setLoading(false);
+      setError(err.response?.data?.message || err.message || 'Failed to save blog');
     }
   };
 
@@ -181,7 +213,7 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
   ];
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto my-8">
+    <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Blog' : 'Create New Blog'}</h2>
       
       {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
@@ -189,14 +221,14 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Title</label>
+            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Title *</label>
             <input
               type="text"
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             />
           </div>
@@ -209,19 +241,18 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
               name="duration"
               value={formData.duration}
               onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              required
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
           
           <div>
-            <label htmlFor="category" className="block text-gray-700 font-medium mb-2">Category</label>
+            <label htmlFor="category" className="block text-gray-700 font-medium mb-2">Category *</label>
             <select
               id="category"
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             >
               <option value="">Select a category</option>
@@ -238,7 +269,7 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -253,7 +284,7 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
               name="author"
               value={formData.author}
               onChange={handleChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
           
@@ -264,12 +295,33 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
               id="featuredImage"
               name="featuredImage"
               onChange={handleImageChange}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               accept="image/*"
             />
             {imagePreview && (
-              <div className="mt-2">
-                <img src={imagePreview} alt="Preview" className="h-32 w-auto object-cover rounded" />
+              <div className="mt-2 relative">
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="h-32 w-auto object-cover rounded border border-gray-200" 
+                  onError={(e) => {
+                    // Only set the error image once to prevent flickering
+                    if (!e.target.src.includes('default-image.jpg')) {
+                      e.target.src = "/images/default-image.jpg";
+                    }
+                  }}
+                />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setImagePreview('');
+                    setFeaturedImage(null);
+                  }}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  title="Remove image"
+                >
+                  ✕
+                </button>
               </div>
             )}
           </div>
@@ -300,7 +352,7 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 border-gray-300 rounded-l-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="flex-1 border border-gray-300 rounded-l-md shadow-sm p-2 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               placeholder="Add a tag and press Enter"
             />
             <button
@@ -320,20 +372,18 @@ const BlogForm = ({ blogId, onSubmitSuccess }) => {
             onChange={handleContentChange}
             modules={modules}
             formats={formats}
-            className="h-64 mb-12"
+            className="h-64 mb-12 bg-white"
           />
         </div>
         
         <div className="mt-16 flex justify-end space-x-3">
-          {isEditing && (
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
