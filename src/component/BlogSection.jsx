@@ -29,6 +29,7 @@ const BlogSection = ({ limit }) => {
           throw new Error("Failed to fetch blog data");
         }
         const data = await response.json();
+        console.log(data); // Log the data to check its structure
         setBlogs(data);
         setLoading(false);
       } catch (error) {
@@ -43,7 +44,7 @@ const BlogSection = ({ limit }) => {
   // Get blog image using the same strategy as in Blog component
   const getBlogImage = (blog) => {
     // Check if blog has images array
-    if (blog.images && blog.images.length > 0) {
+    if (blog.images && Array.isArray(blog.images) && blog.images.length > 0) {
       return `https://apis.innobrains.pk${blog.images[0]}`;
     }
     
@@ -60,7 +61,7 @@ const BlogSection = ({ limit }) => {
       return `https://apis.innobrains.pk${blog.image}`;
     }
     
-    return null; // Return null if no image found instead of default
+    return defaultImagePath; // Return default image if no image found
   };
 
   // Get blog description using the same strategy as in Blog component
