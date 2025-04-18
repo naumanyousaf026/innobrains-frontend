@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import BlogForm from "./BlogForm";
+
 const Blog = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]); // Initialized as empty array
   const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 9; // Total blogs per page
+  const blogsPerPage = 9;
   const [showForm, setShowForm] = useState(false);
   const [editBlog, setEditBlog] = useState(null);
 
@@ -20,18 +21,17 @@ const Blog = () => {
         throw new Error("Failed to fetch blogs");
       }
       const data = await response.json();
-      // Ensure that data.blogs is an array
+      // Ensure data.blogs is an array
       if (Array.isArray(data.blogs)) {
         setBlogs(data.blogs);
       } else {
-        setBlogs([]); // Set blogs to an empty array if data.blogs is not an array
+        setBlogs([]); // Set blogs to empty array if not an array
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
-      setBlogs([]); // Set blogs to an empty array on error
+      setBlogs([]); // Set blogs to empty array on error
     }
   };
-  
 
   const handleDelete = async (blogId) => {
     try {
@@ -53,10 +53,8 @@ const Blog = () => {
 
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = blogs && blogs.length ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) : [];
-
-  const totalPages = blogs && blogs.length ? Math.ceil(blogs.length / blogsPerPage) : 0;
-
+  const currentBlogs = Array.isArray(blogs) && blogs.length ? blogs.slice(indexOfFirstBlog, indexOfLastBlog) : [];
+  const totalPages = Array.isArray(blogs) && blogs.length ? Math.ceil(blogs.length / blogsPerPage) : 0;
 
   const handleEdit = (blog) => {
     setEditBlog(blog);
@@ -73,12 +71,11 @@ const Blog = () => {
     fetchBlogs();
   };
 
-  // Function to truncate the description
   const truncateDescription = (description, maxLength = 100) => {
-    if (description.length > maxLength) {
+    if (description && description.length > maxLength) {
       return description.substring(0, maxLength) + "...";
     }
-    return description;
+    return description || ''; // Safeguard for undefined or null description
   };
 
   return (
@@ -119,7 +116,6 @@ const Blog = () => {
                 <p className="text-gray-600">{blog.category}</p>
                 <p className="text-gray-800 mt-2 flex-grow">
                   {truncateDescription(blog.description, 90)}{" "}
-                  {/* Limit description length */}
                 </p>
                 <hr className="my-2" />
                 <div className="flex justify-between mt-3 px-10 shadow-sm">
