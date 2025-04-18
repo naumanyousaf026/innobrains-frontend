@@ -20,10 +20,11 @@ const Blog = () => {
         throw new Error("Failed to fetch blogs");
       }
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setBlogs(data);
+      // Ensure that data.blogs is an array
+      if (Array.isArray(data.blogs)) {
+        setBlogs(data.blogs);
       } else {
-        setBlogs([]); // If data is not an array, set blogs to an empty array
+        setBlogs([]); // Set blogs to an empty array if data.blogs is not an array
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);

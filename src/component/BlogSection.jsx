@@ -148,6 +148,6 @@ const BlogSection = ({ limit }) => {
       </div>
     </div>
   );
-};
+}
 
 export default BlogSection;
