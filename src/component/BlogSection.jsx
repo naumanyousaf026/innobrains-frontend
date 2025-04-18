@@ -1,39 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import webcard from '../images/image2.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import '../App.css'; 
+import '../App.css'; // Importing App.css
 
 const BlogSection = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+
+  // Ensure full image URL handling (absolute URL)
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/images/default-image.jpg"; // default image if no image is available
+
+    // If the image path already includes the domain, use it as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    // If the path starts with a slash, it's probably a relative path
+    if (imagePath.startsWith('/')) {
+      return `https://apis.innobrains.pk${imagePath}`;
+    }
+
+    // Otherwise, assume it's a relative path without a leading slash
+    return `https://apis.innobrains.pk/${imagePath}`;
+  };
 
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchBlogPosts = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`https://apis.innobrains.pk/api/blog?page=${currentPage}`);
-        
+        const response = await fetch('https://apis.innobrains.pk/api/blog');
         if (!response.ok) {
-          throw new Error('Failed to fetch blogs');
+          throw new Error('Failed to fetch blog posts');
         }
-        
         const data = await response.json();
-        setBlogs(data.blogs);
-        setTotalPages(data.totalPages);
-        setCurrentPage(data.currentPage);
+        setBlogPosts(Array.isArray(data) ? data : [data]); // Handle both array and single object responses
+        setLoading(false);
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
 
-    fetchBlogs();
-  }, [currentPage]);
+    fetchBlogPosts();
+  }, []);
+
+  // Function to create a text excerpt from HTML content
+  const createExcerpt = (htmlContent, maxLength = 120) => {
+    // Remove HTML tags and get plain text
+    const plainText = htmlContent.replace(/<[^>]+>/g, '');
+    // Create excerpt
+    return plainText.length > maxLength
+      ? plainText.substring(0, maxLength) + '...'
+      : plainText;
+  };
+
+  // Fallback data for when API might fail
+  const fallbackPost = {
+    title: "Unraveling the Newest Features",
+    category: "Category",
+    duration: "5",
+    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.",
+    featuredImage: null
+  };
 
   return (
     <div className="py-10 max-w-7xl mx-auto">
@@ -41,113 +70,69 @@ const BlogSection = () => {
         <div className="text-left my-16 px-10 mx-auto">
           <h3 className="block text-lg font-semibold poppins-thin text-[#101010] mb-2">Blog</h3>
           <h1 className="text-4xl lg:text-5xl poppins-thin font-bold text-[#101010] mb-5">
-            Explore article and <span className="block mt-2">information</span> 
+            Explore article and <span className="block mt-2">information</span>
           </h1>
           <p className="text-[#5C5C5C] poppins-thin text-lg">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </p>
         </div>
-
-        {loading ? (
-          <div className="text-center py-10">Loading blogs...</div>
-        ) : error ? (
-          <div className="text-center py-10 text-red-500">Error: {error}</div>
-        ) : (
-          <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
-            {blogs.length > 0 ? (
-              blogs.map((blog) => (
-                <div
-                  key={blog._id}
-                  className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
-                >
-                  <img
-                    className=""
-                    src={blog.featuredImage || webcard}
-                    alt={blog.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = webcard;
-                    }}
-                  />
-                  <div className="p-6 bg-[#FDFDFD]">
-                    <div className="text-sm font-semibold text-[#103153] mb-2">
-                      <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>{" "}
-                      <span className="ms-2 poppins-thin">{blog.duration} min read</span>
-                    </div>
-                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                      {blog.title}
-                    </h3>
-                    <p className="text-gray-600 poppins-thin mb-4">
-                      {blog.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros."}
-                    </p>
-                    <a
-                      href={`/blog/${blog.slug}`}
-                      className="text-[#103153] hover:text-indigo-800 font-semibold"
-                      aria-label={`Read more about ${blog.title}`}
-                    >
-                      Read more
-                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </a>
-                  </div>
+        
+        <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
+          {loading ? (
+            // Loading state
+            Array(3).fill(0).map((_, index) => (
+              <div key={index} className="bg-white shadow-md overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-6 bg-[#FDFDFD]">
+                  <div className="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+                  <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2 w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                 </div>
-              ))
-            ) : (
-              // Fill with placeholder cards if no blogs are available
-              [1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
-                >
-                  <img className="" src={webcard} alt="Blog Post" />
-                  <div className="p-6 bg-[#FDFDFD]">
-                    <div className="text-sm font-semibold text-[#103153] mb-2">
-                      <span className="bg-[#EEEEEE] poppins-thin p-1">Category</span>{" "}
-                      <span className="ms-2 poppins-thin">5 min read</span>
-                    </div>
-                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
-                      Unraveling the Newest Features
-                    </h3>
-                    <p className="text-gray-600 poppins-thin mb-4">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Suspendisse varius enim in eros.
-                    </p>
-                    <a
-                      href="#"
-                      className="text-[#103153] hover:text-indigo-800 font-semibold"
-                      aria-label="Read more about Unraveling the Newest Features"
-                    >
-                      Read more
-                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </a>
+              </div>
+            ))
+          ) : error ? (
+            // Error state
+            <div className="text-center w-full text-red-500">
+              Failed to load blog posts: {error}
+            </div>
+          ) : (
+            // Display blog posts from API or fallback
+            (blogPosts.length > 0 ? blogPosts : Array(3).fill(fallbackPost)).slice(0, 3).map((post, index) => (
+              <div
+                key={index}
+                className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+              >
+                <img
+                  className="w-full h-48 object-cover"
+                  src={post.featuredImage ? getImageUrl(post.featuredImage) : "/images/default-image.jpg"}
+                  alt={post.title || "Blog Post"}
+                />
+                <div className="p-6 bg-[#FDFDFD]">
+                  <div className="text-sm font-semibold text-[#103153] mb-2">
+                    <span className='bg-[#EEEEEE] poppins-thin p-1'>{post.category || "Category"}</span>
+                    <span className='ms-2 poppins-thin'>{post.duration || "5"} min read</span>
                   </div>
+                  <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                    {post.title || "Unraveling the Newest Features"}
+                  </h3>
+                  <p className="text-gray-600 poppins-thin mb-4">
+                    {post.content ? createExcerpt(post.content) : "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                  </p>
+                  <a
+                    href={`/blog/${post.slug || "#"}`}
+                    className="text-[#103153] hover:text-indigo-800 font-semibold"
+                    aria-label={`Read more about ${post.title}`}
+                  >
+                    Read more
+                    <FontAwesomeIcon icon={faChevronRight} className='ms-2 text-sm' />
+                  </a>
                 </div>
-              ))
-            )}
-          </div>
-        )}
-
-        {/* Pagination (optional) */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8 gap-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 bg-gray-200 disabled:opacity-50 rounded"
-            >
-              Prev
-            </button>
-            <span className="px-3 py-1">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-gray-200 disabled:opacity-50 rounded"
-            >
-              Next
-            </button>
-          </div>
-        )}
+              </div>
+            ))
+          )}
+        </div>
 
         {/* Read All Button */}
         <div className="mt-8 text-center">
