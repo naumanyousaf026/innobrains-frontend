@@ -79,30 +79,43 @@ const Blog = () => {
     setShowForm(false);
   };
 
+  // FIXED: Enhanced safety checks in this function
   const truncateDescription = (content, maxLength = 120) => {
-    if (!content || !Array.isArray(content)) return "";
+    // Return empty string if content is not provided
+    if (!content) return "";
+    
+    // If content is not an array, check if it's a string
+    if (!Array.isArray(content)) {
+      // If it's a string, truncate it directly
+      if (typeof content === 'string') {
+        return content.length > maxLength ? content.substring(0, maxLength) + "..." : content;
+      }
+      return "";
+    }
     
     // Find the first paragraph content
-    const paragraphBlock = content.find(block => block.type === "paragraph");
-    if (!paragraphBlock) return "";
+    const paragraphBlock = content.find(block => block && block.type === "paragraph");
+    if (!paragraphBlock || !paragraphBlock.value) return "";
     
     const text = paragraphBlock.value;
-    if (text.length > maxLength) {
+    if (typeof text === 'string' && text.length > maxLength) {
       return text.substring(0, maxLength) + "...";
     }
-    return text;
+    return text || "";
   };
 
   // Function to get the featured image from a blog
   const getBlogImage = (blog) => {
-    if (blog.images && blog.images.length > 0) {
+    if (!blog) return defaultImagePath;
+    
+    if (blog.images && Array.isArray(blog.images) && blog.images.length > 0) {
       return `https://apis.innobrains.pk${blog.images[0]}`;
     }
     
     // Look for first image in content blocks
     if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block.type === "image");
-      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
+      const imageBlock = blog.content.find(block => block && block.type === "image");
+      if (imageBlock && imageBlock.value && typeof imageBlock.value === 'string' && !imageBlock.value.startsWith("contentImage_")) {
         return imageBlock.value;
       }
     }
@@ -112,6 +125,8 @@ const Blog = () => {
 
   // Render content blocks based on their type
   const renderContentBlock = (block, index) => {
+    if (!block || typeof block !== 'object') return null;
+    
     switch (block.type) {
       case "heading":
         return (
@@ -133,7 +148,9 @@ const Blog = () => {
         );
       case "image":
         // Handle both uploaded images and image URLs
-        const imageUrl = block.value.startsWith("contentImage_")
+        if (!block.value) return null;
+        
+        const imageUrl = typeof block.value === 'string' && block.value.startsWith("contentImage_")
           ? null // These should be replaced with actual paths from the server
           : block.value;
           
