@@ -14,7 +14,6 @@ const Blog = () => {
   const [editBlog, setEditBlog] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewBlog, setViewBlog] = useState(null);
-  const [imageErrors, setImageErrors] = useState({});
 
   useEffect(() => {
     fetchBlogs();
@@ -94,30 +93,8 @@ const Blog = () => {
     return text;
   };
 
-  // Function to check if a blog has a valid image
-  const hasValidImage = (blog) => {
-    // Check uploaded images
-    if (blog.images && blog.images.length > 0) {
-      return true;
-    }
-    
-    // Check content blocks for images
-    if (blog.content && Array.isArray(blog.content)) {
-      const imageBlock = blog.content.find(block => block.type === "image");
-      if (imageBlock && imageBlock.value && !imageBlock.value.startsWith("contentImage_")) {
-        return true;
-      }
-    }
-    
-    return false;
-  };
-
   // Function to get the featured image from a blog
   const getBlogImage = (blog) => {
-    if (imageErrors[blog._id]) {
-      return defaultImagePath;
-    }
-    
     if (blog.images && blog.images.length > 0) {
       return `https://apis.innobrains.pk${blog.images[0]}`;
     }
@@ -131,13 +108,6 @@ const Blog = () => {
     }
     
     return defaultImagePath;
-  };
-
-  const handleImageError = (blogId) => {
-    setImageErrors(prev => ({
-      ...prev,
-      [blogId]: true
-    }));
   };
 
   // Render content blocks based on their type
@@ -167,22 +137,19 @@ const Blog = () => {
           ? null // These should be replaced with actual paths from the server
           : block.value;
           
-        if (!imageUrl) return null;
-        
-        const imageId = `content-image-${index}`;
-        
-        return (
+        return imageUrl ? (
           <div key={index} className="my-4">
-            {!imageErrors[imageId] && (
-              <img
-                src={imageUrl}
-                alt="Blog content"
-                className="max-w-full h-auto rounded-lg mx-auto"
-                onError={() => handleImageError(imageId)}
-              />
-            )}
+            <img
+              src={imageUrl}
+              alt="Blog content"
+              className="max-w-full h-auto rounded-lg mx-auto"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultImagePath;
+              }}
+            />
           </div>
-        );
+        ) : null;
       default:
         return null;
     }
@@ -228,16 +195,17 @@ const Blog = () => {
         <BlogForm blog={editBlog} onClose={handleFormClose} />
       ) : viewBlog ? (
         <div className="bg-white shadow-md rounded-lg p-6">
-          {hasValidImage(viewBlog) && !imageErrors[viewBlog._id] && (
-            <div className="mb-6">
-              <img
-                src={getBlogImage(viewBlog)}
-                alt={viewBlog.title}
-                className="w-full h-64 object-cover rounded-lg"
-                onError={() => handleImageError(viewBlog._id)}
-              />
-            </div>
-          )}
+          <div className="mb-6">
+            <img
+              src={getBlogImage(viewBlog)}
+              alt={viewBlog.title}
+              className="w-full h-64 object-cover rounded-lg"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultImagePath;
+              }}
+            />
+          </div>
           
           <div className="flex items-center mb-4 text-sm text-gray-500">
             <span className="mr-4">{viewBlog.category}</span>
@@ -268,16 +236,17 @@ const Blog = () => {
                         className="cursor-pointer"
                         onClick={() => handleViewBlog(blog)}
                       >
-                        {hasValidImage(blog) && !imageErrors[blog._id] && (
-                          <div className="h-48 overflow-hidden">
-                            <img
-                              src={getBlogImage(blog)}
-                              alt={blog.title || "Blog image"}
-                              className="w-full h-full object-cover transition-transform hover:scale-105"
-                              onError={() => handleImageError(blog._id)}
-                            />
-                          </div>
-                        )}
+                        <div className="h-48 overflow-hidden">
+                          <img
+                            src={getBlogImage(blog)}
+                            alt={blog.title || "Blog image"}
+                            className="w-full h-full object-cover transition-transform hover:scale-105"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = defaultImagePath;
+                            }}
+                          />
+                        </div>
                         <div className="p-4">
                           <div className="flex items-center text-xs text-gray-500 mb-2">
                             <span className="mr-3">{blog.category}</span>
