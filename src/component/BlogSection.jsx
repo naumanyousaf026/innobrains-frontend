@@ -1,62 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import '../App.css'; // Importing App.css
+import '../App.css';
 
 const BlogSection = () => {
+  // State to store blog posts
   const [blogPosts, setBlogPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_ENDPOINT = 'https://apis.innobrains.pk/api/blog'; // Replace with your actual API endpoint
 
-  // Ensure full image URL handling (absolute URL)
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return "/images/default-image.jpg"; // Default image if no image is available
-
-    // If the image path already includes the domain, use it as is
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-
-    // If the path starts with a slash, it's likely a relative path
-    if (imagePath.startsWith('/')) {
-      return `https://apis.innobrains.pk${imagePath}`;
-    }
-
-    // Otherwise, assume it's a relative path without a leading slash
-    return `https://apis.innobrains.pk/${imagePath}`;
-  };
-
+  // Fetch blog posts when component mounts
   useEffect(() => {
-    const fetchBlogPosts = async () => {
+    const fetchBlogs = async () => {
       try {
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('API Response:', data); // Log the entire response to see its structure
+        setIsLoading(true);
+        const response = await fetch('https://apis.innobrains.pk/api/blog');
         
-        // Handle different response structures - ensure we always have an array
-        const postsArray = Array.isArray(data) ? data : (data.posts || data.data || []);
-        setBlogPosts(postsArray);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-        console.error("Error fetching blog posts:", error);
+        if (!response.ok) {
+          throw new Error('Failed to fetch blog posts');
+        }
+        
+        const data = await response.json();
+        
+        // Handle both array or single object responses
+        if (Array.isArray(data)) {
+          setBlogPosts(data);
+        } else if (data && data._id) {
+          // If it's a single blog post object
+          setBlogPosts([data]);
+        } else {
+          setBlogPosts([]);
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching blog posts:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchBlogPosts();
-  }, []); // Empty dependency array means this effect runs once after the initial render
+    fetchBlogs();
+  }, []);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading blog posts...</div>;
-  }
+  // Function to truncate text and remove HTML tags
+  const truncateText = (text, maxLength) => {
+    // Remove HTML tags and decode HTML entities
+    const div = document.createElement('div');
+    div.innerHTML = text;
+    const plainText = div.textContent || div.innerText || '';
+    
+    return plainText.length > maxLength 
+      ? plainText.substring(0, maxLength) + '...' 
+      : plainText;
+  };
 
-  if (error) {
-    return <div className="text-center py-10 text-red-500">Error loading blog posts: {error.message}</div>;
+  // Function to create dummy blog posts to fill remaining slots
+  const getDummyPosts = (count) => {
+    const dummyPosts = [];
+    
+    for (let i = 0; i < count; i++) {
+      dummyPosts.push({
+        _id: `dummy-${i}`,
+        title: "Exploring New Technologies",
+        slug: "exploring-new-technologies",
+        duration: "3",
+        category: "Tech",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.",
+        featuredImage: null
+      });
+    }
+    
+    return dummyPosts;
+  };
+  
+  // Combine real posts with dummy posts if needed to have 3 total
+  const displayPosts = [...blogPosts];
+  if (displayPosts.length < 3) {
+    displayPosts.push(...getDummyPosts(3 - displayPosts.length));
   }
 
   return (
@@ -65,55 +85,67 @@ const BlogSection = () => {
         <div className="text-left my-16 px-10 mx-auto">
           <h3 className="block text-lg font-semibold poppins-thin text-[#101010] mb-2">Blog</h3>
           <h1 className="text-4xl lg:text-5xl poppins-thin font-bold text-[#101010] mb-5">
-            Explore article and <span className="block mt-2">information</span>
+            Explore article and <span className="block mt-2">information</span> 
           </h1>
           <p className="text-[#5C5C5C] poppins-thin text-lg">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Latest insights and perspectives on technology and more
           </p>
         </div>
-        <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
-          {Array.isArray(blogPosts) && blogPosts.length > 0 ? (
-            blogPosts.map((post) => (
+
+        {isLoading && (
+          <div className="text-center py-10">
+            <p className="text-lg text-gray-600">Loading blog posts...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-10">
+            <p className="text-lg text-red-600">Error: {error}</p>
+          </div>
+        )}
+
+        {!isLoading && !error && (
+          <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
+            {displayPosts.map((post, index) => (
               <div
                 key={post._id}
                 className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
               >
                 <img
-                  className="w-full" // Make the image responsive within the card
-                  src={getImageUrl(post.featuredImage)}
+                  className="w-full h-52 object-cover"
+                  src={post.featuredImage || '/default-blog-image.jpg'}
                   alt={post.title}
                 />
                 <div className="p-6 bg-[#FDFDFD]">
                   <div className="text-sm font-semibold text-[#103153] mb-2">
-                    <span className='bg-[#EEEEEE] poppins-thin p-1'>{post.category}</span>  <span className='ms-2 poppins-thin'>{post.duration} min read</span>
+                    <span className="bg-[#EEEEEE] poppins-thin p-1">{post.category}</span>
+                    <span className="ms-2 poppins-thin">{post.duration} min read</span>
                   </div>
                   <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
                     {post.title}
                   </h3>
                   <p className="text-gray-600 poppins-thin mb-4">
-                    {post.content.substring(0, 100)}... {/* Display a content snippet */}
+                    {truncateText(post.content, 120)}
                   </p>
                   <a
-                    href={`/blog/${post.slug}`} // Adjust the link as needed
+                    href={`/blog/${post.slug}`}
                     className="text-[#103153] hover:text-indigo-800 font-semibold"
-                    aria-label={`Read more about ${post.title} poppins-thin`}
+                    aria-label={`Read more about ${post.title}`}
                   >
-                    Read more
-                    <FontAwesomeIcon icon={faChevronRight} className='ms-2 text-sm' />
+                    Read more 
+                    <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
                   </a>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-5 w-full">No blog posts available</div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Read All Button */}
         <div className="mt-8 text-center">
           <button
             className="px-6 py-2 bg-[#F8AF2A] text-white rounded-full hover:bg-orange-600 transition duration-300"
-            aria-label="Read all blog posts poppins-thin"
+            aria-label="Read all blog posts"
           >
             Read All
           </button>
