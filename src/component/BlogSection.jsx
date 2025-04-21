@@ -64,7 +64,7 @@ const BlogSection = () => {
             Explore article and <span className="block mt-2">information</span>
           </h1>
           <p className="text-[#5C5C5C] poppins-thin text-lg">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  
           </p>
         </div>
 
