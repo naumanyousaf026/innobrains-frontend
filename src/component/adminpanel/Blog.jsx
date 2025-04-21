@@ -19,7 +19,8 @@ const Blog = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://apis.innobrains.pk/api/blog");
+      // Updated endpoint for fetching all blogs
+      const response = await fetch("https://apis.innobrains.pk/api/blog/admin/all");
       if (!response.ok) {
         throw new Error(`Failed to fetch blogs: ${response.status}`);
       }
@@ -40,6 +41,7 @@ const Blog = () => {
 
   const handleDelete = async (blogId) => {
     try {
+      // Using the DELETE request as specified
       const response = await fetch(`https://apis.innobrains.pk/api/blog/${blogId}`, {
         method: "DELETE",
       });

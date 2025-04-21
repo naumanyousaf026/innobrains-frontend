@@ -143,7 +143,8 @@ const BlogForm = ({ blog, onClose }) => {
         formDataToSend.append('featuredImage', featuredImage);
       }
 
-      // Set up API request
+      // Set up API request with updated endpoint for PUT requests
+      // Using the specific endpoint format provided
       const apiEndpoint = isEditing
         ? `https://apis.innobrains.pk/api/blog/${blog._id}`
         : 'https://apis.innobrains.pk/api/blog';
