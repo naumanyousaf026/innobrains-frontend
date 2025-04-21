@@ -25,8 +25,9 @@ const Blog = () => {
         throw new Error(`Failed to fetch blogs: ${response.status}`);
       }
       const data = await response.json();
-      if (Array.isArray(data.blogs)) {
-        setBlogs(data.blogs);
+      // The API returns an array directly, not an object with a blogs property
+      if (Array.isArray(data)) {
+        setBlogs(data);
       } else {
         setBlogs([]); 
       }
@@ -168,7 +169,7 @@ const Blog = () => {
                   <h2 className="text-lg font-semibold mt-2">{blog.title}</h2>
                   <p className="text-gray-600">{blog.category}</p>
                   <p className="text-gray-800 mt-2 flex-grow">
-                    {truncateDescription(blog.description, 90)}{" "}
+                    {truncateDescription(blog.content ? blog.content.replace(/<[^>]*>/g, '') : '', 90)}{" "}
                   </p>
                   <hr className="my-2" />
                   <div className="flex justify-between mt-3 px-10 shadow-sm">
