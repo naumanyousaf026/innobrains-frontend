@@ -41,7 +41,12 @@ const Blog = () => {
   };
 
   const handleDelete = async (blogId) => {
+    if (!window.confirm("Are you sure you want to delete this blog?")) {
+      return;
+    }
+    
     try {
+      setLoading(true);
       // Using the DELETE request as specified
       const response = await fetch(`https://apis.innobrains.pk/api/blog/${blogId}`, {
         method: "DELETE",
@@ -51,11 +56,14 @@ const Blog = () => {
         setBlogs((prevBlogs) =>
           prevBlogs.filter((blog) => blog._id !== blogId)
         );
+        setLoading(false);
       } else {
         throw new Error(`Failed to delete blog: ${response.status}`);
       }
     } catch (error) {
       console.error("Error deleting blog:", error);
+      setLoading(false);
+      setError("Failed to delete blog. Please try again.");
     }
   };
 
@@ -76,7 +84,7 @@ const Blog = () => {
 
   const handleFormClose = () => {
     setShowForm(false);
-    fetchBlogs();
+    fetchBlogs(); // Refresh the blog list to show updated data
   };
 
   const truncateDescription = (description, maxLength = 100) => {

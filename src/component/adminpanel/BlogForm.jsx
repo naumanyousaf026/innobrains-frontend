@@ -143,27 +143,35 @@ const BlogForm = ({ blog, onClose }) => {
         formDataToSend.append('featuredImage', featuredImage);
       }
 
-      // Set up API request with updated endpoint for PUT requests
-      // Using the specific endpoint format provided
-      const apiEndpoint = isEditing
-        ? `https://apis.innobrains.pk/api/blog/${blog._id}`
-        : 'https://apis.innobrains.pk/api/blog';
-        
+      // Set up API request
+      let response;
       const config = {
         headers: { 
           'Content-Type': 'multipart/form-data',
-          // Add CORS headers
           'Access-Control-Allow-Origin': '*'
         },
         withCredentials: false
       };
 
-      // Make the request
-      const response = isEditing
-        ? await axios.put(apiEndpoint, formDataToSend, config)
-        : await axios.post(apiEndpoint, formDataToSend, config);
+      if (isEditing) {
+        // Use POST method with the _method=PUT parameter for update
+        // This is a common workaround for servers that don't properly handle PUT requests with FormData
+        formDataToSend.append('_method', 'PUT');
+        response = await axios.post(
+          `https://apis.innobrains.pk/api/blog/${blog._id}`,
+          formDataToSend,
+          config
+        );
+      } else {
+        // Use regular POST for creating new blogs
+        response = await axios.post(
+          'https://apis.innobrains.pk/api/blog',
+          formDataToSend,
+          config
+        );
+      }
 
-      // Handle response
+      // Handle successful response
       setLoading(false);
       
       if (onClose) {
