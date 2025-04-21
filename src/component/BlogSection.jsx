@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import webcard from '../images/image2.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +9,10 @@ const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
+  
+  // Check if we're on the all blogs page
+  const isAllBlogsPage = location.pathname === '/blogs';
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -95,14 +100,14 @@ const BlogSection = () => {
                     <p className="text-gray-600 poppins-thin mb-4">
                       Published by {blog.author} on {formatDate(blog.createdAt)}
                     </p>
-                    <a
-                      href={`/blog/${blog.slug}`}
+                    <Link
+                      to={`/blog/${blog._id}`}
                       className="text-[#103153] hover:text-indigo-800 font-semibold"
                       aria-label={`Read more about ${blog.title}`}
                     >
                       Read more
                       <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))
@@ -126,14 +131,14 @@ const BlogSection = () => {
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Suspendisse varius enim in eros.
                     </p>
-                    <a
-                      href="#"
+                    <Link
+                      to="/blog/placeholder"
                       className="text-[#103153] hover:text-indigo-800 font-semibold"
                       aria-label="Read more about Unraveling the Newest Features"
                     >
                       Read more
                       <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))
@@ -141,15 +146,18 @@ const BlogSection = () => {
           </div>
         )}
 
-        {/* Read All Button */}
-        <div className="mt-8 text-center">
-          <button
-            className="px-6 py-2 bg-[#F8AF2A] text-white rounded-full hover:bg-orange-600 transition duration-300"
-            aria-label="Read all blog posts"
-          >
-            Read All
-          </button>
-        </div>
+        {/* Read All Button - Hidden on the all blogs page */}
+        {!isAllBlogsPage && (
+          <div className="mt-8 text-center">
+            <Link
+              to="/blog"
+              className="px-6 py-2 bg-[#F8AF2A] text-white rounded-full hover:bg-orange-600 transition duration-300"
+              aria-label="Read all blog posts"
+            >
+              Read All
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
