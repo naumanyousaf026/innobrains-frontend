@@ -100,14 +100,7 @@ const BlogSection = () => {
                     <p className="text-gray-600 poppins-thin mb-4">
                       Published by {blog.author} on {formatDate(blog.createdAt)}
                     </p>
-                    <Link
-                      to={`/blog/${blog._id}`}
-                      className="text-[#103153] hover:text-indigo-800 font-semibold"
-                      aria-label={`Read more about ${blog.title}`}
-                    >
-                      Read more
-                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </Link>
+                    <Link to={`/blog/${blog.slug || blog._id}`} className="...">Read more</Link>
                   </div>
                 </div>
               ))
