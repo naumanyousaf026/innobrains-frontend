@@ -113,13 +113,29 @@ const BlogForm = ({ blog, onClose }) => {
     setError('');
   
     try {
-      // Existing validation...
+      if (!formData.title || !formData.category) {
+        throw new Error('Title and category are required');
+      }
+  
+      // Create formDataToSend here - this was missing
+      const formDataToSend = new FormData();
       
+      for (const key in formData) {
+        if (key === 'tags') {
+          formDataToSend.append('tags', JSON.stringify(formData.tags));
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      }
+      
+      if (featuredImage) {
+        formDataToSend.append('featuredImage', featuredImage);
+      }
+  
       // Debug - Log what we're sending
       console.log("Sending data:", {
         url: isEditing ? `https://apis.innobrains.pk/api/blog/${blog._id}` : 'https://apis.innobrains.pk/api/blog',
-        method: isEditing ? 'PATCH' : 'POST',
-        formData: Object.fromEntries(formDataToSend.entries()) // Log form data content
+        method: isEditing ? 'PATCH' : 'POST'
       });
       
       const response = await fetch(
@@ -136,20 +152,27 @@ const BlogForm = ({ blog, onClose }) => {
       );
   
       if (!response.ok) {
-        // Improved error handling - try to get the response text
+        // Improved error handling
         const errorText = await response.text();
         throw new Error(`Server responded with ${response.status}: ${errorText || response.statusText}`);
       }
   
       const data = await response.json();
-      // Rest of your success handling...
+      setLoading(false);
+      
+      if (onClose) {
+        onClose(data);
+      }
+  
+      if (!isEditing) {
+        resetForm();
+      }
     } catch (err) {
       console.error('Error saving blog:', err);
       setLoading(false);
       setError(`Failed to save blog: ${err.message}. Please try again or contact support if the issue persists.`);
     }
   };
-
   const resetForm = () => {
     setFormData({
       title: '',
