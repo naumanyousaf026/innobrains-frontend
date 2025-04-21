@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -36,28 +35,23 @@ const BlogForm = ({ blog, onClose }) => {
       });
       
       if (blog.image || blog.featuredImage) {
-        // Create a proper URL for image preview
         const imageUrl = getImageUrl(blog.image || blog.featuredImage);
         setImagePreview(imageUrl);
       }
     }
   }, [blog]);
 
-  // Helper function to get proper image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return '';
     
-    // If the image path already includes the domain, use it as is
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
     
-    // If the path starts with a slash, it's probably a relative path
     if (imagePath.startsWith('/')) {
       return `https://apis.innobrains.pk${imagePath}`;
     }
     
-    // Otherwise, assume it's a relative path without a leading slash
     return `https://apis.innobrains.pk/${imagePath}`;
   };
 
@@ -73,13 +67,11 @@ const BlogForm = ({ blog, onClose }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         setError('Image size must be less than 5MB');
         return;
       }
       
-      // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
         setError('Image must be JPEG, PNG, GIF or WEBP format');
@@ -88,7 +80,7 @@ const BlogForm = ({ blog, onClose }) => {
       
       setFeaturedImage(file);
       setImagePreview(URL.createObjectURL(file));
-      setError(''); // Clear any previous errors
+      setError('');
     }
   };
 
@@ -122,14 +114,12 @@ const BlogForm = ({ blog, onClose }) => {
     setError('');
 
     try {
-      // Verify required fields
       if (!formData.title || !formData.category) {
         throw new Error('Title and category are required');
       }
 
       const formDataToSend = new FormData();
       
-      // Add all form fields
       for (const key in formData) {
         if (key === 'tags') {
           formDataToSend.append('tags', JSON.stringify(formData.tags));
@@ -138,54 +128,55 @@ const BlogForm = ({ blog, onClose }) => {
         }
       }
       
-      // Add the image only if there's a new one
       if (featuredImage) {
         formDataToSend.append('featuredImage', featuredImage);
       }
 
-      // Set up API request
-      let response;
-      const config = {
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Access-Control-Allow-Origin': '*'
-        },
-        withCredentials: false
-      };
+      let url = 'https://apis.innobrains.pk/api/blog';
+      let method = 'POST';
 
-      if (isEditing) {
-        // Use POST method with the _method=PUT parameter for update
-        // This is a common workaround for servers that don't properly handle PUT requests with FormData
-        formDataToSend.append('_method', 'PUT');
-        response = await axios.post(
-          `https://apis.innobrains.pk/api/blog/${blog._id}`,
-          formDataToSend,
-          config
-        );
-      } else {
-        // Use regular POST for creating new blogs
-        response = await axios.post(
-          'https://apis.innobrains.pk/api/blog',
-          formDataToSend,
-          config
-        );
+      if (isEditing && blog._id) {
+        // For update, try a different approach - use PATCH instead of PUT
+        url = `https://apis.innobrains.pk/api/blog/${blog._id}`;
+        method = 'PATCH';
+        
+        // Some servers might require this for proper CORS handling
+        formDataToSend.append('_method', 'PATCH');
       }
 
-      // Handle successful response
+      // Try using simple fetch instead of axios
+      const response = await fetch(url, {
+        method: method,
+        body: formDataToSend,
+        // Important: don't set Content-Type header when sending FormData
+        headers: {
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        mode: 'cors',
+        credentials: 'omit'
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
       setLoading(false);
       
       if (onClose) {
-        onClose(response.data);
+        onClose(data);
       }
 
-      // Reset form if it's a new blog
       if (!isEditing) {
         resetForm();
       }
     } catch (err) {
       console.error('Error saving blog:', err);
       setLoading(false);
-      setError(err.response?.data?.message || err.message || 'Failed to save blog');
+      
+      // More detailed error message
+      setError(`Failed to save blog: ${err.message}. Please try again or contact support if the issue persists.`);
     }
   };
 
@@ -314,7 +305,6 @@ const BlogForm = ({ blog, onClose }) => {
                   alt="Preview" 
                   className="h-32 w-auto object-cover rounded border border-gray-200" 
                   onError={(e) => {
-                    // Only set the error image once to prevent flickering
                     if (!e.target.src.includes('default-image.jpg')) {
                       e.target.src = "/images/default-image.jpg";
                     }
