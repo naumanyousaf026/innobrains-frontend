@@ -14,9 +14,12 @@ const BlogArticle = () => {
       fetchBlog();
     }
   }, [slug]);
+
   const fetchBlog = async () => {
     try {
       setLoading(true);
+      // The API is expecting an ObjectId, not a slug
+      // We're using slug as the parameter name in the route, but it might actually be an ID
       const response = await axios.get(`https://apis.innobrains.pk/api/blog/${slug}`);
       setBlog(response.data);
       
@@ -112,7 +115,7 @@ const BlogArticle = () => {
                   Draft
                 </span>
               )}
-              <span className="text-gray-500 text-sm">{blog.duration}</span>
+              <span className="text-gray-500 text-sm">{blog.duration} min read</span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -170,7 +173,7 @@ const BlogArticle = () => {
               if (window.confirm('Are you sure you want to delete this blog?')) {
                 try {
                   await axios.delete(`https://apis.innobrains.pk/api/blog/${blog._id}`);
-                  window.location.href = '/blogs';
+                  window.location.href = '/blog';
                 } catch (err) {
                   alert('Failed to delete blog');
                   console.error('Error deleting blog:', err);
