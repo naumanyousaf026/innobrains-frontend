@@ -24,8 +24,8 @@ import BlogArticle from './component/blog/BlogArticle.jsx'; // Adjust the import
 import StepForm from "./component/adminpanel/StepForm.jsx";
 
 
-import TermsOfService from "./component/terms-of-service.jsx";  
-import RefundPolicy from "./component/refund-policy.jsx";
+import TermsOfService from "./component/TermsOfService.jsx";  
+import RefundPolicy from "./component/RefundPolicy.jsx";
 import PrivacyPolicy from "./component/PrivacyPolicy.jsx";
 const router = createBrowserRouter([
   {
