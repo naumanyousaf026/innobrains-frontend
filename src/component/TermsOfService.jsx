@@ -7,7 +7,7 @@ const TermsOfService = () => {
   const [termsData, setTermsData] = useState({
     title: "",
     intro: "",
-    sections: []
+    sections: [] // Initialize sections as an empty array
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,11 @@ const TermsOfService = () => {
           throw new Error("Failed to fetch terms data");
         }
         const data = await response.json();
-        setTermsData(data);
+        // Make sure sections exists in the data, if not use an empty array
+        setTermsData({
+          ...data,
+          sections: data.sections || []
+        });
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -75,6 +79,9 @@ const TermsOfService = () => {
     );
   }
 
+  // Make sure termsData.sections exists and is an array before mapping
+  const sections = Array.isArray(termsData.sections) ? termsData.sections : [];
+
   return (
     <>
       <Header />
@@ -98,8 +105,8 @@ const TermsOfService = () => {
         >
           <h2 className="text-lg font-semibold mb-4 text-gray-800">Terms Sections</h2>
           <ul className="space-y-2">
-            {termsData.sections.map((section, index) => (
-              <li key={section._id}>
+            {sections.map((section, index) => (
+              <li key={section._id || index}>
                 <a
                   href={`#section-${index + 1}`}
                   className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition"
@@ -113,13 +120,13 @@ const TermsOfService = () => {
         
         {/* Main Content */}
         <main className="flex-1 text-gray-800 scroll-smooth">
-          <h1 className="text-3xl font-bold mb-6">{termsData.title}</h1>
+          <h1 className="text-3xl font-bold mb-6">{termsData.title || "Terms of Service"}</h1>
           
-          <p className="mb-4">{termsData.intro}</p>
+          <p className="mb-4">{termsData.intro || ""}</p>
           
           {/* Section Content */}
-          {termsData.sections.map((section, index) => (
-            <section key={section._id} id={`section-${index + 1}`} className="mb-10">
+          {sections.map((section, index) => (
+            <section key={section._id || index} id={`section-${index + 1}`} className="mb-10">
               <h2 className="text-xl font-semibold mt-6 mb-2 text-left">
                 {index + 1}. {section.title}
               </h2>
