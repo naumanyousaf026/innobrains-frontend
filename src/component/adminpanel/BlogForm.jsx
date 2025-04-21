@@ -107,17 +107,16 @@ const BlogForm = ({ blog, onClose }) => {
       addTag();
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
+  
     try {
       if (!formData.title || !formData.category) {
         throw new Error('Title and category are required');
       }
-
+  
       const formDataToSend = new FormData();
       
       for (const key in formData) {
@@ -131,51 +130,44 @@ const BlogForm = ({ blog, onClose }) => {
       if (featuredImage) {
         formDataToSend.append('featuredImage', featuredImage);
       }
-
+  
       let url = 'https://apis.innobrains.pk/api/blog';
       let method = 'POST';
-
+  
       if (isEditing && blog._id) {
-        // For update, try a different approach - use PATCH instead of PUT
         url = `https://apis.innobrains.pk/api/blog/${blog._id}`;
         method = 'PATCH';
-        
-        // Some servers might require this for proper CORS handling
-        formDataToSend.append('_method', 'PATCH');
       }
-
-      // Try using simple fetch instead of axios
+  
+      // Updated fetch request - removed problematic headers
       const response = await fetch(url, {
         method: method,
         body: formDataToSend,
-        // Important: don't set Content-Type header when sending FormData
+        // Simplified headers
         headers: {
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          'Accept': 'application/json'
         },
         mode: 'cors',
         credentials: 'omit'
       });
-
+  
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
-
+  
       const data = await response.json();
       setLoading(false);
       
       if (onClose) {
         onClose(data);
       }
-
+  
       if (!isEditing) {
         resetForm();
       }
     } catch (err) {
       console.error('Error saving blog:', err);
       setLoading(false);
-      
-      // More detailed error message
       setError(`Failed to save blog: ${err.message}. Please try again or contact support if the issue persists.`);
     }
   };
