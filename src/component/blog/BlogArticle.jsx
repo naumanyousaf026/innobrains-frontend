@@ -194,45 +194,6 @@ const BlogArticle = () => {
                 <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Twitter</button>
                 <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">LinkedIn</button>
               </div>
-
-              <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-                <img 
-                  src="https://i.pravatar.cc/100" 
-                  className="w-16 h-16 rounded-full" 
-                  alt="Author" 
-                />
-                <div>
-                  <p className="font-semibold text-gray-900">{blog.author || 'Innobrains Team'}</p>
-                  <p className="text-gray-600 text-sm">Content Creator at Innobrains Technologies</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Admin Actions */}
-            <div className="mt-8 pt-4 flex justify-end space-x-4">
-              <Link
-                to={`/admin/blogs/edit/${blog._id}`}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Edit Blog
-              </Link>
-              
-              <button
-                onClick={async () => {
-                  if (window.confirm('Are you sure you want to delete this blog?')) {
-                    try {
-                      await axios.delete(`https://apis.innobrains.pk/api/blog/${blog._id}`);
-                      window.location.href = '/blog';
-                    } catch (err) {
-                      alert('Failed to delete blog');
-                      console.error('Error deleting blog:', err);
-                    }
-                  }
-                }}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Delete Blog
-              </button>
             </div>
           </div>
 
