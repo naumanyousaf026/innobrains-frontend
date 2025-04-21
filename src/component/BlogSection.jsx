@@ -32,6 +32,24 @@ const BlogSection = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Ensure full image URL handling (absolute URL)
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/images/default-image.jpg"; // default image if no image is available
+
+    // If the image path already includes the domain, use it as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    // If the path starts with a slash, it's probably a relative path
+    if (imagePath.startsWith('/')) {
+      return `https://apis.innobrains.pk${imagePath}`;
+    }
+
+    // Otherwise, assume it's a relative path without a leading slash
+    return `https://apis.innobrains.pk/${imagePath}`;
+  };
+
   return (
     <div className="py-10 max-w-7xl mx-auto">
       <div className="container mx-auto">
@@ -59,7 +77,7 @@ const BlogSection = () => {
                 >
                   <img
                     className=""
-                    src={blog.featuredImage || webcard}
+                    src={getImageUrl(blog.featuredImage)}
                     alt={blog.title}
                     onError={(e) => {
                       e.target.onerror = null;
