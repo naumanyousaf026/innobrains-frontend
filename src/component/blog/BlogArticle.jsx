@@ -10,11 +10,10 @@ const BlogArticle = () => {
   const [relatedBlogs, setRelatedBlogs] = useState([]);
 
   useEffect(() => {
-    if (id) {
+    if (slug) {
       fetchBlog();
     }
-  }, [id]);
-
+  }, [slug]);
   const fetchBlog = async () => {
     try {
       setLoading(true);

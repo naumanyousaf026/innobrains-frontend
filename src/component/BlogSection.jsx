@@ -12,7 +12,7 @@ const BlogSection = () => {
   const location = useLocation();
   
   // Check if we're on the all blogs page
-  const isAllBlogsPage = location.pathname === '/blogs';
+  const isAllBlogsPage = location.pathname === '/blog';
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -124,14 +124,7 @@ const BlogSection = () => {
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       Suspendisse varius enim in eros.
                     </p>
-                    <Link
-                      to="/blog/placeholder"
-                      className="text-[#103153] hover:text-indigo-800 font-semibold"
-                      aria-label="Read more about Unraveling the Newest Features"
-                    >
-                      Read more
-                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
-                    </Link>
+                    <Link to={`/blog/${blog.slug || blog._id}`} className="...">Read more</Link>
                   </div>
                 </div>
               ))
