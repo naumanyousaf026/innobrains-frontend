@@ -7,7 +7,7 @@ const RefundPolicy = () => {
   const [policyData, setPolicyData] = useState({
     title: "",
     description: "",
-    items: []
+    items: [] // Initialize items as an empty array
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,14 @@ const RefundPolicy = () => {
           throw new Error("Failed to fetch refund policy data");
         }
         const data = await response.json();
-        setPolicyData(data);
+        
+        // Ensure data has the expected structure
+        setPolicyData({
+          title: data?.title || "",
+          description: data?.description || "",
+          items: Array.isArray(data?.items) ? data.items : []
+        });
+        
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -78,13 +85,13 @@ const RefundPolicy = () => {
         >
           <h2 className="text-lg font-semibold mb-4 text-gray-800">Policy Sections</h2>
           <ul className="space-y-2">
-            {policyData.items.map((item, index) => (
+            {(policyData.items || []).map((item, index) => (
               <li key={index}>
                 <a
                   href={`#section-${index + 1}`}
                   className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition"
                 >
-                  {index + 1}. {item.heading}
+                  {index + 1}. {item?.heading || 'Section'}
                 </a>
               </li>
             ))}
@@ -93,19 +100,19 @@ const RefundPolicy = () => {
 
         {/* Main Content */}
         <main className="flex-1 text-gray-800 scroll-smooth">
-          <h1 className="text-3xl font-bold mb-6 text-left">{policyData.title}</h1>
+          <h1 className="text-3xl font-bold mb-6 text-left">{policyData.title || 'Refund Policy'}</h1>
 
           <p className="mb-4 text-left">
-            {policyData.description}
+            {policyData.description || ''}
           </p>
 
-          {policyData.items.map((item, index) => (
-            <section id={`section-${index + 1}`} className="mb-10" key={item._id}>
+          {(policyData.items || []).map((item, index) => (
+            <section id={`section-${index + 1}`} className="mb-10" key={item?._id || index}>
               <h2 className="text-xl font-semibold mt-6 mb-2 text-left">
-                {index + 1}. {item.heading}
+                {index + 1}. {item?.heading || 'Section'}
               </h2>
-              {item.description && <p className="mb-4 text-left">{item.description}</p>}
-              {item.points && item.points.length > 0 && (
+              {item?.description && <p className="mb-4 text-left">{item.description}</p>}
+              {item?.points && Array.isArray(item.points) && item.points.length > 0 && (
                 <ul className="list-disc list-inside mb-4 space-y-1 text-left">
                   {item.points.map((point, pointIndex) => (
                     <li key={pointIndex}>{point}</li>
