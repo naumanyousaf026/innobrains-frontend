@@ -180,7 +180,17 @@ const Blog = () => {
                     {truncateDescription(blog.content ? blog.content.replace(/<[^>]*>/g, '') : '', 90)}{" "}
                   </p>
                   <hr className="my-2" />
-                  <div className="flex justify-between mt-3 px-10 shadow-sm">
+                  
+                  {/* Status badge added here */}
+                  <div className="mb-2 text-center">
+                    {blog.status === 'draft' || blog.isDraft ? (
+                      <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-medium">Draft</span>
+                    ) : (
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">Published</span>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between mt-1 px-10 shadow-sm">
                     <button
                       onClick={() => handleEdit(blog)}
                       className="text-yellow-500 hover:text-yellow-600 transform hover:scale-110 transition-transform"
