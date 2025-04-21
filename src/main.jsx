@@ -22,6 +22,9 @@ import PageNotFound from "./component/adminpanel/PageNotFound.jsx";
 import AchievementForm from "./component/adminpanel/AchievementForm.jsx";
 import BlogArticle from './component/blog/BlogArticle.jsx'; // Adjust the import path as necessary
 import StepForm from "./component/adminpanel/StepForm.jsx";
+import privacypolicy from "./component/privacy-policy.jsx";
+import TermsOfService from "./component/terms-of-service.jsx";  
+import RefundPolicy from "./component/refund-policy.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -54,6 +57,19 @@ element: <BlogArticle />,
   {
     path: "/AchievementForm",
     element: <AchievementForm />,
+  },
+  {
+path: "/privacy-policy",
+element: <privacypolicy />,
+  },
+  {
+path: "/terms-of-service",
+element: <TermsOfService />,
+  },
+
+  {
+path: "/refund-policy", 
+element: <RefundPolicy />,
   },
   {
     path: "/StepForm",

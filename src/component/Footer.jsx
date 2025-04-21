@@ -58,6 +58,7 @@ const Footer = () => {
             <li><Link to="/" className="roboto-thin">Pages</Link></li>
             <li><Link to="/blog" className="roboto-thin">Blog</Link></li>
             <li><Link to="/contact" className="roboto-thin">Contact Us</Link></li>
+            
           </ul>
         </div>
         </div>
@@ -86,9 +87,12 @@ const Footer = () => {
       © 2025 Innobrains Technologies. All rights reserved.
     </div>
     <div className="space-x-3">
-      <Link to="/" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
-      <Link to="/" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
-    </div>
+         
+         <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
+         <Link to="/terms-of-service" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
+         <Link to="/refund-policy" className="text-gray-800 hover:underline roboto-thin"> RefundPolicy</Link>
+
+       </div>
   </div>
 </div>
 
