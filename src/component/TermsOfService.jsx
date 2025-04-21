@@ -4,15 +4,12 @@ import Footer from "./Footer";
 
 const TermsOfService = () => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [termsData, setTermsData] = useState({
-    title: "",
-    intro: "",
-    sections: [] // Initialize sections as an empty array
-  });
+  const [termsData, setTermsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch terms data from API
     const fetchTermsData = async () => {
       try {
         const response = await fetch("https://apis.innobrains.pk/api/terms");
@@ -20,11 +17,7 @@ const TermsOfService = () => {
           throw new Error("Failed to fetch terms data");
         }
         const data = await response.json();
-        // Make sure sections exists in the data, if not use an empty array
-        setTermsData({
-          ...data,
-          sections: data.sections || []
-        });
+        setTermsData(data[0]); // Taking the first item from the array
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -39,20 +32,12 @@ const TermsOfService = () => {
     return (
       <>
         <Header />
-        <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-6"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-10"></div>
             <div className="h-4 bg-gray-200 rounded mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded mb-4 w-5/6 mx-auto"></div>
-            <div className="space-y-6 mt-10">
-              {[...Array(6)].map((_, i) => (
-                <div key={i}>
-                  <div className="h-6 bg-gray-200 rounded w-1/4 mb-3"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2 w-11/12"></div>
-                </div>
-              ))}
-            </div>
+            <div className="h-4 bg-gray-200 rounded mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded mb-4"></div>
           </div>
         </div>
         <Footer />
@@ -64,28 +49,20 @@ const TermsOfService = () => {
     return (
       <>
         <Header />
-        <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Terms of Service</h2>
-          <p className="mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-          >
-            Try Again
-          </button>
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <div className="bg-red-50 p-6 rounded-lg">
+            <h2 className="text-red-700 text-xl font-semibold mb-2">Error Loading Terms</h2>
+            <p className="text-red-600">{error}</p>
+          </div>
         </div>
         <Footer />
       </>
     );
   }
 
-  // Make sure termsData.sections exists and is an array before mapping
-  const sections = Array.isArray(termsData.sections) ? termsData.sections : [];
-
   return (
     <>
       <Header />
-      
       {/* Mobile Sidebar Toggle */}
       <div className="md:hidden px-4 mt-4">
         <button
@@ -95,7 +72,6 @@ const TermsOfService = () => {
           {showSidebar ? "Hide Menu" : "Show Menu"}
         </button>
       </div>
-      
       <div className="max-w-7xl mx-auto px-4 py-10 flex gap-10">
         {/* Sidebar */}
         <aside
@@ -105,8 +81,8 @@ const TermsOfService = () => {
         >
           <h2 className="text-lg font-semibold mb-4 text-gray-800">Terms Sections</h2>
           <ul className="space-y-2">
-            {sections.map((section, index) => (
-              <li key={section._id || index}>
+            {termsData?.sections.map((section, index) => (
+              <li key={section._id}>
                 <a
                   href={`#section-${index + 1}`}
                   className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition"
@@ -117,27 +93,21 @@ const TermsOfService = () => {
             ))}
           </ul>
         </aside>
-        
         {/* Main Content */}
         <main className="flex-1 text-gray-800 scroll-smooth">
-          <h1 className="text-3xl font-bold mb-6">{termsData.title || "Terms of Service"}</h1>
-          
-          <p className="mb-4">{termsData.intro || ""}</p>
-          
+          <h1 className="text-3xl font-bold mb-6">{termsData?.title}</h1>
+          <p className="mb-4">{termsData?.intro}</p>
           {/* Section Content */}
-          {sections.map((section, index) => (
-            <section key={section._id || index} id={`section-${index + 1}`} className="mb-10">
+          {termsData?.sections.map((section, index) => (
+            <section key={section._id} id={`section-${index + 1}`} className="mb-10">
               <h2 className="text-xl font-semibold mt-6 mb-2 text-left">
                 {index + 1}. {section.title}
               </h2>
-              <p className="text-gray-700 text-left">
-                {section.content}
-              </p>
+              <p className="text-gray-700 text-left">{section.content}</p>
             </section>
           ))}
         </main>
       </div>
-      
       <Footer />
     </>
   );
