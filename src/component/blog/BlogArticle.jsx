@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import Header from "../Header";
+import Footer from "../Footer";
 
 const BlogArticle = () => {
   const { slug } = useParams();
@@ -19,7 +21,6 @@ const BlogArticle = () => {
     try {
       setLoading(true);
       // The API is expecting an ObjectId, not a slug
-      // We're using slug as the parameter name in the route, but it might actually be an ID
       const response = await axios.get(`https://apis.innobrains.pk/api/blog/${slug}`);
       setBlog(response.data);
       
@@ -72,156 +73,222 @@ const BlogArticle = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
+      <>
+        <Header />
+        <div className="flex justify-center items-center min-h-screen bg-gray-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (error || !blog) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600">Error Loading Blog</h2>
-          <p className="mt-2 text-gray-600">{error || 'Blog not found'}</p>
-          <Link to="/blog" className="mt-4 inline-block text-indigo-600 hover:text-indigo-800">
-            ← Back to blogs
-          </Link>
+      <>
+        <Header />
+        <div className="bg-gray-50 min-h-screen py-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-red-600">Error Loading Blog</h2>
+              <p className="mt-2 text-gray-600">{error || 'Blog not found'}</p>
+              <Link to="/blog" className="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium">
+                ← Back to blogs
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="bg-white">
-      <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <nav className="mb-8">
-          <Link to="/blog" className="text-indigo-600 hover:text-indigo-800 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
-            Back to Blogs
-          </Link>
-        </nav>
+    <>
+      <Header />
+      
+      <div className="bg-gray-50 text-gray-800 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        <article>
-          <header className="mb-8">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                {blog.category}
-              </span>
-              {blog.status === 'draft' && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                  Draft
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Back to Blogs Link */}
+            <Link to="/blog" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back to Blogs
+            </Link>
+          
+            {/* Hero Section */}
+            <div className="bg-gradient-to-r from-blue-100 to-blue-200 rounded-xl p-8 shadow-md mb-6">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-600 text-white">
+                  {blog.category}
                 </span>
-              )}
-              <span className="text-gray-500 text-sm">{blog.duration} min read</span>
-            </div>
-            
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              {blog.title}
-            </h1>
-            
-            <div className="flex items-center justify-between">
-              <div className="text-gray-600 text-sm">
-                <span>By {blog.author || 'Admin'}</span>
-                <span className="mx-2">•</span>
-                <span>{formatDate(blog.createdAt)}</span>
+                {blog.status === 'draft' && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                    Draft
+                  </span>
+                )}
+                <span className="text-gray-700 text-sm">{blog.duration || '5'} min read</span>
               </div>
               
-              {blog.tags && blog.tags.length > 0 && (
+              <h1 className="text-4xl sm:text-5xl font-bold text-gray-900">
+                {blog.title}
+              </h1>
+              
+              <p className="text-lg text-gray-700 mt-4">
+                {blog.excerpt || 'Discover insights and knowledge in this comprehensive article.'}
+              </p>
+            </div>
+
+            {/* Meta Info */}
+            <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
+              <img
+                src="https://i.pravatar.cc/48"
+                alt="Author Avatar"
+                className="w-12 h-12 rounded-full border-2 border-gray-300"
+              />
+              <div>
+                <p className="font-semibold text-gray-700">{blog.author || 'Innobrains Technologies'}</p>
+                <p>{formatDate(blog.createdAt)} · {blog.duration || '5'} min read</p>
+              </div>
+            </div>
+
+            {/* Featured Image */}
+            {blog.featuredImage && (
+              <div className="mb-8">
+                <img
+                  src={getImageUrl(blog.featuredImage)}
+                  alt={blog.title}
+                  className="w-full h-[500px] object-cover rounded-2xl shadow-2xl border border-gray-200"
+                  onError={(e) => e.target.src = "/images/default-image.jpg"}
+                />
+              </div>
+            )}
+
+            {/* Article Content */}
+            <article className="prose lg:prose-xl prose-slate max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
+            </article>
+
+            {/* Tags */}
+            {blog.tags && blog.tags.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-2">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {blog.tags.map((tag, index) => (
-                    <span key={index} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                    <span key={index} className="text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
                       #{tag}
                     </span>
                   ))}
                 </div>
-              )}
+              </div>
+            )}
+
+            {/* Share & Author */}
+            <div className="mt-10 border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Share this article</h3>
+              <div className="flex gap-4 mb-8">
+                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Twitter</button>
+                <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">LinkedIn</button>
+              </div>
+
+              <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
+                <img 
+                  src="https://i.pravatar.cc/100" 
+                  className="w-16 h-16 rounded-full" 
+                  alt="Author" 
+                />
+                <div>
+                  <p className="font-semibold text-gray-900">{blog.author || 'Innobrains Team'}</p>
+                  <p className="text-gray-600 text-sm">Content Creator at Innobrains Technologies</p>
+                </div>
+              </div>
             </div>
-          </header>
 
-          {blog.featuredImage && (
-            <div className="mb-8">
-              <img
-                src={getImageUrl(blog.featuredImage)}
-                alt={blog.title}
-                className="w-full h-auto rounded-lg object-cover"
-                style={{ maxHeight: '500px' }}
-                onError={(e) => e.target.src = "/images/default-image.jpg"} // Handle image error
-              />
-            </div>
-          )}
-
-          <div 
-            className="prose max-w-none prose-indigo prose-lg"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          ></div>
-        </article>
-
-        {/* Admin Actions */}
-        <div className="mt-12 border-t pt-6 flex justify-end space-x-4">
-          <Link
-            to={`/admin/blogs/edit/${blog._id}`}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Edit Blog
-          </Link>
-          
-          <button
-            onClick={async () => {
-              if (window.confirm('Are you sure you want to delete this blog?')) {
-                try {
-                  await axios.delete(`https://apis.innobrains.pk/api/blog/${blog._id}`);
-                  window.location.href = '/blog';
-                } catch (err) {
-                  alert('Failed to delete blog');
-                  console.error('Error deleting blog:', err);
-                }
-              }
-            }}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Delete Blog
-          </button>
-        </div>
-
-        {/* Related Blogs */}
-        {relatedBlogs.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedBlogs.map((relatedBlog) => (
-                <Link 
-                  to={`/blog/${relatedBlog._id}`} 
-                  key={relatedBlog._id}
-                  className="group"
-                >
-                  <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    {relatedBlog.featuredImage && (
-                      <img 
-                        src={getImageUrl(relatedBlog.featuredImage)} 
-                        alt={relatedBlog.title}
-                        className="w-full h-48 object-cover"
-                        onError={(e) => e.target.src = "/images/default-image.jpg"} // Handle image error for related blogs
-                      />
-                    )}
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors duration-300">
-                        {relatedBlog.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-2">
-                        {formatDate(relatedBlog.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            {/* Admin Actions */}
+            <div className="mt-8 pt-4 flex justify-end space-x-4">
+              <Link
+                to={`/admin/blogs/edit/${blog._id}`}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Edit Blog
+              </Link>
+              
+              <button
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to delete this blog?')) {
+                    try {
+                      await axios.delete(`https://apis.innobrains.pk/api/blog/${blog._id}`);
+                      window.location.href = '/blog';
+                    } catch (err) {
+                      alert('Failed to delete blog');
+                      console.error('Error deleting blog:', err);
+                    }
+                  }
+                }}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Delete Blog
+              </button>
             </div>
           </div>
-        )}
+
+          {/* Sidebar */}
+          <aside className="bg-white rounded-xl shadow-md p-6 h-fit sticky top-6">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Related Articles</h3>
+            
+            {relatedBlogs.length > 0 ? (
+              <ul className="space-y-5">
+                {relatedBlogs.map((relatedBlog) => (
+                  <li key={relatedBlog._id} className="flex items-center gap-4">
+                    <img 
+                      src={getImageUrl(relatedBlog.featuredImage)} 
+                      alt={relatedBlog.title}
+                      className="w-16 h-16 rounded-lg object-cover"
+                      onError={(e) => e.target.src = "/images/default-image.jpg"}
+                    />
+                    <Link 
+                      to={`/blog/${relatedBlog._id}`} 
+                      className="text-blue-700 font-medium hover:underline"
+                    >
+                      {relatedBlog.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No related articles found</p>
+            )}
+            
+            {/* Newsletter Signup */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Stay Updated</h3>
+              <p className="text-gray-600 text-sm mb-4">Subscribe to our newsletter for the latest updates.</p>
+              
+              <form className="space-y-3">
+                <input 
+                  type="email" 
+                  placeholder="Your email address" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button 
+                  type="submit" 
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </aside>
+        </div>
       </div>
-    </div>
+      
+      <Footer />
+    </>
   );
 };
 
