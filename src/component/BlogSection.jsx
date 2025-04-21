@@ -1,236 +1,137 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import webcard from '../images/image2.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import '../App.css'; // Importing App.css
 
 const BlogSection = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-
-  const categories = ['Technology', 'Business', 'Health', 'Travel', 'Food', 'Lifestyle', 'Other'];
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch('https://apis.innobrains.pk/api/blog');
+        const data = await response.json();
+        setBlogs(data.blogs);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching blogs:', err);
+        setError('Failed to load blogs');
+        setLoading(false);
+      }
+    };
+
     fetchBlogs();
-  }, [currentPage, categoryFilter, statusFilter]);
+  }, []);
 
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      let url = `https://apis.innobrains.pk/api/blog?page=${currentPage}&limit=6`;
-
-      if (categoryFilter) {
-        url += `&category=${categoryFilter}`;
-      }
-
-      if (statusFilter) {
-        url += `&status=${statusFilter}`;
-      }
-
-      const response = await axios.get(url);
-      setBlogs(response.data.blogs);
-      setTotalPages(response.data.totalPages);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch blogs');
-      setLoading(false);
-      console.error('Error fetching blogs:', err);
-    }
-  };
-
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
+  // Function to format date
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const truncateText = (text, maxLength = 150) => {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength) + '...';
-  };
-
-  const removeTags = (htmlString) => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlString;
-    return tempDiv.textContent || tempDiv.innerText || '';
-  };
-
-  // Ensure full image URL handling (absolute URL)
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return "/images/default-image.jpg"; // default image if no image is available
-
-    // If the image path already includes the domain, use it as is
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-
-    // If the path starts with a slash, it's probably a relative path
-    if (imagePath.startsWith('/')) {
-      return `https://apis.innobrains.pk${imagePath}`;
-    }
-
-    // Otherwise, assume it's a relative path without a leading slash
-    return `https://apis.innobrains.pk/${imagePath}`;
-  };
-
   return (
-    <div className="bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Our Blog</h2>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-            Latest insights, tips, and stories from our team
+    <div className="py-10 max-w-7xl mx-auto">
+      <div className="container mx-auto">
+        <div className="text-left my-16 px-10 mx-auto">
+          <h3 className="block text-lg font-semibold poppins-thin text-[#101010] mb-2">Blog</h3>
+          <h1 className="text-4xl lg:text-5xl poppins-thin font-bold text-[#101010] mb-5">
+            Explore article and <span className="block mt-2">information</span>
+          </h1>
+          <p className="text-[#5C5C5C] poppins-thin text-lg">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-8 justify-center">
-          <div>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            >
-              <option value="">All Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
-          </div>
-
-          <button
-            onClick={() => {
-              setCategoryFilter('');
-              setStatusFilter('');
-              setCurrentPage(1);
-            }}
-            className="mt-1 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Clear Filters
-          </button>
-        </div>
-
-        {error && <div className="text-center text-red-500 mb-6">{error}</div>}
-
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          </div>
-        ) : blogs.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-gray-600">No blogs found.</p>
-          </div>
+          <div className="text-center py-8">Loading blogs...</div>
+        ) : error ? (
+          <div className="text-center py-8 text-red-500">{error}</div>
         ) : (
-          <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogs.map((blog) => (
-                <div key={blog._id} className="flex flex-col overflow-hidden rounded-lg shadow-lg">
-                  <div className="flex-shrink-0">
-                    {blog.featuredImage ? (
-                      <img
-                        className="h-48 w-full object-cover"
-                        src={getImageUrl(blog.featuredImage)}
-                        alt={blog.title}
-                        onError={(e) => e.target.src = "/images/default-image.jpg"} // Handle image error
-                      />
-                    ) : (
-                      <div className="h-48 w-full bg-gray-200 flex justify-center items-center">
-                        <span className="text-gray-400">No image</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 bg-white p-6 flex flex-col justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                          {blog.category}
-                        </span>
-                        {blog.status === 'draft' && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Draft
-                          </span>
-                        )}
-                      </div>
-                      <Link to={`/blogs/${blog._id}`} className="block mt-2">
-                        <p className="text-xl font-semibold text-gray-900">{blog.title}</p>
-                        <p className="mt-3 text-base text-gray-500">
-                          {truncateText(removeTags(blog.content || ''))}
-                        </p>
-                      </Link>
-                      <div className="mt-4 flex items-center gap-2">
-                        {blog.tags && blog.tags.map((tag, index) => (
-                          <span key={index} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
+          <div className="flex max-w-7xl mx-auto px-10 flex-col md:flex-row gap-8 justify-center">
+            {blogs.length > 0 ? (
+              blogs.map((blog) => (
+                <div
+                  key={blog._id}
+                  className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                >
+                  <img
+                    className=""
+                    src={blog.featuredImage || webcard}
+                    alt={blog.title}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = webcard;
+                    }}
+                  />
+                  <div className="p-6 bg-[#FDFDFD]">
+                    <div className="text-sm font-semibold text-[#103153] mb-2">
+                      <span className="bg-[#EEEEEE] poppins-thin p-1">{blog.category}</span>{" "}
+                      <span className="ms-2 poppins-thin">{blog.duration} min read</span>
                     </div>
-                    <div className="mt-6 flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="text-sm text-gray-500">
-                          <p>By {blog.author || 'Admin'}</p>
-                          <p>{formatDate(blog.createdAt)} • {blog.duration}</p>
-                        </div>
-                      </div>
-                      <Link
-                        to={`/blogs/${blog._id}`}
-                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Read More
-                      </Link>
-                    </div>
+                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                      {blog.title}
+                    </h3>
+                    <p className="text-gray-600 poppins-thin mb-4">
+                      Published by {blog.author} on {formatDate(blog.createdAt)}
+                    </p>
+                    <a
+                      href={`/blog/${blog.slug}`}
+                      className="text-[#103153] hover:text-indigo-800 font-semibold"
+                      aria-label={`Read more about ${blog.title}`}
+                    >
+                      Read more
+                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                    </a>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-12">
-                <nav className="inline-flex rounded-md shadow">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <span className="relative inline-flex items-center px-4 py-2 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700">
-                    {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </nav>
-              </div>
+              ))
+            ) : (
+              // If no blogs available, show placeholders to maintain design
+              [1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="bg-white shadow-md overflow-hidden transition-transform transform hover:scale-105"
+                >
+                  <img className="" src={webcard} alt="Blog Post" />
+                  <div className="p-6 bg-[#FDFDFD]">
+                    <div className="text-sm font-semibold text-[#103153] mb-2">
+                      <span className="bg-[#EEEEEE] poppins-thin p-1">Category</span>{" "}
+                      <span className="ms-2 poppins-thin">5 min read</span>
+                    </div>
+                    <h3 className="text-xl font-bold poppins-thin text-gray-900 mb-2">
+                      Unraveling the Newest Features
+                    </h3>
+                    <p className="text-gray-600 poppins-thin mb-4">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Suspendisse varius enim in eros.
+                    </p>
+                    <a
+                      href="#"
+                      className="text-[#103153] hover:text-indigo-800 font-semibold"
+                      aria-label="Read more about Unraveling the Newest Features"
+                    >
+                      Read more
+                      <FontAwesomeIcon icon={faChevronRight} className="ms-2 text-sm" />
+                    </a>
+                  </div>
+                </div>
+              ))
             )}
-          </>
+          </div>
         )}
+
+        {/* Read All Button */}
+        <div className="mt-8 text-center">
+          <button
+            className="px-6 py-2 bg-[#F8AF2A] text-white rounded-full hover:bg-orange-600 transition duration-300"
+            aria-label="Read all blog posts"
+          >
+            Read All
+          </button>
+        </div>
       </div>
     </div>
   );
