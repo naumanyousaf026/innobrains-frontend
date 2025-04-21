@@ -10,7 +10,7 @@ const BlogIntroSection = () => {
           For <span className="text-[#103153] ">Innovators</span>
         </h1>
         <p className="text-gray-500 mt-4 poppins-thin text-xl">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Uncover the latest in tech, from coding tips to industry innovations
         </p>
       </div>
     </div>

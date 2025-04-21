@@ -128,8 +128,7 @@ const BlogSection = () => {
                       Unraveling the Newest Features
                     </h3>
                     <p className="text-gray-600 poppins-thin mb-4">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Suspendisse varius enim in eros.
+                   
                     </p>
                     <Link
                       to="/blog/placeholder"
