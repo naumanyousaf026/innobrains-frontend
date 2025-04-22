@@ -179,7 +179,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
 
         {/* Image Upload Section */}
         <div className="text-center mb-6">
-          <div className="w-24 h-24 mx-auto p-3 rounded-full bg-[#ECECEE] text-center mb-4 relative">
+          <div className="w-24 h-24 mx-auto p-3 mt-3 rounded-full bg-[#ECECEE] text-center mb-4 relative">
             <label className="block cursor-pointer">
               <input
                 type="file"
