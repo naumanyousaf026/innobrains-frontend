@@ -9,45 +9,39 @@ const Team = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentMember, setCurrentMember] = useState(null); // To store the member being edited
+  const [currentMember, setCurrentMember] = useState(null);
 
   // Fetching team data from API
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://apis.innobrains.pk/api/team");
-        setData(response.data); // Assuming the response is an array
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchTeamData();
   }, []);
+
+  const fetchTeamData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("https://apis.innobrains.pk/api/team");
+      setData(response.data);
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching team data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addMember = (newMember) => {
     setData((prev) => [...prev, newMember]);
     setShowForm(false);
   };
 
-  const updateMember = async (updatedMember) => {
-    try {
-      await axios.put(
-        `https://apis.innobrains.pk/api/team/${updatedMember._id}`,
-        updatedMember
-      );
-      setData((prev) =>
-        prev.map((member) =>
-          member._id === updatedMember._id ? updatedMember : member
-        )
-      );
-      setShowForm(false);
-      setCurrentMember(null); // Clear current member
-    } catch (err) {
-      console.error("Error updating member:", err);
-    }
+  const updateMember = (updatedMember) => {
+    setData((prev) =>
+      prev.map((member) =>
+        member._id === updatedMember._id ? updatedMember : member
+      )
+    );
+    setShowForm(false);
+    setCurrentMember(null);
   };
 
   const handleEdit = (index) => {
@@ -56,11 +50,14 @@ const Team = () => {
   };
 
   const handleDelete = async (index) => {
-    try {
-      await axios.delete(`https://apis.innobrains.pk/api/team/${data[index]._id}`); // Assuming your data has _id
-      setData((prev) => prev.filter((_, i) => i !== index));
-    } catch (err) {
-      console.error("Error deleting member:", err);
+    if (window.confirm("Are you sure you want to delete this team member?")) {
+      try {
+        await axios.delete(`https://apis.innobrains.pk/api/team/${data[index]._id}`);
+        setData((prev) => prev.filter((_, i) => i !== index));
+      } catch (err) {
+        console.error("Error deleting member:", err);
+        alert("Failed to delete team member");
+      }
     }
   };
 
@@ -93,11 +90,11 @@ const Team = () => {
       {showForm ? (
         <MemberForm
           onAddMember={addMember}
-          onUpdateMember={updateMember} // Pass update function to form
-          member={currentMember} // Pass current member to form for editing
+          onUpdateMember={updateMember}
+          member={currentMember}
           onCancel={() => {
             setShowForm(false);
-            setCurrentMember(null); // Clear current member
+            setCurrentMember(null);
           }}
         />
       ) : (
@@ -113,12 +110,12 @@ const Team = () => {
                     ? `https://apis.innobrains.pk/TeamImages/${person.image}`
                     : `https://apis.innobrains.pk/TeamImages/defaultImage.png`
                 }
-                alt={person.name}
+                alt={`${person.firstName} ${person.lastName}`}
                 className="w-28 h-28 rounded-full mx-auto mb-4 object-cover"
               />
 
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                {person.name}
+                {person.firstName} {person.lastName}
               </h3>
               <p className="text-[#373a3e] font-semibold mb-2">{person.role}</p>
               <abbr title={person.email} className="border-none">
@@ -134,7 +131,7 @@ const Team = () => {
                 <button
                   className="flex items-center justify-center px-3"
                   onClick={() => handleEdit(index)}
-                  aria-label={`Edit ${person.name}`}
+                  aria-label={`Edit ${person.firstName} ${person.lastName}`}
                 >
                   <abbr title="Edit" className="no-underline">
                     <FontAwesomeIcon
@@ -146,7 +143,7 @@ const Team = () => {
                 <button
                   className="flex items-center justify-center px-3"
                   onClick={() => handleDelete(index)}
-                  aria-label={`Delete ${person.name}`}
+                  aria-label={`Delete ${person.firstName} ${person.lastName}`}
                 >
                   <abbr title="Delete">
                     <FontAwesomeIcon

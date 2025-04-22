@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { faCamera, faLeftLong } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const MemberForm = ({ onAddMember, onCancel }) => {
+const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -13,8 +13,28 @@ const MemberForm = ({ onAddMember, onCancel }) => {
     email: "",
     image: null,
   });
-  const [imagePreview, setImagePreview] = useState(null); // To preview the uploaded image
-  const [error, setError] = useState({}); // Error state for validation
+  const [imagePreview, setImagePreview] = useState(null);
+  const [error, setError] = useState({});
+
+  // Fill form with member data when editing
+  useEffect(() => {
+    if (member) {
+      setFormData({
+        firstName: member.firstName || "",
+        lastName: member.lastName || "",
+        gender: member.gender || "Male",
+        role: member.role || "",
+        description: member.description || "",
+        email: member.email || "",
+        image: null // We don't set the image file here as it's not available as File object
+      });
+      
+      // Set image preview if available
+      if (member.image) {
+        setImagePreview(`https://apis.innobrains.pk/TeamImages/${member.image}`);
+      }
+    }
+  }, [member]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -38,7 +58,7 @@ const MemberForm = ({ onAddMember, onCancel }) => {
     if (!formData.description)
       formErrors.description = "Description is required.";
     if (!formData.email) formErrors.email = "Email is required.";
-    if (!formData.image) formErrors.image = "Please upload an image.";
+    if (!formData.image && !member) formErrors.image = "Please upload an image.";
     return formErrors;
   };
 
@@ -58,17 +78,34 @@ const MemberForm = ({ onAddMember, onCancel }) => {
       }
 
       try {
-        const response = await axios.post(
-          "https://apis.innobrains.pk/api/team",
-          formDataToSend,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        onAddMember(response.data); // Call onAddMember to update the state in Team
-        alert("Team member added successfully");
+        if (member) {
+          // Update existing member
+          const response = await axios.put(
+            `https://apis.innobrains.pk/api/team/${member._id}`,
+            formDataToSend,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          onUpdateMember(response.data);
+          alert("Team member updated successfully");
+        } else {
+          // Add new member
+          const response = await axios.post(
+            "https://apis.innobrains.pk/api/team",
+            formDataToSend,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          onAddMember(response.data);
+          alert("Team member added successfully");
+        }
+        
         // Reset form data
         setFormData({
           firstName: "",
@@ -82,10 +119,10 @@ const MemberForm = ({ onAddMember, onCancel }) => {
         setImagePreview(null);
       } catch (error) {
         console.error("Error submitting the form", error);
-        alert("Failed to add team member");
+        alert(member ? "Failed to update team member" : "Failed to add team member");
       }
     } else {
-      setError(formErrors); // Set validation errors
+      setError(formErrors);
     }
   };
 
@@ -95,7 +132,7 @@ const MemberForm = ({ onAddMember, onCancel }) => {
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation(); // Stop event propagation
+          e.stopPropagation();
           onCancel();
         }}
         className="flex items-center mb-4 text-[#103153] hover:text-blue-600"
@@ -224,7 +261,7 @@ const MemberForm = ({ onAddMember, onCancel }) => {
           type="submit"
           className="bg-[#103153] text-white px-6 py-3 rounded-lg hover:bg-blue-600"
         >
-          Add Team Member
+          {member ? "Update Team Member" : "Add Team Member"}
         </button>
       </div>
     </form>
