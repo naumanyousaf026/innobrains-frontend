@@ -15,6 +15,7 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fill form with member data when editing
   useEffect(() => {
@@ -65,7 +66,9 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
+    
     if (Object.keys(formErrors).length === 0) {
+      setIsSubmitting(true);
       const formDataToSend = new FormData();
       formDataToSend.append("firstName", formData.firstName);
       formDataToSend.append("lastName", formData.lastName);
@@ -73,22 +76,29 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
       formDataToSend.append("role", formData.role);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("email", formData.email);
+      
+      // Only append image if a new one is selected
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
 
       try {
         if (member) {
-          // Update existing member
-          const response = await axios.put(
-            `https://apis.innobrains.pk/api/team/${member._id}`,
-            formDataToSend,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+          // Configure axios with longer timeout and proper headers for update
+          const apiUrl = `https://apis.innobrains.pk/api/team/${member._id}`;
+          console.log("Updating member at URL:", apiUrl);
+          
+          const response = await axios({
+            method: 'put',
+            url: apiUrl,
+            data: formDataToSend,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            timeout: 30000 // Increase timeout to 30 seconds
+          });
+          
+          console.log("Update response:", response.data);
           onUpdateMember(response.data);
           alert("Team member updated successfully");
         } else {
@@ -100,6 +110,7 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
               headers: {
                 "Content-Type": "multipart/form-data",
               },
+              timeout: 30000 // Increase timeout to 30 seconds
             }
           );
           onAddMember(response.data);
@@ -119,7 +130,17 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
         setImagePreview(null);
       } catch (error) {
         console.error("Error submitting the form", error);
-        alert(member ? "Failed to update team member" : "Failed to add team member");
+        if (error.code === 'ERR_NETWORK') {
+          alert("Network error. Please check your connection and try again.");
+        } else if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          alert(`Error: ${error.response.data.error || 'Server error'}`);
+        } else {
+          alert(member ? "Failed to update team member" : "Failed to add team member");
+        }
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       setError(formErrors);
@@ -259,9 +280,12 @@ const MemberForm = ({ onAddMember, onUpdateMember, member, onCancel }) => {
       <div className="flex justify-center">
         <button
           type="submit"
-          className="bg-[#103153] text-white px-6 py-3 rounded-lg hover:bg-blue-600"
+          disabled={isSubmitting}
+          className={`bg-[#103153] text-white px-6 py-3 rounded-lg hover:bg-blue-600 ${
+            isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+          }`}
         >
-          {member ? "Update Team Member" : "Add Team Member"}
+          {isSubmitting ? "Processing..." : member ? "Update Team Member" : "Add Team Member"}
         </button>
       </div>
     </form>
