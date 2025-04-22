@@ -89,7 +89,7 @@ const Footer = () => {
          
          <Link to="/privacy-policy" className="text-gray-800 hover:underline roboto-thin">Privacy Policy</Link>
          <Link to="/terms-of-service" className="text-gray-800 hover:underline roboto-thin">Terms of Service</Link>
-         <Link to="/refund-policy" className="text-gray-800 hover:underline roboto-thin"> RefundPolicy</Link>
+         <Link to="/refund-policy" className="text-gray-800 hover:underline roboto-thin"> Refund Policy</Link>
 
        </div>
   </div>
