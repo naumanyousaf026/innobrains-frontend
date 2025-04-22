@@ -85,8 +85,8 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="w-full overflow-auto pr-0">
-      <div className="w-full bg-white rounded-xl p-6 border border-gray-300 shadow-xl">
+    <div className="w-full h-auto pr-0 pt-0 overflow-y-auto">
+      <div className="w-full bg-white rounded-xl p-6 border border-gray-300 shadow-xl mb-8">
         {/* Back Button */}
         <button
           onClick={onClose}
@@ -96,7 +96,7 @@ export default function StatsForm({ onClose }) {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center">
+        <h2 className="text-2xl nunito-sans font-bold text-gray-800 mb-5 text-center mt-2">
           Stats Section Form
         </h2>
 
@@ -114,7 +114,7 @@ export default function StatsForm({ onClose }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Headline */}
           <div>
             <label className="block text-gray-700 nunito-sans font-medium mb-2">Headline</label>
@@ -125,7 +125,7 @@ export default function StatsForm({ onClose }) {
               onChange={handleChange}
               required
               placeholder="Enter your headline"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder:text-gray-400"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
@@ -137,14 +137,14 @@ export default function StatsForm({ onClose }) {
               value={formData.description}
               onChange={handleChange}
               required
-              rows="4"
+              rows="3"
               placeholder="Enter a brief description about your company"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-800 placeholder:text-gray-400"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { label: "Loyal Clients", name: "loyalClients", placeholder: "Enter number of clients" },
               { label: "Experts", name: "experts", placeholder: "Enter number of experts" },
@@ -152,21 +152,21 @@ export default function StatsForm({ onClose }) {
               { label: "Tech Awards", name: "techAwards", placeholder: "Enter number of awards" },
             ].map(({ label, name, placeholder }) => (
               <div key={name}>
-                <label className="block text-gray-700 font-semibold nunito-sans text-lg">{label}</label>
+                <label className="block text-gray-700 font-medium nunito-sans">{label}</label>
                 <input
                   type="number"
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="w-full border border-gray-300 rounded-md mt-2 px-4 py-2 text-gray-800 placeholder:text-gray-400"
+                  className="w-full border border-gray-300 rounded-md mt-1 px-3 py-2 text-gray-800 placeholder:text-gray-400"
                 />
               </div>
             ))}
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
