@@ -16,14 +16,13 @@ export default function StatsForm({ onClose }) {
   const [success, setSuccess] = useState("");
   const [existingStats, setExistingStats] = useState(null);
 
-  // Fetch any existing stats on component mount
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
         const response = await axios.get("https://apis.innobrains.pk/api/stats");
         if (response.data && response.data.length > 0) {
-          const stats = response.data[0]; // Get the first stats object
+          const stats = response.data[0];
           setExistingStats(stats);
           setFormData({
             headline: stats.headline || "",
@@ -55,14 +54,13 @@ export default function StatsForm({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       setError("");
       setSuccess("");
-      
+
       if (existingStats) {
-        // Update existing stats
         const response = await axios.put(
           `https://apis.innobrains.pk/api/stats/${existingStats._id}`,
           formData
@@ -70,7 +68,6 @@ export default function StatsForm({ onClose }) {
         setSuccess("Stats updated successfully!");
         console.log("Updated stats:", response.data);
       } else {
-        // Create new stats
         const response = await axios.post(
           "https://apis.innobrains.pk/api/stats",
           formData
@@ -88,8 +85,8 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="flex  items-center justify-center min-h-screen  w-full  p-6">
-      <div className="w-full bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
+    <div className="w-full h-full p-6 overflow-auto flex justify-center">
+      <div className="w-full max-w-4xl bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
         {/* Back Button */}
         <button
           onClick={onClose}
@@ -104,13 +101,13 @@ export default function StatsForm({ onClose }) {
         </h2>
 
         {loading && <p className="text-center text-gray-600">Loading...</p>}
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
             {error}
           </div>
         )}
-        
+
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
             {success}
