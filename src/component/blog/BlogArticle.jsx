@@ -20,8 +20,8 @@ const BlogArticle = () => {
   const fetchBlog = async () => {
     try {
       setLoading(true);
-      // The API is expecting an ObjectId, not a slug
-      const response = await axios.get(`https://apis.innobrains.pk/api/blog/${slug}`);
+      // Update to use the slug endpoint instead of the ID endpoint
+      const response = await axios.get(`https://apis.innobrains.pk/api/blog/slug/${slug}`);
       setBlog(response.data);
       
       // Fetch related blogs in the same category
@@ -212,7 +212,7 @@ const BlogArticle = () => {
                       onError={(e) => e.target.src = "/images/default-image.jpg"}
                     />
                     <Link 
-                      to={`/blog/${relatedBlog._id}`} 
+                      to={`/blog/${relatedBlog.slug}`} 
                       className="text-blue-700 font-medium hover:underline"
                     >
                       {relatedBlog.title}

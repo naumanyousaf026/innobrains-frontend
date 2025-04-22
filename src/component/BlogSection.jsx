@@ -101,7 +101,7 @@ const BlogSection = () => {
                       Published by {blog.author} on {formatDate(blog.createdAt)}
                     </p>
                     <Link 
-                      to={`/blog/${blog._id}`} 
+                      to={`/blog/${blog.slug}`} 
                       className="text-[#103153] hover:text-indigo-800 font-semibold"
                       aria-label={`Read more about ${blog.title}`}
                     >
