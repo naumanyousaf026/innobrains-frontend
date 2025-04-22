@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -7,15 +8,12 @@ import {
   UsersIcon,
   TrophyIcon,
   PhoneIcon,
-  ChartBarIcon,
   MapPinIcon,
   InformationCircleIcon,
   ArrowTrendingUpIcon,
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
 import { PowerIcon } from "@heroicons/react/24/solid";
-// Import the logo image
-import logoImage from "../../images/innobrains.jpg";
 
 const FormsButton = ({ setSection }) => {
   return (
@@ -62,13 +60,15 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
         isOpen ? "translate-x-0" : "-translate-x-full"
       } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-64`}
     >
-      {/* Logo */}
+      {/* Logo with Link */}
       <div className="mb-8 flex justify-center">
-        <img
-          src={logoImage}
-          alt="InnoBrains Logo"
-          className="h-12 w-auto"
-        />
+        <Link to='/'>
+          <img
+            className="h-10 w-auto"
+            src="https://portal.innobrains.pk/files/system/_file64d57376183f5-site-logo.png"
+            alt="Innobrains Official Logo"
+          />
+        </Link>
       </div>
 
       {/* Navigation Links */}
