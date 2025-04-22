@@ -141,9 +141,7 @@ const BlogArticle = () => {
               <p className="text-lg text-gray-700 mt-4">
                 {blog.excerpt || 'Discover insights and knowledge in this comprehensive article.'}
               </p>
-            </div>
-
-            {/* Meta Info */}
+                          {/* Meta Info */}
             <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
               <img
                 src="https://i.pravatar.cc/48"
@@ -155,6 +153,9 @@ const BlogArticle = () => {
                 <p>{formatDate(blog.createdAt)} · {blog.duration || '5'} min read</p>
               </div>
             </div>
+            </div>
+
+
 
             {/* Featured Image */}
             {blog.featuredImage && (
