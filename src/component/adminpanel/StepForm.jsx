@@ -12,6 +12,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load step data if editing an existing step
   useEffect(() => {
@@ -22,6 +23,11 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
         description: step.description,
         image: null,
       });
+      
+      // Set image preview for existing image
+      if (step.image) {
+        setImagePreview(`https://apis.innobrains.pk/GrowthStepImage/${step.image}`);
+      }
     }
   }, [step]);
 
@@ -58,49 +64,75 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
     }
   };
 
-  // Form submission handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Form validation
+  const validateForm = () => {
     const newError = {};
     if (!formData.number) newError.number = "Step number is required.";
     if (!formData.title) newError.title = "Title is required.";
-    if (!formData.description)
-      newError.description = "Description is required.";
-    if (!formData.image) newError.image = "Image is required.";
-    if (Object.keys(newError).length > 0) {
-      setError(newError);
-      return;
-    }
+    if (!formData.description) newError.description = "Description is required.";
+    if (!step && !formData.image) newError.image = "Image is required.";
+    
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
 
+  // Form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
     const formDataObj = new FormData();
     formDataObj.append("number", formData.number);
     formDataObj.append("title", formData.title);
     formDataObj.append("description", formData.description);
-    formDataObj.append("image", formData.image);
+    if (formData.image) {
+      formDataObj.append("image", formData.image);
+    }
 
     try {
-      const response = await fetch("https://apis.innobrains.pk/api/growthsteps", {
-        method: "POST",
+      let url = "https://apis.innobrains.pk/api/growthsteps";
+      let method = "POST";
+      
+      // If editing, use PUT method and include ID in URL
+      if (step && step._id) {
+        url = `https://apis.innobrains.pk/api/growthsteps/${step._id}`;
+        method = "PUT";
+      }
+      
+      const response = await fetch(url, {
+        method,
         body: formDataObj,
       });
 
       if (response.ok) {
         const data = await response.json();
-        setSuccessMessage("Step created successfully!");
-        setFormData({
-          number: "",
-          title: "",
-          description: "",
-          image: null,
-        });
-        setImagePreview(null);
-        onClose(); // Close form on success
+        setSuccessMessage(step ? "Step updated successfully!" : "Step created successfully!");
+        
+        if (!step) {
+          // Only reset form if adding new step, not when editing
+          setFormData({
+            number: "",
+            title: "",
+            description: "",
+            image: null,
+          });
+          setImagePreview(null);
+        }
+        
+        // Close form after short delay to show success message
+        setTimeout(() => {
+          onClose();
+        }, 1500);
       } else {
         const errorData = await response.json();
-        setError({ general: errorData.message || "Error creating step" });
+        setError({ general: errorData.message || `Error ${step ? "updating" : "creating"} step` });
       }
     } catch (error) {
       setError({ general: "Error connecting to the server" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,9 +143,16 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
         className="bg-white p-8 rounded-lg shadow-lg w-full"
       >
         {successMessage && (
-          <p className="text-green-500 mb-4">{successMessage}</p>
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {successMessage}
+          </div>
         )}
-        {error.general && <p className="text-red-500 mb-4">{error.general}</p>}
+        
+        {error.general && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error.general}
+          </div>
+        )}
 
         <button
           type="button"
@@ -150,7 +189,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
           />
         )}
 
-        <span className="text-[#103153]  text-center block cursor-pointer">
+        <span className="text-[#103153] text-center block cursor-pointer">
           Upload Image
         </span>
 
@@ -196,7 +235,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
 
         {/* Description Input */}
         <div className="mb-6">
-          <label className="block text-[#103153]  font-semibold mb-2">
+          <label className="block text-[#103153] font-semibold mb-2">
             Description
           </label>
           <textarea
@@ -219,9 +258,16 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
         <div className="mt-6 text-center">
           <button
             type="submit"
-            className="bg-[#103153] px-5 text-white py-3 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isLoading}
+            className={`bg-[#103153] px-5 text-white py-3 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              isLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            {step ? "Update Step" : "Add Step"}
+            {isLoading ? (
+              "Processing..."
+            ) : (
+              step ? "Update Step" : "Add Step"
+            )}
           </button>
         </div>
       </form>
