@@ -14,6 +14,8 @@ import {
   EnvelopeIcon
 } from "@heroicons/react/24/outline";
 import { PowerIcon } from "@heroicons/react/24/solid";
+// Import the logo image
+import logoImage from "../images/innobrains.jpg";
 
 const FormsButton = ({ setSection }) => {
   return (
@@ -63,8 +65,8 @@ const Sidebar = ({ setSection, handleLogout, isOpen }) => {
       {/* Logo */}
       <div className="mb-8 flex justify-center">
         <img
-          src="/api/placeholder/200/60"
-          alt="Logo"
+          src={logoImage}
+          alt="InnoBrains Logo"
           className="h-12 w-auto"
         />
       </div>
