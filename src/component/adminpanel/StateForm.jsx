@@ -96,7 +96,7 @@ export default function StatsForm({ onClose }) {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-10">
+        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-6">
           Stats Section Form
         </h2>
 
