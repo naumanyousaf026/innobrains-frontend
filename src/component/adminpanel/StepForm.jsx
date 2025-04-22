@@ -17,30 +17,43 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
   // Load step data if editing an existing step
   useEffect(() => {
     if (step) {
+      // Populate form with existing step data
       setFormData({
-        number: step.number,
-        title: step.title,
-        description: step.description,
-        image: null,
+        number: step.number || "",
+        title: step.title || "",
+        description: step.description || "",
+        image: null, // Initial image is null, only set if user uploads new image
       });
       
       // Set image preview for existing image
       if (step.image) {
         setImagePreview(`https://apis.innobrains.pk/GrowthStepImage/${step.image}`);
       }
+    } else {
+      // Reset form for new step
+      setFormData({
+        number: "",
+        title: "",
+        description: "",
+        image: null,
+      });
+      setImagePreview(null);
     }
   }, [step]);
 
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "image" ? e.target.files[0] : value,
-    }));
-    setError((prev) => ({ ...prev, [name]: "" }));
-
-    if (name === "image") handleImageUpload(e);
+    
+    if (name === "image") {
+      handleImageUpload(e);
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+      setError((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   // Image preview handler
@@ -70,7 +83,11 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
     if (!formData.number) newError.number = "Step number is required.";
     if (!formData.title) newError.title = "Title is required.";
     if (!formData.description) newError.description = "Description is required.";
-    if (!step && !formData.image) newError.image = "Image is required.";
+    
+    // Only require image for new steps
+    if (!step && !formData.image) {
+      newError.image = "Image is required for new steps.";
+    }
     
     setError(newError);
     return Object.keys(newError).length === 0;
@@ -87,6 +104,8 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
     formDataObj.append("number", formData.number);
     formDataObj.append("title", formData.title);
     formDataObj.append("description", formData.description);
+    
+    // Only append image if a new one is selected
     if (formData.image) {
       formDataObj.append("image", formData.image);
     }
@@ -110,17 +129,6 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
         const data = await response.json();
         setSuccessMessage(step ? "Step updated successfully!" : "Step created successfully!");
         
-        if (!step) {
-          // Only reset form if adding new step, not when editing
-          setFormData({
-            number: "",
-            title: "",
-            description: "",
-            image: null,
-          });
-          setImagePreview(null);
-        }
-        
         // Close form after short delay to show success message
         setTimeout(() => {
           onClose();
@@ -130,6 +138,7 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
         setError({ general: errorData.message || `Error ${step ? "updating" : "creating"} step` });
       }
     } catch (error) {
+      console.error("API error:", error);
       setError({ general: "Error connecting to the server" });
     } finally {
       setIsLoading(false);
@@ -154,44 +163,53 @@ const GrowthStepForm = ({ step, onClose = () => {} }) => {
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-600 hover:text-blue-500 transition duration-200 rounded-lg mb-4"
-        >
-          <FontAwesomeIcon icon={faLeftLong} />
-        </button>
+        <div className="flex justify-between mb-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-600 hover:text-blue-500 transition duration-200 rounded-lg"
+          >
+            <FontAwesomeIcon icon={faLeftLong} /> Back
+          </button>
+          
+          <h2 className="text-xl font-semibold">
+            {step ? "Edit Growth Step" : "Add New Growth Step"}
+          </h2>
+        </div>
 
         {/* Image Upload Section */}
-        <div className="w-16 h-16 mx-auto p-3 rounded-full bg-[#ECECEE] text-center mb-4">
-          <label className="block relative cursor-pointer">
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-            />
-            <div className="border bg-[#ECECEE] rounded-full flex justify-center items-center h-full w-full">
-              <FontAwesomeIcon icon={faCamera} className="text-2xl mt-2" />
-            </div>
-          </label>
+        <div className="text-center mb-6">
+          <div className="w-24 h-24 mx-auto p-3 rounded-full bg-[#ECECEE] text-center mb-4 relative">
+            <label className="block cursor-pointer">
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+              />
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="border bg-[#ECECEE] rounded-full flex justify-center items-center h-full w-full">
+                  <FontAwesomeIcon icon={faCamera} className="text-2xl" />
+                </div>
+              )}
+            </label>
+          </div>
+          
+          <span className="text-[#103153] text-center block cursor-pointer">
+            {step ? "Change Image" : "Upload Image"}
+          </span>
+          
           {error.image && (
             <p className="text-red-500 text-sm mt-2">{error.image}</p>
           )}
         </div>
-
-        {imagePreview && (
-          <img
-            src={imagePreview}
-            alt="Preview"
-            className="mx-auto w-24 h-24 object-cover rounded-full mb-4"
-          />
-        )}
-
-        <span className="text-[#103153] text-center block cursor-pointer">
-          Upload Image
-        </span>
 
         {/* Step Number Input */}
         <div className="mb-4">
