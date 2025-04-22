@@ -18,8 +18,9 @@ const Wave = ({ className }) => { // Accept className prop
     const fetchStatsData = async () => {
       try {
         const response = await axios.get("https://apis.innobrains.pk/api/stats");
-        if (response.data) {
-          setStatsData(response.data);
+        // Check if response.data is an array and has at least one item
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          setStatsData(response.data[0]);
         }
         setLoading(false);
       } catch (error) {
