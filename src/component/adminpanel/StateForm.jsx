@@ -85,39 +85,39 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="w-full h-full p-0 m-0">
-      <div className="w-full max-w-2xl bg-white rounded-lg p-4 border border-gray-300 shadow-md mt-0">
+    <div className="w-full overflow-auto pr-0">
+      <div className="w-full bg-white rounded-xl p-6 border border-gray-300 shadow-xl">
         {/* Back Button */}
         <button
           onClick={onClose}
-          className="flex items-center text-black hover:text-gray-700 transition duration-300 mb-2"
+          className="flex items-center text-black hover:text-gray-700 transition duration-300"
         >
-          <IoArrowBackSharp className="text-lg mr-1" />
+          <IoArrowBackSharp className="text-2xl mr-1" />
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h2 className="text-xl font-bold text-gray-800 mb-3 text-center">
+        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center">
           Stats Section Form
         </h2>
 
-        {loading && <p className="text-center text-gray-600 text-sm">Loading...</p>}
+        {loading && <p className="text-center text-gray-600">Loading...</p>}
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm mb-3">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 rounded text-sm mb-3">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
             {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Headline */}
           <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1">Headline</label>
+            <label className="block text-gray-700 nunito-sans font-medium mb-2">Headline</label>
             <input
               type="text"
               name="headline"
@@ -125,54 +125,52 @@ export default function StatsForm({ onClose }) {
               onChange={handleChange}
               required
               placeholder="Enter your headline"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-gray-700 text-sm font-medium mb-1">Description</label>
+            <label className="block nunito-sans text-gray-700 font-medium mb-2">Description</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               required
-              rows="2"
+              rows="4"
               placeholder="Enter a brief description about your company"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
             {[
-              { label: "Loyal Clients", name: "loyalClients", placeholder: "Number of clients" },
-              { label: "Experts", name: "experts", placeholder: "Number of experts" },
-              { label: "Years of Experience", name: "yearsExperience", placeholder: "Years" },
-              { label: "Tech Awards", name: "techAwards", placeholder: "Number of awards" },
+              { label: "Loyal Clients", name: "loyalClients", placeholder: "Enter number of clients" },
+              { label: "Experts", name: "experts", placeholder: "Enter number of experts" },
+              { label: "Years of Experience", name: "yearsExperience", placeholder: "Enter number of years" },
+              { label: "Tech Awards", name: "techAwards", placeholder: "Enter number of awards" },
             ].map(({ label, name, placeholder }) => (
               <div key={name}>
-                <label className="block text-gray-700 text-sm font-medium">
-                  {label}
-                </label>
+                <label className="block text-gray-700 font-semibold nunito-sans text-lg">{label}</label>
                 <input
                   type="number"
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="w-full border border-gray-300 rounded mt-1 px-2 py-1 text-sm"
+                  className="w-full border border-gray-300 rounded-md mt-2 px-4 py-2 text-gray-800 placeholder:text-gray-400"
                 />
               </div>
             ))}
           </div>
 
           {/* Submit Button */}
-          <div className="pt-2">
+          <div className="pt-4">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#103153] text-white font-medium py-2 rounded text-sm"
+              className="w-full bg-[#103153] text-white font-semibold py-2 nunito-sans rounded-md transition-all duration-300 hover:bg-[#0c2641] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : existingStats ? "Update Stats" : "Create Stats"}
             </button>
