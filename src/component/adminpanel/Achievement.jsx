@@ -15,7 +15,7 @@ const Achievement = () => {
 
   const fetchAchievements = async () => {
     try {
-      const res = await fetch("https://apis.innobrains.pk/api/achievement");
+      const res = await fetch("https://apis.innobrains.pk/api/achievements");
       const data = await res.json();
       setAchievements(data);
     } catch (err) {
