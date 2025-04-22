@@ -49,8 +49,8 @@ function ContactForm() {
     // Post data to your API endpoint
     try {
       await axios.post("https://apis.innobrains.pk/api/contact", {
-        FirstName: formData.firstName,
-        LastName: formData.lastName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
         number: formData.phone,
         message: formData.message,
