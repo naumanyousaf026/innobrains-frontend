@@ -85,18 +85,18 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="w-full h-full p-6 overflow-auto flex justify-center">
-      <div className="w-full max-w-4xl bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
+    <div className="w-full h-full overflow-auto p-0 m-0">
+      <div className="w-full max-w-3xl mx-auto bg-white rounded-xl p-6 border border-gray-300 shadow-lg my-4">
         {/* Back Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 left-6 flex items-center text-black hover:text-gray-700 transition duration-300"
+          className="flex items-center text-black hover:text-gray-700 transition duration-300 mb-4"
         >
-          <IoArrowBackSharp className="text-2xl mr-1" />
+          <IoArrowBackSharp className="text-xl mr-1" />
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-4">
+        <h2 className="text-2xl nunito-sans font-bold text-gray-800 mb-4 text-center">
           Stats Section Form
         </h2>
 
@@ -114,10 +114,10 @@ export default function StatsForm({ onClose }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Headline */}
           <div>
-            <label className="block text-gray-700 nunito-sans font-medium mb-2">Headline</label>
+            <label className="block text-gray-700 nunito-sans font-medium mb-1">Headline</label>
             <input
               type="text"
               name="headline"
@@ -125,26 +125,26 @@ export default function StatsForm({ onClose }) {
               onChange={handleChange}
               required
               placeholder="Enter your headline"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder:text-gray-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block nunito-sans text-gray-700 font-medium mb-2">Description</label>
+            <label className="block nunito-sans text-gray-700 font-medium mb-1">Description</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               required
-              rows="4"
+              rows="3"
               placeholder="Enter a brief description about your company"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-gray-800 placeholder:text-gray-400"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 placeholder:text-gray-400"
             />
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { label: "Loyal Clients", name: "loyalClients", placeholder: "Enter number of clients" },
               { label: "Experts", name: "experts", placeholder: "Enter number of experts" },
@@ -152,25 +152,27 @@ export default function StatsForm({ onClose }) {
               { label: "Tech Awards", name: "techAwards", placeholder: "Enter number of awards" },
             ].map(({ label, name, placeholder }) => (
               <div key={name}>
-                <label className="block text-gray-700 font-semibold nunito-sans text-lg">{label}</label>
+                <label className="block text-gray-700 font-medium nunito-sans">
+                  {label}
+                </label>
                 <input
                   type="number"
                   name={name}
                   value={formData[name]}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="w-full border border-gray-300 rounded-md mt-2 px-4 py-2 text-gray-800 placeholder:text-gray-400"
+                  className="w-full border border-gray-300 rounded-md mt-1 px-3 py-2 text-gray-800 placeholder:text-gray-400"
                 />
               </div>
             ))}
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#103153] text-white font-semibold py-2 nunito-sans rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#103153] text-white font-semibold py-2 nunito-sans rounded-md transition-all duration-300 hover:bg-[#0c2641] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : existingStats ? "Update Stats" : "Create Stats"}
             </button>
