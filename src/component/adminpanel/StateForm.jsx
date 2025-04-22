@@ -54,7 +54,7 @@ export default function StatsForm({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
       setLoading(true);
       setError("");
@@ -66,7 +66,6 @@ export default function StatsForm({ onClose }) {
           formData
         );
         setSuccess("Stats updated successfully!");
-        console.log("Updated stats:", response.data);
       } else {
         const response = await axios.post(
           "https://apis.innobrains.pk/api/stats",
@@ -74,7 +73,6 @@ export default function StatsForm({ onClose }) {
         );
         setExistingStats(response.data);
         setSuccess("Stats created successfully!");
-        console.log("Created stats:", response.data);
       }
     } catch (err) {
       setError(`Failed to ${existingStats ? "update" : "create"} stats. Please try again.`);
@@ -85,8 +83,8 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="w-full h-full p-6 overflow-auto flex justify-center">
-      <div className="w-full max-w-4xl bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
+    <div className="w-full h-screen overflow-auto bg-gray-100 p-4">
+      <div className="max-w-5xl mx-auto bg-white rounded-xl p-6 sm:p-10 border border-gray-300 shadow-xl relative">
         {/* Back Button */}
         <button
           onClick={onClose}
@@ -96,7 +94,7 @@ export default function StatsForm({ onClose }) {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-4">
+        <h2 className="text-3xl nunito-sans font-extrabold text-gray-800 mb-5 text-center pt-2">
           Stats Section Form
         </h2>
 
@@ -115,7 +113,6 @@ export default function StatsForm({ onClose }) {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Headline */}
           <div>
             <label className="block text-gray-700 nunito-sans font-medium mb-2">Headline</label>
             <input
@@ -129,7 +126,6 @@ export default function StatsForm({ onClose }) {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block nunito-sans text-gray-700 font-medium mb-2">Description</label>
             <textarea
@@ -143,7 +139,6 @@ export default function StatsForm({ onClose }) {
             />
           </div>
 
-          {/* Stats Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
             {[
               { label: "Loyal Clients", name: "loyalClients", placeholder: "Enter number of clients" },
@@ -165,7 +160,6 @@ export default function StatsForm({ onClose }) {
             ))}
           </div>
 
-          {/* Submit Button */}
           <div className="pt-4">
             <button
               type="submit"
