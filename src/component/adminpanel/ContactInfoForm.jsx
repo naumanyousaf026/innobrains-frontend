@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios"; // Ensure axios is installed with `npm install axios`
 
 function ContactInfoForm() {
@@ -8,6 +8,40 @@ function ContactInfoForm() {
     phone: "",
     hours: "",
   });
+  const [contactId, setContactId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [createMode, setCreateMode] = useState(false);
+
+  // Fetch existing contact info when component mounts
+  useEffect(() => {
+    fetchContactInfo();
+  }, []);
+
+  const fetchContactInfo = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("https://apis.innobrains.pk/api/contact-info");
+      if (response.data && response.status === 200) {
+        setFormData({
+          email: response.data.email || "",
+          location: response.data.location || "",
+          phone: response.data.phone || "",
+          hours: response.data.hours || "",
+        });
+        setContactId(response.data._id);
+        setCreateMode(false);
+      }
+    } catch (error) {
+      console.error("Error fetching contact info:", error);
+      // If 404, it means no contact info exists yet, so we'll be in create mode
+      if (error.response && error.response.status === 404) {
+        setCreateMode(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,36 +54,56 @@ function ContactInfoForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "https://apis.innobrains.pk/api/contact-info",
-        formData
-      );
-      if (response.status === 200) {
-        alert("Contact info submitted successfully!");
-        setFormData({
-          email: "",
-          location: "",
-          phone: "",
-          hours: "",
-        });
+      setLoading(true);
+      let response;
+      
+      if (createMode) {
+        // Create new contact info
+        response = await axios.post(
+          "https://apis.innobrains.pk/api/contact-info",
+          formData
+        );
+        if (response.status === 201) {
+          setContactId(response.data._id);
+          setCreateMode(false);
+        }
       } else {
-        alert("Failed to submit contact info. Please try again.");
+        // Update existing contact info with ID
+        response = await axios.put(
+          `https://apis.innobrains.pk/api/contact-info/${contactId}`,
+          formData
+        );
+      }
+      
+      if (response.status === 200 || response.status === 201) {
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 3000);
+      } else {
+        alert("Failed to update contact info. Please try again.");
       }
     } catch (error) {
-      console.error("Error submitting contact info:", error);
+      console.error("Error updating contact info:", error);
       alert(
-        "An error occurred while submitting the form. Please check your input or try again later."
+        "An error occurred while updating the information. Please check your input or try again later."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen ml-auto w-full p-6">
-      <div className="w-[100%] bg-white bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg p-10">
+      <div className="w-full bg-white bg-opacity-80 backdrop-blur-md rounded-lg shadow-lg p-10">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-black mb-4">
-            Contact Info Form
+            {createMode ? "Create Contact Information" : "Update Contact Information"}
           </h2>
+          {loading && <p className="text-gray-600">Loading current information...</p>}
+          {updateSuccess && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+              Contact information {createMode ? "created" : "updated"} successfully!
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -68,6 +122,7 @@ function ContactInfoForm() {
                 value={formData.location}
                 onChange={handleChange}
                 required
+                disabled={loading}
                 className="w-full px-5 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-black bg-transparent"
               />
             </div>
@@ -86,6 +141,7 @@ function ContactInfoForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 required
+                disabled={loading}
                 className="w-full px-5 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-black bg-transparent"
               />
             </div>
@@ -104,6 +160,7 @@ function ContactInfoForm() {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
               className="w-full px-5 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-black bg-transparent"
             />
           </div>
@@ -122,15 +179,19 @@ function ContactInfoForm() {
               value={formData.hours}
               onChange={handleChange}
               required
-              className="w-full px-5 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 bg-transparent"
+              disabled={loading}
+              className="w-full px-5 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-black bg-transparent"
             />
           </div>
           <div className="flex justify-center">
             <button
               type="submit"
-              className="px-20 bg-[#103153]  text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition"
+              disabled={loading}
+              className={`px-20 bg-[#103153] text-white font-bold py-3 rounded-lg transition ${
+                loading ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-800"
+              }`}
             >
-              Submit
+              {loading ? "Processing..." : createMode ? "Create" : "Update"}
             </button>
           </div>
         </form>
