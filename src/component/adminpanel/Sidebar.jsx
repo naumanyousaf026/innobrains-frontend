@@ -1,47 +1,53 @@
 import React from "react";
 import {
   HomeIcon,
-  ShoppingCartIcon,
-  BriefcaseIcon,
+  ShoppingBagIcon,
+  WrenchScrewdriverIcon,
   NewspaperIcon,
-  UserGroupIcon,
+  UsersIcon,
   TrophyIcon,
   PhoneIcon,
   ChartBarIcon,
-} from "@heroicons/react/24/solid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
+  MapPinIcon,
+  InformationCircleIcon,
+  ArrowTrendingUpIcon,
+  EnvelopeIcon
+} from "@heroicons/react/24/outline";
+import { PowerIcon } from "@heroicons/react/24/solid";
 
 const FormsButton = ({ setSection }) => {
   return (
-    <div className="flex flex-col ml-3 gap-2">
+    <div className="flex flex-col gap-1 mt-2">
+      <div className="pl-3 text-gray-500 text-sm font-semibold uppercase tracking-wider">
+        Forms
+      </div>
       <button
         onClick={() => setSection("AchievementForm")}
-        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+        className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
       >
-        <TrophyIcon className="h-6 w-6" />
+        <TrophyIcon className="h-5 w-5" />
         Achievement
       </button>
       <button
         onClick={() => setSection("ContactInfoForm")}
-        className="flex items-center gap-2 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+        className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
       >
-        <PhoneIcon className="h-6 w-6" />
-        InfoForm
+        <PhoneIcon className="h-5 w-5" />
+        Contact Info
       </button>
       <button
         onClick={() => setSection("StepForm")}
-        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+        className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
       >
-        <ChartBarIcon className="h-6 w-6" />
-        GrowthStep
+        <ArrowTrendingUpIcon className="h-5 w-5" />
+        Growth Steps
       </button>
       <button
         onClick={() => setSection("AboutForm")}
-        className="flex items-center gap-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+        className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
       >
-        <ChartBarIcon className="h-6 w-6" />
-        AboutForm
+        <InformationCircleIcon className="h-5 w-5" />
+        About Form
       </button>
     </div>
   );
@@ -50,82 +56,87 @@ const FormsButton = ({ setSection }) => {
 const Sidebar = ({ setSection, handleLogout, isOpen }) => {
   return (
     <div
-      className={`fixed left-0 top-0 h-full bg-gray-100 p-4 z-20 overflow-y-auto ${
+      className={`fixed left-0 top-0 h-full bg-white shadow-lg p-4 z-20 overflow-y-auto border-r border-gray-200 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-[20%]`}
+      } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-64`}
     >
       {/* Logo */}
-      <div className="mb-8">
+      <div className="mb-8 flex justify-center">
         <img
-          src="https://portal.innobrains.pk/files/system/_file64d57376183f5-site-logo.png"
+          src="/api/placeholder/200/60"
           alt="Logo"
-          className="w-40 mx-auto"
+          className="h-12 w-auto"
         />
       </div>
 
       {/* Navigation Links */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
+        <div className="pl-3 text-gray-500 text-sm font-semibold uppercase tracking-wider">
+          Main Navigation
+        </div>
         <button
           onClick={() => setSection("dashboard")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <HomeIcon className="h-6 w-6" />
+          <HomeIcon className="h-5 w-5" />
           Dashboard
         </button>
         <button
           onClick={() => setSection("products")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <ShoppingCartIcon className="h-6 w-6" />
+          <ShoppingBagIcon className="h-5 w-5" />
           Products
         </button>
         <button
           onClick={() => setSection("services")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <BriefcaseIcon className="h-6 w-6" />
+          <WrenchScrewdriverIcon className="h-5 w-5" />
           Services
         </button>
         <button
           onClick={() => setSection("state")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <BriefcaseIcon className="h-6 w-6" />
+          <MapPinIcon className="h-5 w-5" />
           State
         </button>
         <button
           onClick={() => setSection("blogs")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <NewspaperIcon className="h-6 w-6" />
+          <NewspaperIcon className="h-5 w-5" />
           Blogs
         </button>
         <button
           onClick={() => setSection("team")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <UserGroupIcon className="h-6 w-6" />
+          <UsersIcon className="h-5 w-5" />
           Team
         </button>
         <button
           onClick={() => setSection("userSubmissions")}
-          className="flex items-center gap-2 ml-3 p-2 text-lg font-medium hover:bg-[#103153] hover:text-white rounded-md"
+          className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
         >
-          <UserGroupIcon className="h-6 w-6" />
-          Users Contact
+          <EnvelopeIcon className="h-5 w-5" />
+          User Contacts
         </button>
 
         {/* Form Section */}
         <FormsButton setSection={setSection} />
 
         {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-5 ml-3 p-2 mt-6 mb-4 text-lg font-medium text-red-600 hover:bg-[#103153] hover:text-white rounded-md"
-        >
-          <FontAwesomeIcon icon={faPowerOff} className="h-6 w-6" />
-          Logout
-        </button>
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full gap-3 p-2 pl-4 text-red-600 font-medium hover:bg-red-50 rounded-md transition-colors"
+          >
+            <PowerIcon className="h-5 w-5" />
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
