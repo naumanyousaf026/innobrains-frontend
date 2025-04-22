@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { PowerIcon } from "@heroicons/react/24/solid";
 // Import the logo image
-import logoImage from "../images/innobrains.jpg";
+import logoImage from "../..images/innobrains.jpg";
 
 const FormsButton = ({ setSection }) => {
   return (
