@@ -88,7 +88,7 @@ export default function StatsForm({ onClose }) {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full p-6">
+    <div className="flex  items-center justify-center min-h-screen  w-full  p-6">
       <div className="w-full bg-white rounded-xl p-8 border border-gray-300 relative shadow-xl">
         {/* Back Button */}
         <button
