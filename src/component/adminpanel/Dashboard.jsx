@@ -43,21 +43,38 @@ const Dashboard = () => {
       try {
         setIsLoading(true);
         // Use your actual API endpoints
-        const [productsRes, servicesRes, blogsRes] = await Promise.all([
+        const [productsRes, servicesRes, blogsRes, contactsRes] = await Promise.all([
           axios.get("https://apis.innobrains.pk/api/product"),
           axios.get("https://apis.innobrains.pk/api/service"),
           axios.get("https://apis.innobrains.pk/api/blog"),
+          axios.get("https://apis.innobrains.pk/api/contact")
         ]);
 
-        // For visitors, you might still need a placeholder or another endpoint
-        const visitorsCount = 1250; // Placeholder value, replace with actual API call if available
+        // Handle blog response - check if the response is an array or contains a data property
+        let blogCount = 0;
+        if (Array.isArray(blogsRes.data)) {
+          blogCount = blogsRes.data.length;
+        } else if (blogsRes.data && blogsRes.data.data && Array.isArray(blogsRes.data.data)) {
+          blogCount = blogsRes.data.data.length;
+        } else if (blogsRes.data && typeof blogsRes.data === 'object') {
+          // If it's a single object, count as 1
+          blogCount = 1;
+        }
+
+        // Handle visitors count from contacts API
+        let visitorCount = 0;
+        if (Array.isArray(contactsRes.data)) {
+          visitorCount = contactsRes.data.length;
+        } else if (contactsRes.data && contactsRes.data.data && Array.isArray(contactsRes.data.data)) {
+          visitorCount = contactsRes.data.data.length;
+        }
 
         // Update stats with the total counts from your APIs
         setStats({
-          products: productsRes.data.length,
-          services: servicesRes.data.length,
-          blogs: blogsRes.data.length,
-          visitors: visitorsCount,
+          products: Array.isArray(productsRes.data) ? productsRes.data.length : 0,
+          services: Array.isArray(servicesRes.data) ? servicesRes.data.length : 0,
+          blogs: blogCount,
+          visitors: visitorCount,
         });
 
         // Dummy Data for Sales (you can replace this with actual sales data API)
