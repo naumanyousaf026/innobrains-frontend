@@ -18,9 +18,6 @@ import { PowerIcon } from "@heroicons/react/24/solid";
 const FormsButton = ({ setSection }) => {
   return (
     <div className="flex flex-col gap-1 mt-2">
-      <div className="pl-3 text-gray-500 text-sm font-semibold uppercase tracking-wider">
-        Forms
-      </div>
       <button
         onClick={() => setSection("AchievementForm")}
         className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
@@ -47,7 +44,7 @@ const FormsButton = ({ setSection }) => {
         className="flex items-center gap-3 p-2 pl-4 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
       >
         <InformationCircleIcon className="h-5 w-5" />
-        About Form
+        About Us
       </button>
     </div>
   );
