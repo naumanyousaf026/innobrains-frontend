@@ -35,28 +35,32 @@ const Dashboard = () => {
 
   const [salesData, setSalesData] = useState({ labels: [], datasets: [] });
   const [ordersData, setOrdersData] = useState({ labels: [], datasets: [] });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Replace these API calls with your actual endpoints
-        const [servicesRes, productsRes, blogsRes, visitorsRes] =
-          await Promise.all([
-            axios.get("/api/service/"),
-            axios.get("/api/product/"),
-            axios.get("/api/blog/"),
-            axios.get("/api/visitor/"),
-          ]);
+        setIsLoading(true);
+        // Use your actual API endpoints
+        const [productsRes, servicesRes, blogsRes] = await Promise.all([
+          axios.get("https://apis.innobrains.pk/api/product"),
+          axios.get("https://apis.innobrains.pk/api/service"),
+          axios.get("https://apis.innobrains.pk/api/blog"),
+        ]);
 
-        // Update stats with counts from responses
+        // For visitors, you might still need a placeholder or another endpoint
+        const visitorsCount = 1250; // Placeholder value, replace with actual API call if available
+
+        // Update stats with the total counts from your APIs
         setStats({
-          services: servicesRes.data.length,
           products: productsRes.data.length,
+          services: servicesRes.data.length,
           blogs: blogsRes.data.length,
-          visitors: visitorsRes.data.length,
+          visitors: visitorsCount,
         });
 
-        // Dummy Data for Sales
+        // Dummy Data for Sales (you can replace this with actual sales data API)
         const dummySales = [
           { date: "January", amount: 100 },
           { date: "February", amount: 150 },
@@ -66,8 +70,8 @@ const Dashboard = () => {
           { date: "June", amount: 350 },
         ];
 
-        const salesLabels = dummySales.map((sale) => sale.date); // Extract dates
-        const salesValues = dummySales.map((sale) => sale.amount); // Extract amounts
+        const salesLabels = dummySales.map((sale) => sale.date);
+        const salesValues = dummySales.map((sale) => sale.amount);
 
         setSalesData({
           labels: salesLabels,
@@ -82,7 +86,7 @@ const Dashboard = () => {
           ],
         });
 
-        // Dummy Data for Orders
+        // Dummy Data for Orders (you can replace this with actual orders data API)
         const dummyOrders = [
           { date: "January", count: 30 },
           { date: "February", count: 45 },
@@ -92,8 +96,8 @@ const Dashboard = () => {
           { date: "June", count: 105 },
         ];
 
-        const ordersLabels = dummyOrders.map((order) => order.date); // Extract dates
-        const ordersValues = dummyOrders.map((order) => order.count); // Extract counts
+        const ordersLabels = dummyOrders.map((order) => order.date);
+        const ordersValues = dummyOrders.map((order) => order.count);
 
         setOrdersData({
           labels: ordersLabels,
@@ -107,13 +111,33 @@ const Dashboard = () => {
             },
           ],
         });
+        
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching stats:", error);
+        console.error("Error fetching data:", error);
+        setError("Failed to load dashboard data");
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 lg:w-[80%] ml-auto flex items-center justify-center">
+        <p className="text-xl">Loading dashboard data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 lg:w-[80%] ml-auto flex items-center justify-center">
+        <p className="text-xl text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 lg:w-[80%] ml-auto">
