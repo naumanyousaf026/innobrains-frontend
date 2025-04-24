@@ -69,9 +69,9 @@ export default function StatePreview() {
         <div className="flex justify-end space-x-4 mb-4">
           <button
             onClick={toggleForm}
-            className="bg-black text-white py-2 px-4 rounded-md transition duration-300 flex items-center space-x-2"
+            className="bg-[#3b82f6] w-32  text-white py-2 px-4 rounded-md transition duration-300 flex items-center space-x-2"
           >
-            <IoAddSharp className="text-white text-lg" />
+            <IoAddSharp className="text-bla mx-3 text-lg" />
             <span>{showData ? "Edit" : "Add New"}</span>
           </button>
         </div>
