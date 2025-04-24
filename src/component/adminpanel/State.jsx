@@ -79,7 +79,7 @@ export default function StatePreview() {
 
       {/* Show Form */}
       {showForm ? (
-        <div className="bg-white rounded-lg shadow-md p-4 mt-1 relative">
+        <div className="bg-white rounded-lg  p-4 mt-1 relative">
           {/* Back Icon */}
           <button
             onClick={toggleForm}
@@ -91,7 +91,7 @@ export default function StatePreview() {
           </button>
 
           {/* Form Content */}
-          <div className="pt-12">
+          <div className="">
             <StateForm data={editData} onClose={handleFormClose} />
           </div>
         </div>
