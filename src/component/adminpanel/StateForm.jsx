@@ -86,7 +86,7 @@ export default function StatsForm({ onClose }) {
 
   return (
     <div className="w-full h-full overflow-auto p-0 m-0">
-      <div className="w-full max-w-3xl mx-auto bg-white rounded-xl p-6 border border-gray-300 shadow-lg my-4">
+      <div className=" w-[80%] ml-auto bg-white rounded-xl p-6 border border-gray-300 shadow-lg my-4">
         {/* Back Button */}
         <button
           onClick={onClose}
