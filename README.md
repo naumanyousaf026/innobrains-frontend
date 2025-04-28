@@ -56,8 +56,6 @@ npm start
 Open your browser and navigate to:
 
 
-http://localhost:3000
-
 
 📜 License
 This project is not licensed. All rights reserved by INNOBRAINS.
