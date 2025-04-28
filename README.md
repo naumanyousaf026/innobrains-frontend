@@ -35,18 +35,9 @@ innobrains-frontend/ ├── public/ │ └── assets/ ├── src/ │ 
 📸 Screenshots
 (Add screenshots of homepage, admin dashboard, blog editor & services section)
 ## 📸 Screenshots
+import blogEditorImg from './assets/screenshots/blogeditor.png';
+<img src={blogEditorImg} alt="Blog Editor Screenshot" />
 
-### Homepage
-![Homepage Screenshot](/screenshots/homepage.png)
-
-### Admin Panel
-![Admin Panel Screenshot](/screenshots/dashboard.png)
-
-### Blog Editor
-![Blog Editor Screenshot](/screenshots/blogeditor.png)
-
-### Services Section
-![Services Section Screenshot](/screenshots/servicessection.png)
 
 
 🧩 How to Run Locally
