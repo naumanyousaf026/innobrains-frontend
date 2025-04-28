@@ -32,13 +32,6 @@ This is the official **frontend** for [INNOBRAINS](https://innobrains.pk), a dyn
 
 innobrains-frontend/ ├── public/ │ └── assets/ ├── src/ │ ├── assets/ │ ├── components/ │ │ ├── aboutus/ │ │ ├── adminpanel/ │ │ ├── blog/ │ │ ├── contact/ │ │ ├── images/ │ │ ├── ourservices/ │ │ ├── products/ │ │ ├── common/ │ ├── App.js │ ├── index.js │ ├── services/ │ ├── utils/ ├── .env (Hidden) ├── README.md ├── package.json
 
-📸 Screenshots
-(Add screenshots of homepage, admin dashboard, blog editor & services section)
-## 📸 Screenshots
-import blogEditorImg from './assets/screenshots/blogeditor.png';
-<img src={blogEditorImg} alt="Blog Editor Screenshot" />
-
-
 
 🧩 How to Run Locally
 Clone the repository:
