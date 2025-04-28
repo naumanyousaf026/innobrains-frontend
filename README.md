@@ -40,3 +40,58 @@ This is the **frontend application** for the Innobrains company website. Built w
    ```bash
    git clone https://github.com/naumanyousaf026/innobrains-frontend.git
    cd innobrains-frontend
+
+
+
+
+Install dependencies
+
+bash
+Copy
+Edit
+npm install
+Setup environment variables
+
+Create a .env file at the root and add:
+
+ini
+Copy
+Edit
+REACT_APP_API_URL=https://api.innobrains.pk
+Run the development server
+
+
+npm start
+
+📂 Folder Structure
+
+src/
+├── assets/            # Images and static assets
+├── components/        # Reusable components
+├── pages/             # Pages (Home, Services, Contact, Blog, etc.)
+├── api/               # API calls and configurations
+├── App.js             # Main application file
+├── index.js           # Entry point
+└── ...
+🔗 API
+The frontend is fully connected with a live backend API:
+
+Live API URL:
+https://api.innobrains.pk
+
+Backend is built using:
+
+Express.js
+
+MongoDB
+
+Multer (for file uploads)
+
+Nodemailer (for OTP Email verification)
+
+📞 Contact
+Nauman Yousaf
+GitHub: @naumanyousaf026
+Email: naumanyousaf026@gmail.com
+
+
