@@ -1,88 +1,67 @@
-# 🚀 Innobrains Frontend
+# INNOBRAINS Frontend
 
-This is the **frontend application** for the Innobrains company website. Built with **React.js** and **Tailwind CSS**, this project fetches real-time dynamic data from a live backend API.
+This is the official **frontend** for [INNOBRAINS](https://innobrains.pk), a dynamic and fully customizable company website built using **React.js**.
 
----
-
-## 📋 Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Folder Structure](#folder-structure)
-- [Environment Variables](#environment-variables)
-- [API](#api)
-- [Contact](#contact)
-
----
+## 🚀 Live Website
+👉 [https://innobrains.pk](https://innobrains.pk)
 
 ## ✨ Features
-- Dynamic website fetching real-time data from API.
-- CRUD operations through forms (Admin Panel side).
-- Blog Editor integration for rich text blogs.
-- Sections for Team, Services, Achievements, Products, and Blogs.
-- Contact form integration with API.
-- Responsive design using Tailwind CSS.
 
----
+- Fully dynamic content managed through an admin panel
+- CRUD operations via forms
+- Blog management with a rich text editor
+- OTP system implemented with Nodemailer
+- Admin-protected routes
+- Modular and scalable component architecture
+- Fully responsive across all devices
+- Image uploads for Blogs, Services, Team, and Growth sections
+- Environment variables secured (.env)
 
-## 🛠 Tech Stack
-- React.js
-- React Router
-- Axios
-- Tailwind CSS
-- HTML5 / CSS3 / JavaScript (ES6+)
+## 🛠️ Technologies Used
 
----
+- **React.js** (Frontend Framework)
+- **Axios** (API Integration)
+- **React Router DOM** (Routing)
+- **Tailwind CSS** (Styling)
+- **Rich Text Editor** (Blogs)
+- **Nodemailer** (Email OTP System)
+- **JWT Authentication** (Admin Panel)
+- **Protected Routes** (Security)
 
-## 🚀 Getting Started
+## 📂 Folder Structure
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/naumanyousaf026/innobrains-frontend.git
-   cd innobrains-frontend
+innobrains-frontend/ ├── public/ │ └── assets/ ├── src/ │ ├── assets/ │ ├── components/ │ │ ├── aboutus/ │ │ ├── adminpanel/ │ │ ├── blog/ │ │ ├── contact/ │ │ ├── images/ │ │ ├── ourservices/ │ │ ├── products/ │ │ ├── common/ │ ├── App.js │ ├── index.js │ ├── services/ │ ├── utils/ ├── .env (Hidden) ├── README.md ├── package.json
+
+📸 Screenshots
+(Add screenshots of homepage, admin dashboard, blog editor & services section)
+![alt text](<home page .png>)
+![alt text](<service section.png>) ![alt text](dashboard.png) ![alt text](<blog editor.png>) ![alt text](<team page at admin.png>)
+
+🧩 How to Run Locally
+Clone the repository:
 
 
+git clone https://github.com/yourusername/innobrains-frontend.git
+Navigate to the project directory:
 
+cd innobrains-frontend
+Install all dependencies:
 
-Install dependencies
 
 npm install
+Create a .env file in the root and add your API URL:
+
 
 REACT_APP_API_URL=https://api.innobrains.pk
-Run the development server
+Start the development server:
 
 
 npm start
-
-📂 Folder Structure
-
-src/
-├── assets/            # Images and static assets
-├── components/        # Reusable components
-├── pages/             # Pages (Home, Services, Contact, Blog, etc.)
-├── api/               # API calls and configurations
-├── App.js             # Main application file
-├── index.js           # Entry point
-└── ...
-🔗 API
-The frontend is fully connected with a live backend API:
-
-Live API URL:
-https://api.innobrains.pk
-
-Backend is built using:
-
-Express.js
-
-MongoDB
-
-Multer (for file uploads)
-
-Nodemailer (for OTP Email verification)
-
-📞 Contact
-Nauman Yousaf
-GitHub: @naumanyousaf026
-Email: naumanyousaf026@gmail.com
+Open your browser and navigate to:
 
 
+http://localhost:3000
+
+
+📜 License
+This project is not licensed. All rights reserved by INNOBRAINS.
