@@ -46,17 +46,8 @@ This is the **frontend application** for the Innobrains company website. Built w
 
 Install dependencies
 
-bash
-Copy
-Edit
 npm install
-Setup environment variables
 
-Create a .env file at the root and add:
-
-ini
-Copy
-Edit
 REACT_APP_API_URL=https://api.innobrains.pk
 Run the development server
 
