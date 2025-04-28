@@ -34,8 +34,19 @@ innobrains-frontend/ ├── public/ │ └── assets/ ├── src/ │ 
 
 📸 Screenshots
 (Add screenshots of homepage, admin dashboard, blog editor & services section)
-![alt text](<home page .png>)
-![alt text](<service section.png>) ![alt text](dashboard.png) ![alt text](<blog editor.png>) ![alt text](<team page at admin.png>)
+## 📸 Screenshots
+
+### Homepage
+![Homepage Screenshot](./public/screenshots/homepage.png)
+
+### Admin Panel
+![Admin Panel Screenshot](./public/screenshots/adminpanel.png)
+
+### Blog Editor
+![Blog Editor Screenshot](./public/screenshots/blogeditor.png)
+
+### Services Section
+![Services Section Screenshot](./public/screenshots/servicessection.png)
 
 🧩 How to Run Locally
 Clone the repository:
