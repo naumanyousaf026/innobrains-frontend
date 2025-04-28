@@ -37,16 +37,17 @@ innobrains-frontend/ ├── public/ │ └── assets/ ├── src/ │ 
 ## 📸 Screenshots
 
 ### Homepage
-![Homepage Screenshot](./public/screenshots/homepage.png)
+![Homepage Screenshot](/screenshots/homepage.png)
 
 ### Admin Panel
-![Admin Panel Screenshot](./public/screenshots/adminpanel.png)
+![Admin Panel Screenshot](/screenshots/dashboard.png)
 
 ### Blog Editor
-![Blog Editor Screenshot](./public/screenshots/blogeditor.png)
+![Blog Editor Screenshot](/screenshots/blogeditor.png)
 
 ### Services Section
-![Services Section Screenshot](./public/screenshots/servicessection.png)
+![Services Section Screenshot](/screenshots/servicessection.png)
+
 
 🧩 How to Run Locally
 Clone the repository:
